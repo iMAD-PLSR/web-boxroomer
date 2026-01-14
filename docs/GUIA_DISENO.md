@@ -98,6 +98,22 @@ BOXROOMER debe sentirse como una App nativa en el móvil.
 
 ---
 
+## 🏗️ 8. Layout Híbrido (Responsive)
+
+Para las áreas de gestión (`/app` y `/admin`), se sigue un patrón de diseño adaptable que maximiza la usabilidad en cada dispositivo:
+
+### Ecosistema Móvil (Pantallas < 768px)
+
+- **Bottom Navigation Bar**: Navegación persistente en la parte inferior con 4-5 iconos clave.
+- **Floating Action Button (FAB)**: Botón central elevado para la acción principal ("Añadir", "Crear").
+- **Smart Header**: Cabecera compacta que se oculta o minimiza al hacer scroll.
+
+### Ecosistema Escritorio (Pantallas >= 768px)
+
+- **Sidebar Navigation**: La barra inferior se transforma automáticamente en una columna lateral izquierda fija (Sidebar).
+- **Expanded Grid**: El contenido de una columna se expande a parrillas de 2, 3 o 4 columnas (`grid-cols-2 md:grid-cols-4`).
+- **Data Density**: Se muestra más información secundaria que en móvil se oculta por espacio.
+
 ## 🛠️ 8. Evolución del Diseño
 
 Este documento se actualizará cada vez que se apruebe un cambio estético significativo. Para cualquier desarrollo nuevo:

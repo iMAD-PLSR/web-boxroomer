@@ -378,7 +378,7 @@
                             <li class="flex items-center gap-3">✅ Catálogo Online (Web App)</li>
                         </ul>
                     </div>
-                    <a href="pages/reserva.html"
+                    <a href="pages/reserva.html?pack=mini"
                         class="block text-center w-full py-5 rounded-2xl bg-brandPurple text-white hover:bg-brandDark transition-all font-bold text-lg uppercase tracking-widest shadow-lg shadow-brandPurple/20">Elegir
                         Pack Mini</a>
                 </div>
@@ -428,7 +428,7 @@
                             <li class="flex items-center gap-3">✅ Catálogo Online (Web App)</li>
                         </ul>
                     </div>
-                    <a href="pages/reserva.html"
+                    <a href="pages/reserva.html?pack=duo"
                         class="block text-center w-full py-5 rounded-2xl bg-brandPurple text-white hover:bg-white hover:text-brandDark transition-all font-bold text-lg uppercase tracking-widest shadow-xl">Elegir
                         Pack Dúo</a>
                 </div>
@@ -530,10 +530,10 @@
                         </div>
                     </div>
 
-                    <a href="pages/reserva.html"
-                        class="block text-center w-full py-6 rounded-[2rem] bg-brandPurple text-white font-black text-xl hover:bg-white hover:text-brandDark transition-all shadow-2xl uppercase tracking-[0.1em] relative z-10">
+                    <button onclick="bookFromCalculator()"
+                        class="block text-center w-full py-6 rounded-[2rem] bg-brandPurple text-white font-black text-xl hover:bg-white hover:text-brandDark transition-all shadow-2xl uppercase tracking-[0.1em] relative z-10 cursor-pointer">
                         RESERVAR AHORA
-                    </a>
+                    </button>
                     <button onclick="BoxBot.openChat(event)"
                         class="mt-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-brandPurple transition-all flex items-center justify-center gap-2 w-full relative z-10">
                         <span class="material-symbols-outlined" style="font-size: 14px;">smart_toy</span>
@@ -760,7 +760,7 @@
     <!-- Sticky Mobile CTA -->
     <div
         class="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-xl border-t border-brandPurple/10 z-[50] md:hidden">
-        <a href="https://app.boxroomer.com/"
+        <a href="pages/reserva.html"
             class="flex items-center justify-center bg-brandPurple text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl active:scale-95 transition-all">
             Reserva tu espacio ahora ⚡
         </a>

@@ -177,3 +177,41 @@ Haciendo un barrido final, estos 3 detalles marcan la diferencia técnica y oper
 1. **Setup**: Desplegar entorno de pruebas en subdominio de SiteGround.
 2. **API Check**: Solicitar documentación de la API Ad-Hoc del SGA.
 3. **Frontend**: Maquetar primera versión del Wizard con el Chat-Copiloto.
+
+## 13. ESTADO DE IMPLEMENTACIÓN (MVP FRONTEND COMPLETADO)
+
+*Última actualización: Enero 2026*
+
+Se ha completado la construcción de todas las interfaces clave del ecosistema (MVP Visual). El proyecto está listo para iniciar la fase de integración backend.
+
+### ✅ FASE 1: FRONTEND & UX (HECHO)
+
+#### **Web Pública & Captación**
+
+- [x] **Landing Page**: Optimizada con calculadora de precios.
+- [x] **Wizard de Reserva**: Flujo de 3 pasos con autocompletado de dirección (Nominatim), validación de zona y chat copiloto.
+- [x] **Simulación de Pago**: Botón de confirmación funcional (guarda estado en `localStorage`).
+
+#### **Área de Cliente (Fidelización)**
+
+- [x] **Autenticación UI**: Pantallas de `Login` y `Registro` con diseño Glassmorphism.
+- [x] **Dashboard (`/pages/cliente_dashboard.html`)**:
+  - **Diseño Híbrido**: Barra inferior en Móvil ↔ Sidebar Lateral en Escritorio.
+  - Status Card dinámica (con datos hidratados desde reserva).
+- [x] **Inventario (`/pages/cliente_inventario.html`)**: Galería visual simulada de bultos.
+- [x] **Wallet (`/pages/cliente_pagos.html`)**: Historial de facturas y métodos de pago.
+- [x] **Perfil (`/pages/cliente_cuenta.html`)**: Gestión de datos personales.
+
+#### **Torre de Control (Gestión)**
+
+- [x] **Admin Dashboard (`/pages/admin_dashboard.html`)**:
+  - Recepción en tiempo real de nuevas reservas (lee del `localStorage` compartido).
+  - Grid de KPIs operacionales (Ocupación, MRR, Rutas).
+  - Tabla de gestión de pedidos live.
+
+### 🔜 FASE 2: BACKEND & INTEGRACIÓN (PENDIENTE)
+
+1. **Infraestructura de Datos (Supabase/PostgreSQL)**: Migrar `localStorage` a base de datos real.
+2. **Autenticación Real (Clerk)**: Implementar protección de rutas.
+3. **Pasarela de Pagos (Stripe)**: Conectar botón de pago con Checkout real.
+4. **Logística Inteligente**: Refinar cálculo de rutas y zonas.

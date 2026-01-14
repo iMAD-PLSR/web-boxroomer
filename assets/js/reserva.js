@@ -63,21 +63,26 @@ function initStep1() {
         });
     }
 
-    // Check URL parameters for pre-selection
+    // Check URL parameters for pre-selection (Updated for new Home)
     const urlParams = new URLSearchParams(window.location.search);
-    const packParam = urlParams.get('pack');
-    const durParam = urlParams.get('duration');
-    const m3Param = urlParams.get('m3');
+    const packParam = urlParams.get('pack'); // 'mini' | 'duo'
+    const volParam = urlParams.get('vol');
+    const monthsParam = urlParams.get('months');
 
-    if (packParam) {
-        selectPack(parseInt(packParam));
-    }
-    if (durParam) {
-        setDuration(parseInt(durParam));
-    }
-    if (m3Param) {
-        setSelectMode('manual');
-        updateM3(parseFloat(m3Param));
+    if (packParam === 'mini') {
+        updateM3(1.0);
+        setDuration(monthsParam ? parseInt(monthsParam) : 3);
+        // Force highlight pack visual logic if exists (optional)
+    } else if (packParam === 'duo') {
+        updateM3(2.0);
+        setDuration(monthsParam ? parseInt(monthsParam) : 3);
+    } else if (volParam) {
+        updateM3(parseFloat(volParam));
+        if (monthsParam) setDuration(parseInt(monthsParam));
+    } else {
+        // Default
+        updateM3(1.5); // Start with a nice middle ground
+        setDuration(3);
     }
 
     // If no pack or m3 selected, ensure UI is reset
@@ -1418,6 +1423,29 @@ function updateSummary() {
 
 function confirmOrder() {
     const terms = document.getElementById('terms-check');
+    const authName = document.getElementById('auth-name');
+    const authEmail = document.getElementById('auth-email');
+    const authPass = document.getElementById('auth-pass');
+
+    // 1. Auth Validation (Simple)
+    let authError = false;
+    if (!authName || !authName.value.trim()) { authName.classList.add('border-red-500'); authError = true; }
+    else authName.classList.remove('border-red-500');
+
+    if (!authEmail || !authEmail.value.trim() || !authEmail.value.includes('@')) { authEmail.classList.add('border-red-500'); authError = true; }
+    else authEmail.classList.remove('border-red-500');
+
+    if (!authPass || !authPass.value.trim() || authPass.value.length < 8) { authPass.classList.add('border-red-500'); authError = true; }
+    else authPass.classList.remove('border-red-500');
+
+    if (authError) {
+        addAiMessage("⚠️ **Atención**: Para asegurar tu reserva, necesito que completes tus datos de cuenta (Nombre, Email y Contraseña válida).");
+        // Scroll to auth section
+        authName.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
+
+    // 2. Terms Validation
     if (!terms || !terms.checked) {
         addAiMessage("⚠️ Para confirmar tu reserva inteligente, es necesario que aceptes las condiciones generales.");
         return;
@@ -1429,7 +1457,7 @@ function confirmOrder() {
     const stepperContainer = document.querySelector('.flex.items-center.justify-between.md\\:justify-center.gap-2.md\\:gap-8.mb-8');
 
     btn.disabled = true;
-    btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Procesando Pago...';
+    btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Creando Cuenta y Procesando Pago...';
 
     setTimeout(() => {
         isPaid = true; // LOCK NAVIGATION
@@ -1437,15 +1465,20 @@ function confirmOrder() {
         // UI Changes
         if (backBtn) backBtn.classList.add('hidden');
         if (terms) terms.disabled = true;
+        // Lock auth fields
+        if (authName) authName.disabled = true;
+        if (authEmail) authEmail.disabled = true;
+        if (authPass) authPass.disabled = true;
 
         // Hide stepper to avoid confusion
         if (stepperContainer) stepperContainer.classList.add('opacity-30', 'pointer-events-none');
 
         // SAVE DATA FOR DASHBOARD SIMULATION
         const dashboardData = {
-            userName: "Israel", // Simulated logged user
+            userName: authName.value.split(' ')[0], // Take first name
+            userEmail: authEmail.value,
             volume: document.getElementById('reserva-range')?.value || 0,
-            address: document.getElementById('pickup-address')?.value || "Pinto, Madrid",
+            address: document.getElementById('pickup-address')?.value || "La dirección no se guardó bien",
             pickupDate: selectedDate ? `${selectedDate.day} ${selectedDate.month}` : 'Pendiente',
             pickupTime: selectedSlot || 'Pendiente',
             status: 'pending_pickup', // active, pending_pickup

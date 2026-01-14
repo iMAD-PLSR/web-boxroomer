@@ -131,3 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // Expose functions globally for HTML onclick attributes
 window.setDuration = setDuration;
 window.calculate = calculate;
+window.bookFromCalculator = function () {
+    const vol = range ? range.value : 1;
+    const months = currentMonths || 3;
+    window.location.href = `pages/reserva.html?vol=${vol}&months=${months}`;
+};
