@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth bg-gradient-to-br from-slate-100 to-slate-200">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva tu Trastero Inteligente | BOXROOMER</title>
+    <link rel="icon" href="../assets/images/favicon.png" type="image/png">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com?v=20260113"></script>
+    <script src="../assets/js/tailwind.config.js?v=20260113"></script>
+
+    <!-- Google Fonts: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/chat.css">
+    <link rel="stylesheet" href="../assets/css/reserva.css">
+    <link rel="stylesheet" href="../assets/css/google-maps-fix.css">
+
+    <!-- Google Material Symbols -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+</head>
+
+<body class="bg-transparent text-brandDark antialiased custom-scrollbar overflow-hidden h-screen flex flex-col">
+
+    <!-- Contenedor para Avisos IA (Solo Móvil) -->
+    <div id="ai-toast-container" class="fixed top-4 left-4 right-4 z-[9999] pointer-events-none flex flex-col gap-3">
+    </div>
+
+    <!-- AI Scan Transition Overlay -->
+    <div id="ai-scan-overlay" class="ai-scan-overlay">
+        <div class="scan-line"></div>
+    </div>
+
+    <!-- Header / Navigation (Enhanced with Stepper) -->
+    <header
+        class="py-3 px-6 md:px-12 border-b border-slate-200/50 flex flex-col md:flex-row justify-between items-center bg-white/80 backdrop-blur-md z-50 gap-4 shadow-sm">
+        <div class="flex items-center justify-between w-full md:w-auto gap-8">
+            <a href="../index.html" class="flex-shrink-0"><img src="../assets/images/logo.png" alt="BOXROOMER"
+                    class="h-6 md:h-8"></a>
+
+            <a href="../index.html"
+                class="md:hidden text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-brandPurple transition-all flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">close</span> Salir
+            </a>
+        </div>
+
+        <!-- Progress Stepper in Header -->
+        <div class="flex items-center gap-2 md:gap-8 flex-grow justify-center max-w-2xl w-full px-2">
+            <!-- Step 1 -->
+            <div class="flex items-center gap-2 group cursor-pointer" onclick="goToStep(1)">
+                <div id="step-circle-1"
+                    class="w-8 h-8 rounded-full bg-brandPurple text-white flex items-center justify-center text-xs font-black shadow-lg transition-all border-2 border-white">
+                    1</div>
+                <span
+                    class="hidden sm:inline text-[9px] font-black uppercase tracking-widest text-brandPurple italic">Espacio</span>
+            </div>
+
+            <div class="h-px bg-slate-200 flex-grow max-w-[40px]"></div>
+
+            <!-- Step 2 -->
+            <div class="flex items-center gap-2 group cursor-pointer" onclick="goToStep(2)">
+                <div id="step-circle-2"
+                    class="w-8 h-8 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-xs font-black transition-all border-2 border-white">
+                    2</div>
+                <span
+                    class="hidden sm:inline text-[9px] font-black uppercase tracking-widest text-slate-400 italic">Logística</span>
+            </div>
+
+            <div class="h-px bg-slate-200 flex-grow max-w-[40px]"></div>
+
+            <!-- Step 3 -->
+            <div class="flex items-center gap-2 group cursor-pointer" onclick="goToStep(3)">
+                <div id="step-circle-3"
+                    class="w-8 h-8 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-xs font-black transition-all border-2 border-white">
+                    3</div>
+                <span
+                    class="hidden sm:inline text-[9px] font-black uppercase tracking-widest text-slate-400 italic">Pago</span>
+            </div>
+        </div>
+
+        <a href="../index.html"
+            class="hidden md:flex text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-brandPurple transition-all items-center gap-2">
+            <span class="material-symbols-outlined text-sm">close</span> Salir
+        </a>
+    </header>
+
+    <!-- Wizard Container -->
+    <main class="flex-grow pt-4 pb-6 px-4 overflow-hidden flex flex-col">
+        <div class="max-w-6xl mx-auto w-full h-full flex flex-col min-h-0">
+
+
+            <!-- Main Split Layout -->
+            <div class="flex flex-col lg:flex-row gap-6 items-stretch flex-grow overflow-visible p-4 min-h-0">
+
+                <!-- Left: Form Step -->
+                <div
+                    class="w-full lg:w-[60%] lg:h-full bg-white rounded-[2rem] md:rounded-[3rem] shadow-2xl border border-brandPurple/5 p-5 md:p-10 flex flex-col reveal active transition-all duration-500">
+                    <!-- Contenido del Paso -->
+                    <div id="wizard-step-1"
+                        class="step-content flex flex-col h-full overflow-y-auto custom-scrollbar px-4 py-2">
+                        <!-- Header del Paso -->
+                        <div class="mb-6 flex-shrink-0">
+                            <h1
+                                class="text-2xl md:text-4xl font-black text-brandDark mb-2 uppercase tracking-tighter italic">
+                                Elige <span class="text-brandPurple underline decoration-brandPurple/20">tu
+                                    espacio</span>
+                            </h1>
+                            <p class="text-slate-500 font-medium italic text-xs md:text-sm text-balance">Configura el
+                                tamaño de tu trastero de forma personalizada.</p>
+                        </div>
+
+                        <!-- Selectors Row -->
+                        <div class="flex flex-col gap-6 mb-8">
+                            <!-- Toggle Select Mode -->
+                            <div class="toggle-container p-1.5 bg-brandPurple/5 rounded-2xl w-full max-w-sm relative">
+                                <!-- The Sliding Pill -->
+                                <div id="pill-mode" class="sliding-pill w-1/2 left-[5px]"></div>
+
+                                <button onclick="setSelectMode('packs')" id="mode-btn-packs"
+                                    class="relative z-10 flex-1 py-3 px-3 rounded-xl font-black text-[9px] md:text-[10px] uppercase tracking-widest transition-all text-brandPurple">
+                                    Packs
+                                </button>
+                                <button onclick="setSelectMode('manual')" id="mode-btn-manual"
+                                    class="relative z-10 flex-1 py-3 px-3 rounded-xl font-black text-[9px] md:text-[10px] uppercase tracking-widest transition-all text-slate-400">
+                                    Manual (m³)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Content Area -->
+                        <div id="selection-area" class="flex-grow flex flex-col min-h-0">
+                            <!-- Pack View -->
+                            <div id="view-packs" class="flex-1 flex flex-col justify-center py-0 -mt-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                    <!-- Pack Mini -->
+                                    <div id="pack-card-mini" onclick="selectPack(1)"
+                                        class="magnetic-card group cursor-pointer bg-white rounded-[2rem] p-5 md:p-6 border-2 border-slate-100 transition-all relative overflow-hidden h-full flex flex-col justify-between">
+                                        <div class="relative z-10">
+                                            <div class="flex justify-between items-stretch mb-3 md:mb-4">
+                                                <div
+                                                    class="w-10 h-10 md:w-12 md:h-12 bg-brandPurple/5 rounded-2xl flex items-center justify-center text-brandPurple group-hover:scale-110 transition-transform">
+                                                    <span
+                                                        class="material-symbols-outlined text-xl md:text-2xl">package_2</span>
+                                                </div>
+                                                <div
+                                                    class="w-5 h-5 md:w-6 md:h-6 rounded-full border-2 border-slate-200 flex items-center justify-center group-[.selected]:bg-brandPurple group-[.selected]:border-brandPurple transition-all">
+                                                    <span
+                                                        class="material-symbols-outlined text-white text-[10px] md:text-sm hidden group-[.selected]:block">check</span>
+                                                </div>
+                                            </div>
+                                            <h3
+                                                class="text-sm md:text-base font-black uppercase text-brandDark mb-1 italic">
+                                                Pack Mini <span class="text-brandPurple">(1 m³)</span>
+                                            </h3>
+                                            <p
+                                                class="text-[11px] md:text-xs text-slate-400 font-bold uppercase tracking-widest mb-3 md:mb-4 leading-none">
+                                                Ropa de temporada o 10 cajas</p>
+                                            <ul
+                                                class="space-y-1.5 text-[11px] md:text-xs font-bold text-slate-500 mb-4 md:mb-5">
+                                                <li class="flex items-center gap-2">✅ Recogida y Entrega GRATIS</li>
+                                                <li class="flex items-center gap-2">✅ Seguro 1.000€/m³</li>
+                                                <li class="flex items-center gap-2">✅ Catálogo Digital App</li>
+                                            </ul>
+                                        </div>
+                                        <div class="relative z-10 pt-4 ">
+                                            <div class="flex items-baseline gap-1">
+                                                <span id="pack-monthly-mini"
+                                                    class="text-xl md:text-2xl font-black text-brandDark">--€</span>
+                                                <span class="text-[9px] text-slate-400 font-medium italic">/mes</span>
+                                            </div>
+                                            <p id="pack-price-mini"
+                                                class="text-[11px] text-brandPurple font-bold uppercase tracking-widest mt-1 opacity-100 transition-opacity">
+                                                Total Pack: --€</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Pack Dúo -->
+                                    <div id="pack-card-duo" onclick="selectPack(2)"
+                                        class="magnetic-card group cursor-pointer bg-white rounded-[2rem] p-5 md:p-6 border-2 border-slate-100 transition-all relative overflow-hidden h-full flex flex-col justify-between">
+                                        <div class="relative z-10">
+                                            <div class="flex justify-between items-stretch mb-3 md:mb-4">
+                                                <div
+                                                    class="w-10 h-10 md:w-12 md:h-12 bg-brandPurple/5 rounded-2xl flex items-center justify-center text-brandPurple group-hover:scale-110 transition-transform">
+                                                    <span
+                                                        class="material-symbols-outlined text-xl md:text-2xl">grid_view</span>
+                                                </div>
+                                                <div
+                                                    class="w-5 h-5 md:w-6 md:h-6 rounded-full border-2 border-slate-200 flex items-center justify-center group-[.selected]:bg-brandPurple group-[.selected]:border-brandPurple transition-all">
+                                                    <span
+                                                        class="material-symbols-outlined text-white text-[10px] md:text-sm hidden group-[.selected]:block">check</span>
+                                                </div>
+                                            </div>
+                                            <h3
+                                                class="text-sm md:text-base font-black uppercase text-brandDark mb-1 italic">
+                                                Pack Dúo <span class="text-brandPurple">(2 m³)</span>
+                                            </h3>
+                                            <p
+                                                class="text-[11px] md:text-xs text-slate-400 font-bold uppercase tracking-widest mb-3 md:mb-4 leading-none">
+                                                Bicis o habitación completa</p>
+                                            <ul
+                                                class="space-y-1.5 text-[11px] md:text-xs font-bold text-slate-500 mb-4 md:mb-5">
+                                                <li class="flex items-center gap-2">✅ Recogida y Entrega GRATIS</li>
+                                                <li class="flex items-center gap-2">✅ Seguro 1.000€/m³</li>
+                                                <li class="flex items-center gap-2">✅ Catálogo Digital App</li>
+                                            </ul>
+                                        </div>
+                                        <div class="relative z-10 pt-4 ">
+                                            <div class="flex items-baseline gap-1">
+                                                <span id="pack-monthly-duo"
+                                                    class="text-xl md:text-2xl font-black text-brandDark">--€</span>
+                                                <span class="text-[9px] text-slate-400 font-medium italic">/mes</span>
+                                            </div>
+                                            <p id="pack-price-duo"
+                                                class="text-[11px] text-brandPurple font-bold uppercase tracking-widest mt-1 opacity-100 transition-opacity">
+                                                Total Pack: --€</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Manual m³ View -->
+                            <div id="view-manual" class="hidden py-1 flex-1 flex flex-col gap-3">
+                                <div
+                                    class="bg-white border-2 border-brandPurple/10 rounded-[2rem] p-4 md:p-5 flex flex-col shadow-sm relative overflow-hidden">
+                                    <!-- Decorative subtle background -->
+                                    <div
+                                        class="absolute -top-24 -right-24 w-64 h-64 bg-brandPurple/5 rounded-full blur-3xl animate-floating">
+                                    </div>
+                                    <div
+                                        class="absolute -bottom-24 -left-24 w-64 h-64 bg-cyan-400/5 rounded-full blur-3xl animate-floating-delayed">
+                                    </div>
+
+                                    <div
+                                        class="flex flex-col md:flex-row justify-between items-center gap-3 mb-3 relative z-10">
+                                        <div class="text-center md:text-left">
+                                            <label
+                                                class="text-[11px] font-black uppercase tracking-widest text-brandPurple/60 italic">Volumen
+                                                personalizado</label>
+                                            <p
+                                                class="text-slate-500 text-[12px] font-bold mt-1 italic leading-tight max-w-[200px]">
+                                                Desliza para elegir tu espacio ideal.</p>
+                                        </div>
+                                        <div class="flex items-stretch gap-2 w-full md:w-auto">
+                                            <!-- Box 1: Volume -->
+                                            <div
+                                                class="min-w-[90px] bg-brandDark rounded-2xl px-4 py-2 flex flex-col items-center justify-center shadow-lg border border-white/5 relative overflow-hidden w-full md:w-auto">
+                                                <div
+                                                    class="absolute top-0 right-0 w-10 h-10 bg-brandPurple/20 rounded-full blur-xl -mr-5 -mt-5">
+                                                </div>
+                                                <span
+                                                    class="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-0.5">Volumen</span>
+                                                <div class="flex items-baseline gap-0.5">
+                                                    <span id="m3-val"
+                                                        class="text-xl md:text-2xl font-black text-white tracking-tighter leading-none">1</span>
+                                                    <span
+                                                        class="text-xs font-black text-brandPurple italic leading-none">m³</span>
+                                                </div>
+                                                <div id="manual-pack-badge"
+                                                    class="hidden mt-1 bg-white/10 text-white text-[10px] font-black px-1.5 py-0.5 rounded text-center uppercase tracking-widest border border-white/10">
+                                                    Pack Mini
+                                                </div>
+                                            </div>
+
+                                            <!-- Box 2: Price -->
+                                            <div id="manual-price-container"
+                                                class="min-w-[110px] bg-white rounded-2xl px-4 py-2 flex flex-col items-center justify-center shadow-lg border-2 border-brandPurple/10 relative transition-all duration-300 w-full md:w-auto">
+                                                <span
+                                                    class="text-[11px] text-slate-400 font-bold uppercase tracking-widest mb-0.5">Precio</span>
+                                                <div class="flex items-baseline gap-0.5">
+                                                    <span id="manual-price-monthly"
+                                                        class="text-xl md:text-2xl font-black text-brandDark tracking-tighter leading-none">--€</span>
+                                                </div>
+                                                <span id="manual-price-total"
+                                                    class="text-[11px] text-brandPurple font-bold uppercase tracking-wide mt-1 bg-brandPurple/5 px-2 py-0.5 rounded text-center">Total:
+                                                    --€</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Range Slider -->
+                                    <div class="relative px-2 mb-4 relative z-10">
+                                        <input type="range" id="reserva-range" min="1" max="15" step="0.5" value="1"
+                                            class="w-full h-2 bg-slate-100 rounded-full appearance-none cursor-pointer accent-brandPurple custom-range-premium">
+                                        <div class="flex justify-between mt-4">
+                                            <div class="flex flex-col items-stretch gap-1">
+                                                <span
+                                                    class="text-[10px] font-black text-slate-300 uppercase italic">Mínimo</span>
+                                                <span
+                                                    class="bg-slate-50 text-slate-500 text-[11px] font-bold px-3 py-1 rounded-lg border border-slate-100 italic">1.0
+                                                    m³</span>
+                                            </div>
+                                            <div class="flex flex-col items-end gap-1">
+                                                <span
+                                                    class="text-[10px] font-black text-slate-300 uppercase italic">Máximo
+                                                    Slider</span>
+                                                <span
+                                                    class="bg-slate-50 text-slate-500 text-[11px] font-bold px-3 py-1 rounded-lg border border-slate-100 italic">15.0
+                                                    m³</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Bottom Info: > 15 m3 Integrated -->
+                                    <div
+                                        class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between gap-4 relative z-10">
+                                        <div class="flex items-center gap-2">
+                                            <div
+                                                class="w-7 h-7 rounded-lg bg-brandPurple/5 flex items-center justify-center text-brandPurple">
+                                                <span
+                                                    class="material-symbols-outlined text-base">add_shopping_cart</span>
+                                            </div>
+                                            <span class="text-[11px] font-black uppercase text-brandDark italic">¿Más de
+                                                15m³?</span>
+                                        </div>
+                                        <div
+                                            class="flex items-center bg-slate-50 rounded-xl p-0.5 border border-slate-200 w-32">
+                                            <input type="number" id="manual-m3-input" step="0.5" min="15.5"
+                                                placeholder="15.5"
+                                                class="w-full bg-transparent border-none outline-none px-2 font-black text-brandPurple text-center text-xs">
+                                            <button onclick="applyManualM3()"
+                                                class="bg-brandDark text-white h-7 w-7 rounded-lg flex items-center justify-center">
+                                                <span class="material-symbols-outlined text-sm">check</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> <!-- End Selection Area -->
+
+                        <!-- Bottom Controls (Plans + Continue) -->
+                        <div class="pt-6 pb-4">
+                            <div class="grid grid-cols-4 gap-2 items-stretch">
+                                <!-- Duration Group (Cols 1-3) -->
+                                <div class="col-span-3 toggle-container p-1 bg-slate-100 rounded-2xl relative h-14">
+                                    <div id="pill-duration" class="sliding-pill w-[calc(33.33%-4px)] left-[3px]"></div>
+                                    <div class="flex relative z-10 h-full w-full">
+                                        <button onclick="setDuration(3)" id="duration-btn-3"
+                                            class="flex-1 flex flex-col items-center justify-center transition-all text-white font-black">
+                                            <span class="text-[12px] md:text-[13px] uppercase tracking-widest">3
+                                                Meses</span>
+                                            <span class="text-[10px] opacity-80 font-medium">básico</span>
+                                        </button>
+                                        <button onclick="setDuration(6)" id="duration-btn-6"
+                                            class="flex-1 flex flex-col items-center justify-center transition-all text-slate-400 font-black relative group">
+                                            <span class="text-[12px] md:text-[13px] uppercase tracking-widest">6
+                                                Meses</span>
+                                            <span
+                                                class="text-[10px] md:text-[11px] bg-green-100 text-green-600 px-1.5 py-0.5 rounded-full font-bold mt-0.5 group-[.selected-pill]:bg-white/20 group-[.selected-pill]:text-white">🎁
+                                                +1</span>
+                                        </button>
+                                        <button onclick="setDuration(12)" id="duration-btn-12"
+                                            class="flex-1 flex flex-col items-center justify-center transition-all text-slate-400 font-black relative group">
+                                            <span class="text-[12px] md:text-[13px] uppercase tracking-widest">12
+                                                Meses</span>
+                                            <span
+                                                class="text-[10px] md:text-[11px] bg-green-100 text-green-600 px-1.5 py-0.5 rounded-full font-bold mt-0.5 group-[.selected-pill]:bg-white/20 group-[.selected-pill]:text-white">🚀
+                                                +3</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Continue Button (Col 4) -->
+                                <div class="sticky-nav-mobile flex lg:flex lg:justify-end lg:relative lg:p-0">
+                                    <button onclick="goToStep(2)" id="continue-btn-step-1"
+                                        class="w-full lg:w-auto h-14 md:h-auto py-3 px-6 rounded-2xl bg-brandPurple text-white shadow-lg shadow-brandPurple/20 hover:scale-[1.03] active:scale-95 flex items-center justify-center disabled:opacity-50 transition-all">
+                                        <span
+                                            class="lg:hidden text-[10px] font-black uppercase tracking-widest mr-2">Configurar
+                                            Recogida</span>
+                                        <span class="material-symbols-outlined text-xl">arrow_forward</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paso 2: Logística -->
+                    <div id="wizard-step-2"
+                        class="step-content hidden flex-col h-full overflow-y-auto custom-scrollbar px-4 pb-10">
+                        <!-- Selector de Modalidad -->
+                        <div class="toggle-container p-1 bg-slate-100 rounded-2xl mb-6 flex-shrink-0 relative">
+                            <!-- The Sliding Pill -->
+                            <div id="pill-delivery" class="sliding-pill w-1/2 left-[5px]"></div>
+
+                            <button onclick="setDeliveryMode('pickup')" id="mode-pickup"
+                                class="relative z-10 flex-1 py-3 px-4 rounded-xl text-[12px] font-black uppercase tracking-widest transition-all text-brandPurple">
+                                🚛 Recogida Gratis
+                            </button>
+                            <button onclick="setDeliveryMode('dropoff')" id="mode-dropoff"
+                                class="relative z-10 flex-1 py-3 px-4 rounded-xl text-[12px] font-black uppercase tracking-widest transition-all text-slate-400">
+                                🏠 Entrega en Almacén
+                            </button>
+                        </div>
+
+                        <!-- Header Dinámico -->
+                        <div class="mb-5 flex-shrink-0 staggered-item" style="animation-delay: 0.1s;">
+                            <h2
+                                class="text-xl md:text-2xl font-black text-brandDark uppercase tracking-tighter italic leading-none">
+                                Detalles de la <span id="step2-title-mode"
+                                    class="text-brandPurple underline decoration-brandPurple/20">Recogida</span>
+                            </h2>
+                            <p id="step2-subtitle" class="text-slate-500 font-medium italic text-sm md:text-base">
+                                Dinos dónde y cuándo pasamos a por tus pertenencias de forma GRATUITA.</p>
+                        </div>
+
+                        <!-- Form Area -->
+                        <div class="space-y-4 pb-4">
+                            <!-- Address Input Group (Ocultable) -->
+                            <div id="address-section"
+                                class="staggered-item bg-slate-50/50 p-4 rounded-[2rem] border border-slate-100 flex flex-col gap-3 transition-all duration-500"
+                                style="animation-delay: 0.2s;">
+                                <label
+                                    class="text-[11px] font-black uppercase tracking-[0.2em] text-brandPurple px-1">Dirección
+                                    del Trastero</label>
+                                <div class="relative group">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">location_on</span>
+                                    <input type="text" id="pickup-address" oninput="saveAddress(); validateStep2()"
+                                        placeholder="Calle, número, piso..."
+                                        class="w-full bg-white border-2 border-slate-100 rounded-xl py-3 pl-10 pr-3 outline-none focus:border-brandPurple transition-all text-xs font-bold shadow-sm placeholder:text-slate-300">
+                                </div>
+                                <div class="flex gap-3">
+                                    <input type="text" id="pickup-cp" oninput="saveAddress(); validateStep2()"
+                                        placeholder="CP"
+                                        class="w-1/4 bg-white border-2 border-slate-100 rounded-xl py-2 px-3 outline-none focus:border-brandPurple transition-all text-xs font-bold shadow-sm placeholder:text-slate-300">
+                                    <input type="text" id="pickup-city" oninput="saveAddress(); validateStep2()"
+                                        placeholder="Ciudad"
+                                        class="w-3/4 bg-white border-2 border-slate-100 rounded-xl py-2 px-3 outline-none focus:border-brandPurple transition-all text-xs font-bold shadow-sm placeholder:text-slate-300">
+                                </div>
+                            </div>
+
+                            <!-- Tipo de Acceso / Recogida -->
+                            <div id="access-section"
+                                class="staggered-item bg-slate-50/50 p-4 rounded-[2rem] border border-slate-100"
+                                style="animation-delay: 0.3s;">
+                                <label
+                                    class="text-[11px] font-black uppercase tracking-[0.2em] text-brandPurple px-1 block mb-3">¿Cómo
+                                    es el acceso?</label>
+                                <div class="toggle-container p-1 bg-slate-100 rounded-2xl relative h-20">
+                                    <!-- The Sliding Pill (3 positions) -->
+                                    <div id="pill-access" class="sliding-pill w-[calc(33.33%-4px)] left-[3px] hidden">
+                                    </div>
+
+                                    <div class="flex relative z-10 h-full w-full">
+                                        <button onclick="setAccessType('street')" id="access-street"
+                                            class="flex-1 flex flex-col items-center justify-center gap-1 transition-all text-slate-400">
+                                            <span class="material-symbols-outlined text-lg">door_front</span>
+                                            <span class="text-[8px] font-black uppercase text-center">Pie de
+                                                calle</span>
+                                            <span class="text-[10px] text-green-500 font-bold italic">- Ahorro -</span>
+                                        </button>
+                                        <button onclick="setAccessType('elevator')" id="access-elevator"
+                                            class="flex-1 flex flex-col items-center justify-center gap-1 transition-all text-slate-400">
+                                            <span class="material-symbols-outlined text-lg">elevator</span>
+                                            <span class="text-[8px] font-black uppercase text-center">Ascensor</span>
+                                        </button>
+                                        <button onclick="setAccessType('stairs')" id="access-stairs"
+                                            class="flex-1 flex flex-col items-center justify-center gap-1 transition-all text-slate-400">
+                                            <span class="material-symbols-outlined text-lg">stairs</span>
+                                            <span class="text-[8px] font-black uppercase text-center">Escaleras</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tipo de Carga -->
+                            <div id="load-section"
+                                class="staggered-item bg-slate-50 border-2 border-slate-100 rounded-[2rem] p-4"
+                                style="animation-delay: 0.4s;">
+                                <label
+                                    class="text-[11px] font-black uppercase tracking-[0.2em] text-brandPurple mb-3 block">¿Qué
+                                    vamos a recoger?</label>
+                                <div class="toggle-container p-1 bg-slate-100 rounded-2xl relative h-20">
+                                    <!-- The Sliding Pill (2 positions) -->
+                                    <div id="pill-load" class="sliding-pill w-[calc(50%-4px)] left-[3px] hidden"></div>
+
+                                    <div class="flex relative z-10 h-full w-full">
+                                        <button onclick="setLoadType('standard')" id="load-standard"
+                                            class="flex-1 flex flex-col items-center justify-center gap-1 transition-all text-slate-400">
+                                            <span class="material-symbols-outlined text-lg">inventory_2</span>
+                                            <span class="text-[11px] font-black uppercase text-center">Cajas o
+                                                enseres</span>
+                                        </button>
+                                        <button onclick="setLoadType('heavy')" id="load-heavy"
+                                            class="flex-1 flex flex-col items-center justify-center gap-0.5 transition-all text-slate-400">
+                                            <span class="material-symbols-outlined text-lg">conveyor_belt</span>
+                                            <span class="text-[11px] font-black uppercase text-center">Muebles
+                                                grandes</span>
+                                            <span class="text-[9px] text-brandPurple font-bold italic leading-none">+
+                                                Mozo extra (35€)</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="text-[11px] text-slate-400 italic mt-2 px-1 text-center leading-tight">
+                                    * El servicio incluye 15 min. de carga. El tiempo extra se facturará a 15€ por cada
+                                    tramo de 15 min.
+                                </p>
+                            </div>
+
+                            <!-- Date & Time Selection -->
+                            <div class="staggered-item bg-white border-2 border-brandPurple/5 rounded-[2rem] p-4 shadow-sm relative"
+                                style="animation-delay: 0.5s;">
+                                <label
+                                    class="text-[9px] font-black uppercase tracking-[0.2em] text-brandPurple mb-3 block">Fecha
+                                    y Horario</label>
+                                <div id="calendar-grid" class="flex md:grid md:grid-cols-7 gap-2 mb-4">
+                                    <!-- Populated by JS -->
+                                </div>
+                                <div
+                                    class="toggle-container grid grid-cols-2 gap-2 bg-slate-100 p-1 rounded-2xl relative">
+                                    <!-- The Sliding Pill -->
+                                    <div id="pill-timeslot" class="sliding-pill w-[calc(50%-5px)] left-[5px] hidden">
+                                    </div>
+
+                                    <button onclick="setTimeSlot('morning')" id="slot-morning"
+                                        class="relative z-10 py-2.5 px-3 rounded-xl text-slate-400 font-extrabold text-[9px] uppercase tracking-wider transition-all flex items-center justify-center gap-2">
+                                        <span class="material-symbols-outlined text-sm">light_mode</span> Mañana
+                                    </button>
+                                    <button onclick="setTimeSlot('afternoon')" id="slot-afternoon"
+                                        class="relative z-10 py-2.5 px-3 rounded-xl text-slate-400 font-extrabold text-[9px] uppercase tracking-wider transition-all flex items-center justify-center gap-2">
+                                        <span class="material-symbols-outlined text-sm">dark_mode</span> Tarde
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Extras / Servicios Premium -->
+                            <div class="staggered-item space-y-3" style="animation-delay: 0.6s;">
+                                <label
+                                    class="text-[9px] font-black uppercase tracking-[0.2em] text-brandPurple px-1 block mb-2">Servicios
+                                    Adicionales</label>
+                                <div class="grid grid-cols-1 gap-2">
+                                    <!-- Cajas con Stepper -->
+                                    <div id="extra-boxes-item"
+                                        class="flex items-center justify-between p-3 bg-white border-2 border-slate-50 rounded-2xl transition-all">
+                                        <div class="flex items-center gap-3">
+                                            <span
+                                                class="material-symbols-outlined text-slate-400 text-xl">inventory_2</span>
+                                            <div class="flex flex-col">
+                                                <span class="text-[10px] font-black uppercase text-brandDark">Cajas
+                                                    BOXROOMER (1,80€/u)</span>
+                                                <span class="text-[10px] text-slate-400 font-bold italic">Las llevamos
+                                                    el
+                                                    día de la recogida</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3 bg-slate-50 rounded-xl p-1">
+                                            <button onclick="updateBoxCount(-1)"
+                                                class="w-6 h-6 flex items-center justify-center bg-white rounded-lg shadow-sm text-brandPurple font-bold hover:bg-brandPurple hover:text-white transition-all">-</button>
+                                            <span id="box-count-display"
+                                                class="text-[10px] font-black text-brandDark w-4 text-center">0</span>
+                                            <button onclick="updateBoxCount(1)"
+                                                class="w-6 h-6 flex items-center justify-center bg-white rounded-lg shadow-sm text-brandPurple font-bold hover:bg-brandPurple hover:text-white transition-all">+</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        <!-- Embalaje Toggle -->
+                                        <div id="card-extra-packing" onclick="toggleExtra('extra-packing')"
+                                            class="p-3 bg-white border-2 border-slate-50 rounded-2xl cursor-pointer transition-all hover:border-brandPurple/30 group">
+                                            <div class="flex items-center gap-2">
+                                                <span
+                                                    class="material-symbols-outlined text-slate-400 group-hover:text-brandPurple text-lg">handyman</span>
+                                                <span
+                                                    class="text-[9px] font-black uppercase text-brandDark">Embalaje</span>
+                                            </div>
+                                            <div class="flex items-center justify-between mt-1">
+                                                <span
+                                                    class="text-[10px] text-slate-400 font-bold italic">Opcional</span>
+                                                <input type="checkbox" id="extra-packing"
+                                                    class="w-3 h-3 accent-brandPurple pointer-events-none">
+                                            </div>
+                                        </div>
+                                        <!-- Desmontaje Toggle -->
+                                        <div id="card-extra-assembly" onclick="toggleExtra('extra-assembly')"
+                                            class="p-3 bg-white border-2 border-slate-50 rounded-2xl cursor-pointer transition-all hover:border-brandPurple/30 group">
+                                            <div class="flex items-center gap-2">
+                                                <span
+                                                    class="material-symbols-outlined text-slate-400 group-hover:text-brandPurple text-lg">home_repair_service</span>
+                                                <span
+                                                    class="text-[9px] font-black uppercase text-brandDark">Desmontaje</span>
+                                            </div>
+                                            <div class="flex items-center justify-between mt-1">
+                                                <span
+                                                    class="text-[10px] text-slate-400 font-bold italic">Opcional</span>
+                                                <input type="checkbox" id="extra-assembly"
+                                                    class="w-3 h-3 accent-brandPurple pointer-events-none">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Navigation -->
+                        <div
+                            class="mt-auto pt-4 border-t border-slate-50 flex items-center justify-between sticky-nav-mobile">
+                            <button onclick="goToStep(1)"
+                                class="flex items-center gap-2 text-slate-400 font-black uppercase text-[9px] tracking-widest hover:text-brandPurple transition-colors">
+                                <span class="material-symbols-outlined text-base">arrow_back</span> Atrás
+                            </button>
+                            <button id="btn-to-step-3" onclick="goToStep(3)" disabled
+                                class="py-3 px-8 rounded-xl bg-brandPurple text-white font-black uppercase text-[10px] tracking-widest shadow-lg transition-all disabled:opacity-30 disabled:grayscale disabled:cursor-not-allowed">
+                                Ir al Resumen
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="wizard-step-3"
+                        class="step-content hidden flex-col h-full overflow-y-auto custom-scrollbar px-2 pr-1">
+                        <!-- Header -->
+                        <div class="mb-4 flex-shrink-0">
+                            <h2
+                                class="text-xl md:text-2xl font-black text-brandDark mb-0.5 uppercase tracking-tighter italic">
+                                Resumen <span class="text-brandPurple underline decoration-brandPurple/20">Final</span>
+                            </h2>
+                            <p class="text-slate-500 font-medium italic text-[11px] md:text-xs">Revisa que todo esté
+                                correcto antes de finalizar.</p>
+                        </div>
+
+                        <!-- Ticket / Summary Area -->
+                        <div class="space-y-3 pb-4">
+                            <!-- Bloque Consolidado: Datos de la Reserva -->
+                            <div class="bg-slate-50 border-2 border-white rounded-[2rem] p-5 shadow-sm">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- Columna 1: Espacio -->
+                                    <div class="space-y-3">
+                                        <div class="flex items-center gap-2">
+                                            <div
+                                                class="w-7 h-7 rounded-full bg-brandPurple/10 flex items-center justify-center">
+                                                <span
+                                                    class="material-symbols-outlined text-brandPurple text-sm">grid_view</span>
+                                            </div>
+                                            <h3 class="text-[12px] font-black uppercase text-brandDark">Tu Espacio</h3>
+                                        </div>
+                                        <div>
+                                            <p id="summary-size"
+                                                class="text-2xl font-black text-brandDark leading-none">0 m³</p>
+                                            <p id="summary-plan"
+                                                class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                                                PLAN MENSUAL</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Columna 2: Recogida -->
+                                    <div class="space-y-4">
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div class="space-y-1">
+                                                <span class="text-[11px] font-black text-slate-400 uppercase">Fecha y
+                                                    Hora</span>
+                                                <p id="summary-datetime"
+                                                    class="text-[13px] font-black text-brandDark leading-tight">Sin
+                                                    fecha</p>
+                                            </div>
+                                            <div class="space-y-1">
+                                                <span
+                                                    class="text-[11px] font-black text-slate-400 uppercase">Modalidad</span>
+                                                <p id="summary-mode"
+                                                    class="text-[13px] font-black text-brandDark leading-tight italic text-brandPurple">
+                                                    Recogida GRATIS</p>
+                                            </div>
+                                        </div>
+                                        <div class="space-y-1 pt-3 border-t border-slate-200/50">
+                                            <span class="text-[11px] font-black text-slate-400 uppercase">Ubicación y
+                                                Acceso</span>
+                                            <p id="summary-address"
+                                                class="text-[13px] font-bold text-brandDark leading-tight italic">No se
+                                                requiere dirección</p>
+                                            <div id="pinto-map-link" class="hidden mt-2">
+                                                <a href="https://www.google.com/maps?q=Pinto,Madrid" target="_blank"
+                                                    class="text-[10px] font-black text-brandPurple flex items-center gap-1 hover:underline">
+                                                    <span class="material-symbols-outlined text-sm">location_on</span>
+                                                    Ver ubicación en Google Maps
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <!-- Logística Reforzada Extra Badge -->
+                                        <div id="badge-mozo-extra" class="hidden pt-2">
+                                            <div
+                                                class="inline-flex items-center gap-2 px-3 py-1.5 bg-brandPurple/10 text-brandPurple rounded-xl border border-brandPurple/20">
+                                                <span class="material-symbols-outlined text-sm">group</span>
+                                                <span class="text-[9px] font-black uppercase tracking-wider">Logística
+                                                    reforzada: 2 operarios</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bloque: Desglose de Gastos -->
+                            <div
+                                class="bg-white border-2 border-brandPurple/20 rounded-[2.5rem] p-6 shadow-xl relative mt-4">
+                                <div class="absolute -top-3.5 left-6 px-4 py-1.5 bg-brandPurple rounded-full shadow-lg">
+                                    <span
+                                        class="text-[10px] font-black text-white uppercase tracking-widest leading-none">Desglose
+                                        de Pago</span>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between items-center text-[14px]">
+                                            <span class="text-slate-500 font-bold italic">Alquiler espacio</span>
+                                            <span id="cost-rent"
+                                                class="font-black text-brandDark text-base">0,00€</span>
+                                        </div>
+                                        <div class="flex justify-between items-center pt-2 border-t border-slate-100">
+                                            <span class="text-[14px] font-black text-brandDark uppercase">Total
+                                                Mensual</span>
+                                            <span id="cost-total-monthly"
+                                                class="text-2xl font-black text-brandPurple">0,00€<span
+                                                    class="text-[11px] text-slate-400 font-bold ml-1">/mes</span></span>
+                                        </div>
+                                    </div>
+
+                                    <div id="section-one-time"
+                                        class="space-y-2 pt-4 border-t border-dashed border-slate-200 hidden">
+                                        <!-- Cajas Row -->
+                                        <div id="row-boxes"
+                                            class="flex justify-between items-center text-[14px] hidden">
+                                            <span class="text-slate-500 font-bold italic">Cajas BOXROOMER (x<span
+                                                    id="summary-box-qty">0</span>)</span>
+                                            <span id="cost-boxes"
+                                                class="font-black text-brandDark text-base">0,00€</span>
+                                        </div>
+                                        <!-- Mozo Extra Row -->
+                                        <div id="row-mozo" class="flex justify-between items-center text-[14px] hidden">
+                                            <span class="text-slate-500 font-bold italic">Mozo extra (Servicio
+                                                carga)</span>
+                                            <span id="cost-mozo"
+                                                class="font-black text-brandDark text-base">35,00€</span>
+                                        </div>
+
+                                        <!-- Subtotal Adicionales -->
+                                        <div id="row-total-extra"
+                                            class="flex justify-between items-center pt-2 border-t border-slate-100 hidden">
+                                            <span
+                                                class="text-[13px] font-black text-slate-400 uppercase tracking-wider">Subtotal
+                                                Adicionales</span>
+                                            <span id="cost-total-extra"
+                                                class="font-black text-brandDark text-base">0,00€</span>
+                                        </div>
+
+                                        <p class="text-[13px] text-slate-400 italic">Los importes de recogida se pagan
+                                            una única vez al inicio del servicio.</p>
+                                        <p class="text-[11px] text-brandPurple/60 font-medium italic">* Incluye 15 min
+                                            de
+                                            carga. El tiempo extra se facturará a 15€/tramo de 15 min.</p>
+                                    </div>
+
+                                    <!-- TOTAL A PAGAR HOY -->
+                                    <div class="pt-4 border-t-2 border-brandPurple/10">
+                                        <div
+                                            class="flex justify-between items-center bg-brandPurple/5 p-3 rounded-2xl border border-brandPurple/10">
+                                            <div class="flex flex-col">
+                                                <span
+                                                    class="text-[13px] font-black text-brandPurple uppercase tracking-[0.1em]">Total
+                                                    Pago Hoy</span>
+                                                <span class="text-[10px] text-slate-400 font-bold italic">(1er mes +
+                                                    adicionales)</span>
+                                            </div>
+                                            <span id="cost-grand-total"
+                                                class="text-2xl font-black text-brandPurple">0,00€</span>
+                                        </div>
+                                        <!-- Stripe & Security Badges -->
+                                        <div
+                                            class="flex items-center justify-center gap-4 mt-3 opacity-60 grayscale-[0.5]">
+                                            <div class="flex items-center gap-1">
+                                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg"
+                                                    class="h-3.5" alt="Stripe">
+                                            </div>
+                                            <div class="h-4 w-px bg-slate-200"></div>
+                                            <div class="flex items-center gap-1 text-slate-500">
+                                                <span class="material-symbols-outlined text-[14px]">lock</span>
+                                                <span class="text-[9px] font-bold uppercase tracking-widest">Seguridad
+                                                    SSL</span>
+                                            </div>
+                                            <div class="h-4 w-px bg-slate-200"></div>
+                                            <div class="flex items-center gap-1 text-slate-500">
+                                                <span class="material-symbols-outlined text-[14px]">verified_user</span>
+                                                <span class="text-[9px] font-bold uppercase tracking-widest">Seguro
+                                                    Incluido</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Consent and Actions -->
+                            <div class="mt-4 space-y-4">
+                                <label class="flex items-start gap-3 cursor-pointer group">
+                                    <input type="checkbox" id="terms-check"
+                                        class="mt-1 w-4 h-4 accent-brandPurple rounded border-slate-300">
+                                    <span
+                                        class="text-[11px] font-medium text-slate-500 leading-snug group-hover:text-brandDark transition-colors">
+                                        Acepto las <a href="condiciones.html" target="_blank"
+                                            class="text-brandPurple font-bold underline decoration-brandPurple/20">condiciones
+                                            generales</a> de servicio y privacidad.
+                                    </span>
+                                </label>
+
+                                <div class="sticky-nav-mobile flex-col md:flex-row gap-3">
+                                    <button onclick="confirmOrder()" id="confirm-btn"
+                                        class="w-full py-4 rounded-2xl bg-brandDark text-white font-black uppercase text-xs tracking-[0.2em] shadow-2xl hover:bg-black transition-all flex items-center justify-center gap-3 active:scale-[0.98]">
+                                        Confirmar y Pagar <span class="material-symbols-outlined">payments</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Footer Navigation (Volver) -->
+                        <div class="mt-auto pt-4 pb-4 px-2 border-t border-slate-50 flex items-center">
+                            <button id="btn-back-to-step-2" onclick="goToStep(2)"
+                                class="flex items-center gap-2 text-slate-400 font-black uppercase text-[9px] tracking-widest hover:text-brandPurple transition-colors">
+                                <span class="material-symbols-outlined text-base">arrow_back</span> Corregir Datos de
+                                Recogida
+                            </button>
+                        </div>
+                    </div>
+                </div> <!-- End Left Panel -->
+
+                <!-- Right: BoxBot AI Guide (Enhanced Edge-to-Edge) -->
+                <div
+                    class="w-full lg:w-[40%] bg-brandDark rounded-[2rem] md:rounded-[3rem] shadow-2xl flex flex-col relative overflow-hidden h-[400px] lg:h-full border border-white/10">
+                    <div id="reserva-chat-container"
+                        class="flex flex-col h-full relative bg-gradient-to-br from-brandDark to-[#21103c]">
+
+                        <div
+                            class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-brandPurple to-transparent opacity-40 animate-pulse">
+                        </div>
+
+                        <div class="px-6 py-5 md:p-8 border-b border-white/10 relative z-10 flex items-center gap-5">
+                            <div
+                                class="avatar-ai flex-shrink-0 w-12 md:w-16 h-12 md:h-16 bg-brandPurple rounded-[1.25rem] md:rounded-[1.5rem] flex items-center justify-center shadow-[0_0_30px_rgba(110,68,255,0.6)] border border-white/20 animate-glow">
+                                <span class="material-symbols-outlined text-white text-3xl md:text-4xl">robot_2</span>
+                            </div>
+                            <div>
+                                <h4
+                                    class="text-white font-black uppercase tracking-widest text-xs md:text-sm flex items-center gap-2">
+                                    BOXBOT <span
+                                        class="flex h-2 w-2 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]"></span>
+                                </h4>
+                                <p
+                                    class="text-slate-400 text-[8px] md:text-[10px] font-bold uppercase tracking-[0.2em] mt-1">
+                                    IA Operativa Especializada</p>
+                            </div>
+                        </div>
+
+                        <!-- Chat Messages -->
+                        <div id="reserva-messages"
+                            class="flex-grow overflow-y-auto min-h-0 p-6 md:p-8 flex flex-col gap-5 md:gap-6 custom-scrollbar scroll-smooth">
+                            <!-- BoxBot initial message will be injected by JS to have the typing effect -->
+                        </div>
+
+                        <!-- Status bar -->
+                        <div
+                            class="px-6 py-3 md:px-8 md:py-4 bg-white/5 border-t border-white/10 text-[8px] font-black uppercase tracking-[0.3em] text-cyan-400/80 italic">
+                            <span class="animate-pulse flex items-center gap-2">
+                                <span class="block w-1.5 h-1.5 rounded-full bg-cyan-400/50"></span>
+                                SCANNING VOLUME...
+                            </span>
+                        </div>
+                    </div> <!-- End Right Panel -->
+                </div> <!-- End Split Layout -->
+            </div> <!-- End Centered Container -->
+    </main>
+
+    <!-- Scripts -->
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/reserva.js"></script>
+    <!-- Google Maps API for Autocomplete (Recommendation 1) -->
+    <!-- TEMPORARILY DISABLED FOR DEBUGGING
+    <script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAsIz_L4o2vtOg8hB6SaDKrWjWWzBiEZJs&libraries=places&callback=initAutocomplete"></script>
+    -->
+</body>
+
+</html>

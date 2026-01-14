@@ -1,0 +1,61 @@
+/* Photon Autocomplete Dropdown (OpenStreetMap) */
+.photon-autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 8px;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+    border: 2px solid #f1f5f9;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 10000;
+    display: none;
+    font-family: 'Outfit', sans-serif;
+}
+
+.photon-suggestion-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+    transition: all 0.2s ease;
+}
+
+.photon-suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.photon-suggestion-item:hover,
+.photon-suggestion-item.selected {
+    background-color: #f8fafc;
+    border-left: 3px solid #642d91;
+    padding-left: 13px;
+}
+
+.photon-address {
+    font-size: 13px;
+    font-weight: bold;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.photon-location {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.photon-autocomplete-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.photon-autocomplete-dropdown::-webkit-scrollbar-thumb {
+    background: #642d91;
+    border-radius: 10px;
+}
+
+.photon-autocomplete-dropdown::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}

@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOXROOMER | Trasteros Inteligentes en Madrid con Recogida y Entrega Gratis</title>
+    <link rel="icon" href="assets/images/favicon.png" type="image/png">
+    <meta name="description"
+        content="¿Sigues cargando cajas? En BOXROOMER recogemos, custodiamos y te devolvemos tus cosas. Smart Storage en Madrid con tarifas planas y seguro incluido.">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="assets/js/tailwind.config.js"></script>
+
+    <!-- Google Fonts: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/scroll-top.css">
+    <link rel="stylesheet" href="assets/css/chat.css">
+    <style>
+        /* Extra padding for mobile sticky CTA */
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 80px;
+            }
+
+            #scroll-to-top {
+                bottom: 90px;
+                left: 1.5rem;
+            }
+
+            #boxbot-widget {
+                bottom: 90px;
+                right: 1.5rem;
+            }
+        }
+
+        /* Testimonials Carousel Styles */
+        .testimonial-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+            gap: 20px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .testimonial-track {
+            display: flex;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            gap: 20px;
+            align-items: center;
+        }
+
+        .testimonial-card {
+            min-width: 320px;
+            max-width: 320px;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.5;
+            transform: scale(0.9);
+            filter: blur(1px);
+        }
+
+        @media (max-width: 768px) {
+            .testimonial-card {
+                min-width: 280px;
+                max-width: 280px;
+            }
+        }
+
+        .testimonial-card.middle {
+            opacity: 1;
+            transform: scale(1.1);
+            z-index: 10;
+            filter: blur(0);
+            background-color: var(--brandDark) !important;
+            color: white !important;
+            box-shadow: 0 25px 50px -12px rgba(110, 68, 255, 0.3);
+        }
+
+        .testimonial-card.middle p {
+            color: #cbd5e1 !important;
+            /* text-slate-300 */
+        }
+
+        .testimonial-card.middle h4 {
+            color: var(--brandPurple) !important;
+        }
+
+        .testimonial-card.middle .avatar-bg {
+            background-color: var(--brandPurple) !important;
+            color: white !important;
+        }
+
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 20;
+            background: white;
+            color: var(--brandPurple);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(110, 68, 255, 0.1);
+        }
+
+        .nav-arrow:hover {
+            background: var(--brandPurple);
+            color: white;
+            box-shadow: 0 10px 25px rgba(110, 68, 255, 0.3);
+        }
+
+        .nav-arrow.left {
+            left: 20px;
+        }
+
+        .nav-arrow.right {
+            right: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .nav-arrow {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+    <!-- Google Material Symbols -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+</head>
+
+<!-- Marcado JSON-LD para SEO e IA -->
+<script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": "BOXROOMER",
+      "image": "https://boxroomer.com/logo.png",
+      "url": "https://boxroomer.com",
+      "description": "Líder en Valet Storage en Madrid. Servicio de trastero a domicilio con recogida y entrega incluida.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Madrid",
+        "addressCountry": "ES"
+      },
+      "priceRange": "€€",
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "09:00",
+        "closes": "19:00"
+      }
+    }
+    </script>
+</head>
+
+<body class="bg-white text-brandDark antialiased custom-scrollbar">
+
+    <!-- Header / Navigation -->
+    <div id="header-placeholder" data-path="components/header.html"></div>
+
+    <!-- Hero Section -->
+    <section class="relative pt-12 pb-20 lg:pt-24 lg:pb-32 overflow-hidden px-4 reveal">
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
+                <div class="text-center lg:text-left">
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-6 text-[10px] font-black uppercase tracking-widest text-brandPurple bg-brandPurple/10 rounded-full">
+                        🏆 Pioneros en España desde 2014
+                    </div>
+                    <h1
+                        class="text-4xl md:text-6xl lg:text-7xl font-extrabold leading-tight text-brandDark mb-8 tracking-tighter">
+                        Tu trastero <br class="hidden md:block"> <span
+                            class="text-brandPurple underline decoration-brandPurple/20 italic">a domicilio.</span>
+                    </h1>
+                    <p class="text-lg md:text-xl text-slate-500 mb-10 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                        BOXROOMER es la evolución lógica del almacenaje. Recogemos GRATIS, cuidamos y devolvemos tus
+                        pertenencias. <span class="font-bold text-brandDark">Libera tu hogar sin moverte de él.</span>
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <button onclick="scrollToId('calculadora')"
+                            class="bg-brandPurple text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-brandDark transition-all shadow-xl hover:shadow-brandPurple/30">Calcular
+                            espacio</button>
+                        <button onclick="scrollToId('tarifas')"
+                            class="bg-brandGray text-brandDark px-10 py-5 rounded-2xl font-bold text-lg hover:bg-slate-200 transition-all">Ver
+                            Packs</button>
+                    </div>
+                </div>
+                <div class="mt-16 lg:mt-0 relative">
+                    <img src="assets/images/hero-illustration.jpg" alt="BOXROOMER - Tu trastero a domicilio"
+                        class="rounded-[2rem] md:rounded-[3rem] w-full h-[400px] md:h-[550px] object-cover shadow-2xl">
+                    <div
+                        class="absolute -bottom-10 -left-10 bg-white p-8 rounded-[2.5rem] shadow-2xl max-w-[280px] hidden sm:block">
+                        <p class="text-brandPurple text-6xl font-black mb-2 tracking-tighter">Justos</p>
+                        <p
+                            class="text-brandDark font-extrabold text-[10px] uppercase tracking-[0.25em] leading-relaxed">
+                            Sólo cobramos por lo que ocupes
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Beneficios (AIDA: Interés) -->
+    <section id="como-funciona" class="py-20 md:py-32 bg-brandDark text-white overflow-hidden reveal">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Process Steps -->
+            <div class="mb-24 text-center">
+                <span
+                    class="inline-block py-1 px-3 rounded-full bg-brandPurple/20 text-brandPurple text-[10px] font-black uppercase tracking-widest mb-4 border border-brandPurple/30">Simple
+                    y Rápido</span>
+                <h2 class="text-3xl md:text-5xl font-extrabold mb-16 text-center italic tracking-tighter uppercase">
+                    Tu Trastero <span class="text-brandPurple">en 3 Pasos</span>
+                </h2>
+
+                <!-- Visual Process Illustration -->
+                <div class="relative mb-8 reveal">
+                    <div class="absolute -inset-4 bg-brandPurple/5 blur-3xl rounded-full"></div>
+                    <img src="assets/images/steps-illustration.jpg"
+                        alt="Proceso BOXROOMER - Reserva, Recogida y Control"
+                        class="relative z-10 w-full rounded-[2rem] md:rounded-[3rem] shadow-2xl border border-white/5">
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8 relative z-10">
+                    <!-- Step 1 -->
+                    <div class="group relative">
+                        <div
+                            class="relative bg-white/5 p-8 rounded-3xl border border-white/10 h-full flex flex-col items-center text-center hover:border-brandPurple/50 transition-all">
+                            <p class="text-slate-400 text-sm leading-relaxed">
+                                Elige el tamaño que necesitas en <a href="#calculadora"
+                                    onclick="scrollToId('calculadora')"
+                                    class="text-brandPurple font-bold hover:underline">nuestra calculadora</a> o
+                                selecciona alguno de nuestros <a href="#tarifas" onclick="scrollToId('tarifas')"
+                                    class="text-brandPurple font-bold hover:underline">packs completos</a>.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="group relative">
+                        <div
+                            class="relative bg-white/5 p-8 rounded-3xl border border-white/10 h-full flex flex-col items-center text-center hover:border-brandPurple/50 transition-all">
+                            <p class="text-slate-400 text-sm leading-relaxed">
+                                Vamos a tu puerta, desmontamos y protegemos todo. Tienes <span
+                                    class="text-brandPurple font-bold">15' de cortesía</span> incluidos.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="group relative">
+                        <div
+                            class="relative bg-white/5 p-8 rounded-3xl border border-white/10 h-full flex flex-col items-center text-center hover:border-brandPurple/50 transition-all">
+                            <p class="text-slate-400 text-sm leading-relaxed">
+                                Todo queda guardado y visible en tu inventario digital. ¿Lo necesitas de
+                                vuelta? Un clic y te lo llevamos.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Differentiators -->
+            <div class="text-center mb-12">
+                <h2
+                    class="text-2xl md:text-3xl font-extrabold text-center italic tracking-tighter uppercase text-slate-300">
+                    La Diferencia <span class="text-white">BOXROOMER</span>
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                <div class="bg-white/5 p-8 rounded-3xl border border-white/10 hover:border-brandPurple transition-all">
+                    <div class="text-3xl mb-4">🚚</div>
+                    <h3 class="text-lg font-bold mb-3">Puerta a Puerta</h3>
+                    <p class="text-sm text-slate-400">Servicio integral a domicilio. Olvida las furgonetas y el esfuerzo
+                        físico.</p>
+                </div>
+                <div class="bg-white/5 p-8 rounded-3xl border border-white/10 hover:border-brandPurple transition-all">
+                    <div class="text-3xl mb-4">⏱️</div>
+                    <h3 class="text-lg font-bold mb-3">Recogida GRATIS + 15'</h3>
+                    <p class="text-sm text-slate-400">Transporte sin coste inicial y 15 minutos de cortesía en carga y
+                        descarga.</p>
+                </div>
+                <div class="bg-white/5 p-8 rounded-3xl border border-white/10 hover:border-brandPurple transition-all">
+                    <div class="text-3xl mb-4">🛡️</div>
+                    <h3 class="text-lg font-bold mb-3">Seguro Incluido</h3>
+                    <p class="text-sm text-slate-400">Cobertura de hasta 1.000€/m³ en almacenaje y transporte.</p>
+                </div>
+                <div class="bg-white/5 p-8 rounded-3xl border border-white/10 hover:border-brandPurple transition-all">
+                    <div class="text-3xl mb-4">🏠</div>
+                    <h3 class="text-lg font-bold mb-3">Mudanzas Completas</h3>
+                    <p class="text-sm text-slate-400">Guardamuebles incluido durante tu transición. Todo en uno.</p>
+                </div>
+            </div>
+
+            <!-- Additional Info Row -->
+            <div class="mt-12 grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <div class="text-2xl mb-3">📱</div>
+                    <h3 class="text-base font-bold mb-2">Gestión Digital</h3>
+                    <p class="text-xs text-slate-400">Inventario online y solicitud de entregas con un clic desde tu
+                        móvil.</p>
+                </div>
+                <div class="bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <div class="text-2xl mb-3">💡</div>
+                    <h3 class="text-base font-bold mb-2">Precios Justos</h3>
+                    <p class="text-xs text-slate-400">Solo pagas por el volumen real de tus cosas, no por espacio vacío.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Packs Cerrados (AIDA: Deseo) -->
+    <section id="tarifas" class="py-20 md:py-32 bg-white px-4 reveal">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2
+                    class="text-4xl md:text-5xl font-extrabold text-brandDark mb-4 uppercase tracking-tighter italic italic">
+                    Packs Listos</h2>
+                <p class="text-slate-500 text-lg">Soluciones llave en mano. Sin permanencia (Plan mínimo 3 meses).</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto">
+                <!-- Pack Mini -->
+                <div
+                    class="bg-white rounded-[2.5rem] p-8 md:p-12 border border-brandGray premium-card-hover box-shadow-premium relative hover:shadow-2xl">
+                    <h3 class="text-2xl font-black mb-1 uppercase text-brandPurple">Pack Mini (1 m³)</h3>
+                    <p class="text-slate-400 mb-8 font-medium italic">El favorito para ropa de temporada o 10 cajas.</p>
+                    <!-- Pricing Options -->
+                    <div class="space-y-3 mb-10">
+                        <div class="flex justify-between items-center text-sm border-b border-gray-100 pb-2">
+                            <span class="text-slate-500 font-bold">3 Meses</span>
+                            <div class="text-right">
+                                <span class="block font-black text-brandDark">139€</span>
+                                <span class="text-[10px] text-slate-400">(46,3€/mes)</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center text-sm border-b border-gray-100 pb-2">
+                            <span class="text-slate-500 font-bold">6 Meses</span>
+                            <div class="text-right">
+                                <span class="block font-black text-brandDark">199€</span>
+                                <span class="text-[10px] text-green-600 font-bold">(33,16€/mes)</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-slate-500 font-bold">12 Meses</span>
+                            <div class="text-right">
+                                <span class="block font-black text-brandPurple text-lg">319€</span>
+                                <div class="text-[10px] text-white bg-red-500 px-2 rounded-full font-bold inline-block">
+                                    26,60€/mes</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-brandGray rounded-2xl p-6 mb-10">
+                        <p class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4 italic">Servicio
+                            Total Incluido:</p>
+                        <ul class="space-y-4 text-xs font-bold text-brandDark">
+                            <li class="flex items-center gap-3">✅ Recogida GRATIS + 15' cortesía</li>
+                            <li class="flex items-center gap-3">✅ Entrega INCLUIDA + 15' cortesía</li>
+                            <li class="flex items-center gap-3">✅ Seguro hasta 1.000€/m³</li>
+                            <li class="flex items-center gap-3">✅ Catálogo Online (Web App)</li>
+                        </ul>
+                    </div>
+                    <a href="pages/reserva.html"
+                        class="block text-center w-full py-5 rounded-2xl bg-brandPurple text-white hover:bg-brandDark transition-all font-bold text-lg uppercase tracking-widest shadow-lg shadow-brandPurple/20">Elegir
+                        Pack Mini</a>
+                </div>
+
+                <!-- Pack Dúo -->
+                <div
+                    class="bg-brandDark rounded-[2.5rem] p-8 md:p-12 text-white relative shadow-2xl transform lg:scale-105 border-4 border-brandPurple premium-card-hover">
+                    <div
+                        class="absolute -top-5 left-1/2 -translate-x-1/2 bg-brandPurple text-white text-[10px] font-black px-6 py-2 rounded-full uppercase tracking-[0.2em] shadow-xl">
+                        Recomendado</div>
+                    <h3 class="text-2xl font-black mb-1 uppercase text-brandPurple">Pack Dúo (2 m³)</h3>
+                    <p class="text-slate-400 mb-8 font-medium italic">Capacidad para bicis o una habitación completa.
+                    </p>
+                    <!-- Pricing Options -->
+                    <div class="space-y-3 mb-10">
+                        <div class="flex justify-between items-center text-sm border-b border-white/10 pb-2">
+                            <span class="text-slate-400 font-bold">3 Meses</span>
+                            <div class="text-right">
+                                <span class="block font-black text-white">199€</span>
+                                <span class="text-[10px] text-slate-500">(66,3€/mes)</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center text-sm border-b border-white/10 pb-2">
+                            <span class="text-slate-400 font-bold">6 Meses</span>
+                            <div class="text-right">
+                                <span class="block font-black text-white">309€</span>
+                                <span class="text-[10px] text-green-400 font-bold">(51,50€/mes)</span>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-slate-400 font-bold">12 Meses</span>
+                            <div class="text-right">
+                                <span class="block font-black text-brandPurple text-lg">529€</span>
+                                <div
+                                    class="text-[10px] text-brandDark bg-white px-2 rounded-full font-bold inline-block">
+                                    44,10€/mes</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white/5 rounded-2xl p-6 mb-10">
+                        <p class="text-[10px] font-black uppercase tracking-widest text-brandPurple mb-4 italic italic">
+                            Servicio Total Incluido:</p>
+                        <ul class="space-y-4 text-xs font-bold text-white">
+                            <li class="flex items-center gap-3">✅ Recogida GRATIS + 15' cortesía</li>
+                            <li class="flex items-center gap-3">✅ Entrega INCLUIDA + 15' cortesía</li>
+                            <li class="flex items-center gap-3">✅ Seguro hasta 1.000€/m³</li>
+                            <li class="flex items-center gap-3">✅ Catálogo Online (Web App)</li>
+                        </ul>
+                    </div>
+                    <a href="pages/reserva.html"
+                        class="block text-center w-full py-5 rounded-2xl bg-brandPurple text-white hover:bg-white hover:text-brandDark transition-all font-bold text-lg uppercase tracking-widest shadow-xl">Elegir
+                        Pack Dúo</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Calculadora Optimizada (AIDA: Acción) -->
+    <section id="calculadora" class="py-20 md:py-32 bg-brandGray px-4 reveal">
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-brandPurple/5 lg:flex">
+                <!-- Controles -->
+                <div class="p-8 md:p-12 lg:w-3/5">
+                    <h2 class="text-3xl md:text-4xl font-black text-brandDark mb-3 uppercase tracking-tighter italic">
+                        Configura <span class="text-brandPurple">tu Espacio</span>
+                    </h2>
+                    <p class="text-slate-500 mb-6 font-medium italic text-sm">Escalable de 0.5m³ en 0.5m³ hasta 15m³.
+                    </p>
+
+                    <div class="bg-brandPurple/5 border border-brandPurple/10 rounded-xl p-4 mb-10">
+                        <p
+                            class="text-[10px] font-black text-brandPurple uppercase tracking-[0.2em] flex items-center gap-2">
+                            <span>💡</span> SOLO PAGAS POR EL VOLUMEN REAL DE TUS COSAS
+                        </p>
+                    </div>
+
+                    <!-- Volumen -->
+                    <div class="mb-12">
+                        <div class="flex justify-between items-center mb-6">
+                            <label
+                                class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 italic">Volumen
+                                Solicitado</label>
+                            <span id="m3-display" class="text-4xl font-black text-brandPurple tracking-tighter">1
+                                m³</span>
+                        </div>
+                        <div class="relative px-2">
+                            <input type="range" id="m3-range" min="1" max="15" step="0.5" value="1"
+                                class="w-full h-3 bg-brandGray rounded-full appearance-none cursor-pointer accent-brandPurple custom-range">
+                            <div
+                                class="flex justify-between mt-4 text-[9px] font-black text-slate-300 uppercase tracking-widest">
+                                <span>1.0 M³</span>
+                                <span>15.0 M³</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Duración -->
+                    <div>
+                        <label
+                            class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6 italic">Periodo
+                            de Almacenaje</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <button onclick="setDuration(3)" id="dur-3"
+                                class="dur-btn py-5 rounded-xl font-black border-2 border-brandPurple bg-brandPurple text-white transition-all shadow-lg text-xs uppercase tracking-widest">
+                                3 Meses
+                            </button>
+                            <button onclick="setDuration(6)" id="dur-6"
+                                class="dur-btn py-5 rounded-xl font-black border-2 border-slate-100 text-slate-400 hover:border-brandPurple transition-all text-xs uppercase tracking-widest">
+                                6 Meses
+                                <span class="block text-[8px] text-green-600 mt-1">1 MES GRATIS</span>
+                            </button>
+                            <button onclick="setDuration(12)" id="dur-12"
+                                class="dur-btn py-5 rounded-xl font-black border-2 border-slate-100 text-slate-400 hover:border-brandPurple transition-all text-xs uppercase tracking-widest">
+                                12 Meses
+                                <span class="block text-[8px] text-green-600 mt-1">3 MESES GRATIS</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resultado Dashboard -->
+                <div
+                    class="p-8 md:p-12 lg:w-2/5 bg-brandDark text-white flex flex-col justify-center relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-brandPurple/10 rounded-full blur-3xl -mr-32 -mt-32">
+                    </div>
+
+                    <p
+                        class="text-[11px] font-black uppercase tracking-[0.2em] text-brandPurple mb-6 italic relative z-10">
+                        Cuota Mensual Efectiva</p>
+                    <div class="flex items-baseline gap-2 mb-12 relative z-10">
+                        <span id="final-price" class="text-8xl font-black tracking-tighter transition-all">39€</span>
+                        <span class="text-2xl text-slate-500 font-black italic">/mes</span>
+                    </div>
+
+                    <div
+                        class="space-y-5 mb-14 text-[11px] font-black text-slate-400 border-t border-white/10 pt-10 uppercase tracking-[0.2em] relative z-10">
+                        <div class="flex justify-between">
+                            <span id="calc-shipping-text" class="italic">RECOGIDA GRATIS</span>
+                            <span id="calc-shipping-value" class="text-brandPurple">ENTREGA PENDIENTE</span>
+                        </div>
+                        <div class="flex justify-between border-b border-white/5 pb-5">
+                            <span class="italic">SEGURO 1.000€/M³</span>
+                            <span class="text-brandPurple">INCLUIDO</span>
+                        </div>
+                        <div class="flex justify-between items-center py-2">
+                            <span class="italic">PROMOCIÓN</span>
+                            <a id="promo-label" href="#"
+                                class="bg-green-600 text-white px-4 py-1.5 rounded-full text-[9px] font-black transition-all hover:scale-105 inline-block">-</a>
+                        </div>
+                    </div>
+
+                    <a href="pages/reserva.html"
+                        class="block text-center w-full py-6 rounded-[2rem] bg-brandPurple text-white font-black text-xl hover:bg-white hover:text-brandDark transition-all shadow-2xl uppercase tracking-[0.1em] relative z-10">
+                        RESERVAR AHORA
+                    </a>
+                    <button onclick="BoxBot.openChat(event)"
+                        class="mt-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-brandPurple transition-all flex items-center justify-center gap-2 w-full relative z-10">
+                        <span class="material-symbols-outlined" style="font-size: 14px;">smart_toy</span>
+                        ¿Dudas con el volumen? Pregunta a BoxBot
+                    </button>
+                </div>
+            </div>
+            <p
+                class="text-center text-slate-400 text-[10px] mt-12 font-black uppercase tracking-[0.3em] italic opacity-50">
+                * TARIFAS: 39€ PRIMER M³ + 16€ POR M³ ADICIONAL (8€ CADA 0.5M³).<br>
+                * TARIFA DE ENTREGA FIJA (39€) VÁLIDA SOLO PARA ZONA 0.
+            </p>
+        </div>
+    </section>
+
+    <!-- Zonas de Operación (SEO Local) -->
+    <section class="py-20 bg-white border-t border-brandGray/30 overflow-hidden px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="lg:flex items-center gap-16">
+                <div class="lg:w-1/2 mb-12 lg:mb-0">
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-2 mb-6 text-[10px] font-black uppercase tracking-widest text-brandPurple bg-brandPurple/10 rounded-full italic">
+                        Presencia Local
+                    </div>
+                    <h2 class="text-3xl md:text-5xl font-black mb-8 uppercase tracking-tighter italic">
+                        Damos servicio a <br> <span class="text-brandPurple underline decoration-brandPurple/20">toda la
+                            Comunidad.</span>
+                    </h2>
+                    <p class="text-lg text-slate-500 leading-relaxed max-w-xl">
+                        No importa en qué barrio o pueblo de Madrid te encuentres. Nuestro sistema de logística
+                        inteligente nos permite llegar a cualquier punto de la capital y alrededores con la misma
+                        puntualidad de siempre.
+                    </p>
+                </div>
+                <div class="lg:w-1/2 grid grid-cols-2 sm:grid-cols-2 gap-6">
+                    <!-- Pinto Base (Zona Sur) -->
+                    <div
+                        class="p-6 bg-brandDark text-white rounded-3xl border-2 border-brandPurple shadow-xl col-span-2">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p
+                                    class="font-black text-brandPurple uppercase tracking-[0.2em] text-[12px] mb-1 italic">
+                                    Nuestra Base de Operaciones</p>
+                                <h3 class="text-3xl font-black uppercase tracking-tighter">Pinto • Zona Sur</h3>
+                            </div>
+                            <span class="text-4xl">🏢</span>
+                        </div>
+                        <p class="text-slate-300 font-bold text-sm mb-4 leading-relaxed">
+                            Contamos con más de <span class="text-white">10.000m² de instalaciones propias</span> en
+                            Pinto, conectando estratégicamente con <span class="text-white">Getafe, Leganés, Alcorcón,
+                                Fuenlabrada y Valdemoro.</span>
+                        </p>
+                        <div
+                            class="flex flex-wrap gap-4 text-[10px] font-black uppercase tracking-widest text-brandPurple">
+                            <span>✅ Logística Propia</span>
+                            <span>✅ Cobertura Total en el Sur</span>
+                        </div>
+                    </div>
+
+                    <div
+                        class="p-6 bg-brandGray rounded-2xl border border-brandPurple/5 hover:border-brandPurple/20 transition-all">
+                        <p class="font-black text-brandDark uppercase tracking-widest text-[11px] mb-4 italic">Madrid
+                            Capital</p>
+                        <ul class="text-[10px] text-slate-500 font-bold space-y-2 uppercase tracking-wider">
+                            <li><span class="text-brandPurple mr-1">•</span> Salamanca • Chamberí • Retiro</li>
+                            <li><span class="text-brandPurple mr-1">•</span> Chamartín • Tetuán • Fuencarral</li>
+                            <li><span class="text-brandPurple mr-1">•</span> Carabanchel • Usera • Villaverde</li>
+                        </ul>
+                    </div>
+                    <div
+                        class="p-6 bg-brandGray rounded-2xl border border-brandPurple/5 hover:border-brandPurple/20 transition-all">
+                        <p class="font-black text-brandDark uppercase tracking-widest text-[11px] mb-4 italic">Norte,
+                            Sur, Este y Oeste</p>
+                        <ul class="text-[10px] text-slate-500 font-bold space-y-2 uppercase tracking-wider">
+                            <li><span class="text-brandPurple mr-1">•</span> Pozuelo • Majadahonda • Las Rozas</li>
+                            <li><span class="text-brandPurple mr-1">•</span> Alcobendas • Sanse • La Moraleja</li>
+                            <li><span class="text-brandPurple mr-1">•</span> Getafe • Valdemoro • Pinto</li>
+                            <li><span class="text-brandPurple mr-1">•</span> Alcorcón • Móstoles • Leganés</li>
+                            <li><span class="text-brandPurple mr-1">•</span> Rivas • Coslada • Torrejón</li>
+                        </ul>
+                    </div>
+
+                    <div class="col-span-2 text-center pt-4">
+                        <p class="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] italic">
+                            Damos servicio a <span class="text-brandPurple">cualquier código postal</span> de la
+                            Comunidad de Madrid
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof (Opiniones) -->
+    <section class="py-24 bg-white overflow-hidden reveal">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-12 px-4">
+                <p
+                    class="inline-block px-4 py-1.5 mb-4 text-[10px] font-black uppercase tracking-widest text-brandPurple bg-brandPurple/10 rounded-full">
+                    Testimonios Reales</p>
+                <h2 class="text-3xl md:text-5xl font-black text-brandDark uppercase tracking-tighter">Lo que dicen de
+                    <span class="text-brandPurple italic">BOXROOMER</span>
+                </h2>
+                <div class="flex justify-center mt-6">
+                    <button onclick="BoxBot.openChat(event)"
+                        class="px-6 py-3 bg-brandPurple/5 border border-brandPurple/10 text-brandPurple rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-brandPurple hover:text-white transition-all inline-flex items-center gap-2">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">help</span>
+                        ¿Tienes dudas personalizadas? Habla con nosotros
+                    </button>
+                </div>
+            </div>
+
+            <div class="testimonial-container reveal">
+                <button class="nav-arrow left" onclick="prevTestimonial()">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <button class="nav-arrow right" onclick="nextTestimonial()">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+
+                <div class="testimonial-track" id="testimonial-track">
+                    <!-- Testimonios se inyectan por JS o se listan aquí -->
+                    <!-- Testimonio 1 -->
+                    <div class="testimonial-card p-8 bg-brandGray rounded-3xl relative">
+                        <div class="flex gap-1 text-yellow-400 mb-4">
+                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                        </div>
+                        <p class="text-sm text-slate-600 font-bold mb-6 italic leading-relaxed text-content">
+                            "Súper cómodo. Vinieron a por todo a mi casa de Chamberí y en mi catálogo veo mis cajas con
+                            fotos. ¡Es el futuro!"
+                        </p>
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 bg-brandPurple/20 avatar-bg rounded-full flex items-center justify-center font-black text-brandPurple">
+                                MA</div>
+                            <div>
+                                <h4 class="text-xs font-black uppercase author-name text-brandDark">Miguel Ángel R.</h4>
+                                <p class="text-[10px] text-slate-400 author-info">Cliente desde 2023</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Testimonio 2 -->
+                    <div class="testimonial-card p-8 bg-brandDark text-white rounded-3xl relative shadow-2xl middle">
+                        <div class="flex gap-1 text-yellow-400 mb-4">
+                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                        </div>
+                        <p class="text-sm text-slate-300 font-bold mb-6 italic leading-relaxed text-content">
+                            "Para mi estudio de diseño es increíble. Guardo el archivo y el stock muerto y me lo traen
+                            cuando quiero por solo 39€."
+                        </p>
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 bg-brandPurple avatar-bg rounded-full flex items-center justify-center font-black text-white">
+                                SP</div>
+                            <div>
+                                <h4 class="text-xs font-black uppercase author-name text-brandPurple">Sara P.</h4>
+                                <p class="text-[10px] text-slate-500 author-info uppercase font-black">Autónoma</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Testimonio 3 -->
+                    <div class="testimonial-card p-8 bg-brandGray rounded-3xl">
+                        <div class="flex gap-1 text-yellow-400 mb-4">
+                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                        </div>
+                        <p class="text-sm text-slate-600 font-bold mb-6 italic leading-relaxed text-content">
+                            "Reformamos el salón y nos guardaron el sofá y la tele. Muy profesionales y el precio estaba
+                            clarísimo desde el inicio."
+                        </p>
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 bg-brandPurple/20 avatar-bg rounded-full flex items-center justify-center font-black text-brandPurple">
+                                DL</div>
+                            <div>
+                                <h4 class="text-xs font-black uppercase author-name text-brandDark">David L.</h4>
+                                <p class="text-[10px] text-slate-400 author-info">Mudanza temporal</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Testimonio 4 -->
+                    <div class="testimonial-card p-8 bg-brandGray rounded-3xl">
+                        <div class="flex gap-1 text-yellow-400 mb-4">
+                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                        </div>
+                        <p class="text-sm text-slate-600 font-bold mb-6 italic leading-relaxed text-content">
+                            "Ideal para guardar todo lo de la terraza en invierno. El servicio de recogida es
+                            puntualísimo y el personal muy amable."
+                        </p>
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 bg-brandPurple/20 avatar-bg rounded-full flex items-center justify-center font-black text-brandPurple">
+                                EM</div>
+                            <div>
+                                <h4 class="text-xs font-black uppercase author-name text-brandDark">Elena M.</h4>
+                                <p class="text-[10px] text-slate-400 author-info">Cliente residencial</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Testimonio 5 -->
+                    <div class="testimonial-card p-8 bg-brandGray rounded-3xl">
+                        <div class="flex gap-1 text-yellow-400 mb-4">
+                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                        </div>
+                        <p class="text-sm text-slate-600 font-bold mb-6 italic leading-relaxed text-content">
+                            "Buscaba un trastero para mi bici y equipo de esquí. Lo mejor es no tener que desplazarme
+                            yo. BoxBot es una maravilla."
+                        </p>
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-10 h-10 bg-brandPurple/20 avatar-bg rounded-full flex items-center justify-center font-black text-brandPurple">
+                                JG</div>
+                            <div>
+                                <h4 class="text-xs font-black uppercase author-name text-brandDark">Javier G.</h4>
+                                <p class="text-[10px] text-slate-400 author-info">Deportista</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Sticky Mobile CTA -->
+    <div
+        class="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-xl border-t border-brandPurple/10 z-[50] md:hidden">
+        <a href="https://app.boxroomer.com/"
+            class="flex items-center justify-center bg-brandPurple text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl active:scale-95 transition-all">
+            Reserva tu espacio ahora ⚡
+        </a>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer-placeholder" data-path="components/footer.html"></div>
+
+    <!-- Scripts -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/calculator.js"></script>
+    <script src="assets/js/chat.js"></script>
+
+    <script>
+        // Testimonials Carousel Logic
+        let currentTestimonialIndex = 1; // Start with the second one as middle
+        const track = document.getElementById('testimonial-track');
+        const cards = document.querySelectorAll('.testimonial-card');
+        const totalCards = cards.length;
+        let autoRotateTimer;
+
+        function updateCarousel() {
+            const cardWidth = cards[0].offsetWidth + 20; // width + gap
+            const containerWidth = document.querySelector('.testimonial-container').offsetWidth;
+
+            // Calculate offset to center the "current" card
+            const offset = (containerWidth / 2) - (cardWidth / 2) - (currentTestimonialIndex * cardWidth);
+
+            track.style.transform = `translateX(${offset}px)`;
+
+            // Update classes
+            cards.forEach((card, index) => {
+                card.classList.remove('middle');
+                if (index === currentTestimonialIndex) {
+                    card.classList.add('middle');
+                }
+            });
+        }
+
+        function nextTestimonial() {
+            currentTestimonialIndex = (currentTestimonialIndex + 1) % totalCards;
+            updateCarousel();
+            resetAutoRotate();
+        }
+
+        function prevTestimonial() {
+            currentTestimonialIndex = (currentTestimonialIndex - 1 + totalCards) % totalCards;
+            updateCarousel();
+            resetAutoRotate();
+        }
+
+        function startAutoRotate() {
+            autoRotateTimer = setInterval(nextTestimonial, 15000);
+        }
+
+        function resetAutoRotate() {
+            clearInterval(autoRotateTimer);
+            startAutoRotate();
+        }
+
+        window.addEventListener('resize', updateCarousel);
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCarousel();
+            startAutoRotate();
+        });
+    </script>
+</body>
+
+</html>
