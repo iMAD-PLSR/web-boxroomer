@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mis Cosas | BOXROOMER</title>
+
+    <!-- Icons & Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../assets/js/tailwind.config.js"></script>
+
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-brandDark">
+
+    <div class="md:flex min-h-screen">
+
+        <!-- Desktop Sidebar (Hidden on Mobile) -->
+        <aside
+            class="hidden md:flex fixed top-0 left-0 h-screen w-72 bg-white border-r border-slate-100 flex-col p-8 z-50 justify-between shadow-xl shadow-slate-200/50">
+            <div>
+                <img src="../assets/images/logo.png" onclick="window.location.href='../index.html'" alt="LOGO"
+                    class="h-8 object-contain cursor-pointer mb-12">
+
+                <nav class="space-y-4">
+                    <a href="cliente_dashboard.html"
+                        class="flex items-center gap-4 px-4 py-3 rounded-2xl text-slate-400 hover:bg-slate-50 hover:text-brandDark transition-all group">
+                        <span class="material-symbols-outlined group-hover:scale-110 transition-transform">home</span>
+                        <span class="font-bold text-sm">Inicio</span>
+                    </a>
+                    <a href="cliente_inventario.html"
+                        class="flex items-center gap-4 px-4 py-3 rounded-2xl bg-brandPurple text-white shadow-lg shadow-brandPurple/30 transition-all">
+                        <span class="material-symbols-outlined filled">grid_view</span>
+                        <span class="font-bold text-sm">Mis Cosas</span>
+                    </a>
+                    <a href="cliente_pagos.html"
+                        class="flex items-center gap-4 px-4 py-3 rounded-2xl text-slate-400 hover:bg-slate-50 hover:text-brandDark transition-all group">
+                        <span
+                            class="material-symbols-outlined group-hover:scale-110 transition-transform">receipt_long</span>
+                        <span class="font-bold text-sm">Pagos</span>
+                    </a>
+                    <a href="cliente_cuenta.html"
+                        class="flex items-center gap-4 px-4 py-3 rounded-2xl text-slate-400 hover:bg-slate-50 hover:text-brandDark transition-all group">
+                        <span
+                            class="material-symbols-outlined group-hover:scale-110 transition-transform">settings</span>
+                        <span class="font-bold text-sm">Cuenta</span>
+                    </a>
+                </nav>
+
+                <button
+                    class="mt-8 w-full py-4 bg-brandDark text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-lg">add</span> Guardar Más
+                </button>
+            </div>
+
+            <div class="flex items-center gap-3 p-3 rounded-2xl border border-slate-100 bg-slate-50 cursor-pointer hover:bg-white transition-colors"
+                onclick="window.location.href='../index.html'">
+                <div
+                    class="w-10 h-10 rounded-full bg-brandPurple text-white flex items-center justify-center font-bold">
+                    IM</div>
+                <div class="flex-1">
+                    <p class="text-xs font-black text-brandDark">Israel M.</p>
+                    <p class="text-[10px] text-slate-400 font-bold">Cerrar Sesión</p>
+                </div>
+                <span class="material-symbols-outlined text-slate-300 text-lg">logout</span>
+            </div>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <div class="flex-1 flex flex-col md:ml-72 transition-all duration-300">
+
+            <!-- Top Navigation (Mobile Only) -->
+            <nav
+                class="md:hidden sticky top-0 z-50 glass-panel border-b border-white/50 px-6 py-4 flex justify-between items-center shadow-sm">
+                <h1 class="text-lg font-black uppercase tracking-widest text-brandDark">Mis Cosas</h1>
+                <div
+                    class="w-9 h-9 rounded-full bg-brandPurple text-white flex items-center justify-center font-bold shadow-lg shadow-brandPurple/20">
+                    IM
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="px-5 pt-6 pb-32 max-w-lg mx-auto md:max-w-7xl md:mx-0 md:p-12 w-full">
+
+                <!-- Desktop Header -->
+                <div class="hidden md:flex justify-between items-end mb-10">
+                    <div>
+                        <h1 class="text-3xl font-black text-brandDark tracking-tight">Inventario Virtual</h1>
+                        <p class="text-slate-400 text-sm font-bold mt-1">Gestiona tus pertenencias almacenadas</p>
+                    </div>
+                </div>
+
+                <!-- Search & Filter -->
+                <div class="flex gap-3 mb-6 md:max-w-md">
+                    <div class="relative flex-1">
+                        <span
+                            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+                        <input type="text" placeholder="Buscar (ej. bici, ropa...)"
+                            class="w-full bg-white border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-xs font-bold outline-none focus:border-brandPurple transition-colors">
+                    </div>
+                    <button
+                        class="w-12 h-12 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-400 hover:text-brandPurple hover:border-brandPurple transition-colors">
+                        <span class="material-symbols-outlined">filter_list</span>
+                    </button>
+                </div>
+
+                <!-- Inventory Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+
+                    <!-- Item 1 -->
+                    <div
+                        class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 group relative overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1">
+                        <div class="aspect-square bg-slate-100 rounded-xl mb-3 relative overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1544233726-9f1d2b27be8b?auto=format&fit=crop&q=80&w=200"
+                                class="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-500">
+                            <span
+                                class="absolute top-2 right-2 bg-black/50 text-white text-[9px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">ID:
+                                8392</span>
+                        </div>
+                        <h3 class="text-xs font-black text-brandDark truncate">Caja Ropa Invierno</h3>
+                        <p class="text-[10px] text-slate-400 font-bold mb-2">Entrada: 12 Ene</p>
+                        <button
+                            class="w-full py-2 bg-brandPurple/5 text-brandPurple rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-brandPurple hover:text-white transition-colors">
+                            Recuperar
+                        </button>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div
+                        class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 group relative overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1">
+                        <div class="aspect-square bg-slate-100 rounded-xl mb-3 relative overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=200"
+                                class="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-500">
+                            <span
+                                class="absolute top-2 right-2 bg-black/50 text-white text-[9px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">ID:
+                                8393</span>
+                        </div>
+                        <h3 class="text-xs font-black text-brandDark truncate">Monitor LG + Stand</h3>
+                        <p class="text-[10px] text-slate-400 font-bold mb-2">Entrada: 12 Ene</p>
+                        <button
+                            class="w-full py-2 bg-brandPurple/5 text-brandPurple rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-brandPurple hover:text-white transition-colors">
+                            Recuperar
+                        </button>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div
+                        class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 group relative overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1">
+                        <div class="aspect-square bg-slate-100 rounded-xl mb-3 relative overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1629198688000-71f23e745b6e?auto=format&fit=crop&q=80&w=200"
+                                class="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-500">
+                            <span
+                                class="absolute top-2 right-2 bg-black/50 text-white text-[9px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">ID:
+                                8394</span>
+                        </div>
+                        <h3 class="text-xs font-black text-brandDark truncate">Documentos 2024</h3>
+                        <p class="text-[10px] text-slate-400 font-bold mb-2">Entrada: 12 Ene</p>
+                        <button
+                            class="w-full py-2 bg-brandPurple/5 text-brandPurple rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-brandPurple hover:text-white transition-colors">
+                            Recuperar
+                        </button>
+                    </div>
+
+                    <!-- Empty State / Add Placeolder -->
+                    <div
+                        class="bg-slate-50 p-3 rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-center group cursor-pointer hover:border-brandPurple hover:bg-brandPurple/5 transition-all min-h-[180px]">
+                        <div
+                            class="w-10 h-10 rounded-full bg-white text-slate-300 flex items-center justify-center mb-2 shadow-sm group-hover:text-brandPurple group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined">add_a_photo</span>
+                        </div>
+                        <h3 class="text-[11px] font-bold text-slate-400 group-hover:text-brandPurple">Foto pendiente
+                        </h3>
+                        <p class="text-[9px] text-slate-300 mt-0.5 px-2">Subiremos fotos cuando lleguen a almacén</p>
+                    </div>
+
+                </div>
+
+                <p class="text-[10px] text-slate-400 text-center mt-12 italic px-8">
+                    Estás viendo una simulación. Cuando tus objetos lleguen a Pinto, verás aquí las fotos reales tomadas
+                    por nuestro SGA. 📸
+                </p>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar (Mobile Only - Fixed) -->
+    <div
+        class="md:hidden fixed bottom-6 left-4 right-4 max-w-lg mx-auto bg-brandDark text-white rounded-full p-2 shadow-2xl flex justify-between items-center z-50 border border-white/10">
+
+        <button onclick="window.location.href='cliente_dashboard.html'"
+            class="flex-1 flex flex-col items-center gap-1 py-2 text-white/40 hover:text-white transition-colors">
+            <span class="material-symbols-outlined">home</span>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Inicio</span>
+        </button>
+
+        <button class="flex-1 flex flex-col items-center gap-1 py-2 text-brandPurple">
+            <span class="material-symbols-outlined filled">grid_view</span>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Cosas</span>
+        </button>
+
+        <!-- Center FAB (Add) -->
+        <div class="relative -top-8">
+            <button
+                class="w-14 h-14 rounded-full bg-brandPurple text-white shadow-lg shadow-brandPurple/40 flex items-center justify-center transform transition-transform hover:scale-110 active:scale-95 border-4 border-slate-50">
+                <span class="material-symbols-outlined text-2xl">add</span>
+            </button>
+        </div>
+
+        <button onclick="window.location.href='cliente_pagos.html'"
+            class="flex-1 flex flex-col items-center gap-1 py-2 text-white/40 hover:text-white transition-colors">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Pagos</span>
+        </button>
+
+        <button onclick="window.location.href='cliente_cuenta.html'"
+            class="flex-1 flex flex-col items-center gap-1 py-2 text-white/40 hover:text-white transition-colors">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Cuenta</span>
+        </button>
+
+    </div>
+
+</body>
+
+</html>

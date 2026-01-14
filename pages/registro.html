@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Crear Cuenta | BOXROOMER</title>
+
+    <!-- Icons & Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../assets/js/tailwind.config.js"></script>
+
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-slate-50 text-brandDark min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
+
+    <!-- Background Decor -->
+    <div
+        class="absolute top-0 right-0 w-96 h-96 bg-brandPurple/5 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2">
+    </div>
+    <div
+        class="absolute bottom-0 left-0 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2">
+    </div>
+
+    <!-- Card Container -->
+    <div
+        class="bg-white/90 backdrop-blur-xl border border-white/50 w-full max-w-sm p-8 rounded-[2.5rem] shadow-2xl relative z-10 my-4">
+
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-black text-brandDark tracking-tight">Crea tu cuenta</h1>
+            <p class="text-slate-400 text-xs font-bold mt-1">Empieza a liberar espacio en segundos</p>
+        </div>
+
+        <!-- Form -->
+        <form onsubmit="handleRegister(event)" class="space-y-3">
+
+            <!-- Name Input -->
+            <div class="space-y-1">
+                <label class="text-[10px] uppercase font-black tracking-widest text-slate-400 pl-3">Nombre
+                    Completo</label>
+                <div class="relative">
+                    <span
+                        class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">badge</span>
+                    <input type="text" placeholder="Tu Nombre" required id="reg-name"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 pl-11 pr-4 text-sm font-bold outline-none focus:border-brandPurple focus:bg-white transition-all">
+                </div>
+            </div>
+
+            <!-- Email Input -->
+            <div class="space-y-1">
+                <label class="text-[10px] uppercase font-black tracking-widest text-slate-400 pl-3">Email</label>
+                <div class="relative">
+                    <span
+                        class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">mail</span>
+                    <input type="email" placeholder="tu@email.com" required
+                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 pl-11 pr-4 text-sm font-bold outline-none focus:border-brandPurple focus:bg-white transition-all">
+                </div>
+            </div>
+
+            <!-- Password Input -->
+            <div class="space-y-1">
+                <label class="text-[10px] uppercase font-black tracking-widest text-slate-400 pl-3">Contraseña</label>
+                <div class="relative">
+                    <span
+                        class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">lock</span>
+                    <input type="password" placeholder="Mínimo 8 caracteres" required minlength="8"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 pl-11 pr-4 text-sm font-bold outline-none focus:border-brandPurple focus:bg-white transition-all">
+                </div>
+            </div>
+
+            <!-- Terms Checkbox -->
+            <div class="flex items-start gap-3 px-1 py-1">
+                <input type="checkbox" id="terms" required
+                    class="mt-1 w-4 h-4 rounded border-slate-300 text-brandPurple focus:ring-brandPurple">
+                <label for="terms" class="text-[10px] text-slate-500 font-medium leading-tight">
+                    Acepto los <a href="condiciones.html" class="font-bold underline text-brandDark">Términos y
+                        Condiciones</a> y la Política de Privacidad de BOXROOMER.
+                </label>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit"
+                class="w-full bg-brandDark text-white py-4 rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-xl hover:scale-[1.02] hover:shadow-2xl active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-4">
+                Crear Cuenta <span class="material-symbols-outlined text-sm">rocket_launch</span>
+            </button>
+
+        </form>
+
+        <!-- Divider -->
+        <div class="relative flex py-5 items-center">
+            <div class="flex-grow border-t border-slate-200"></div>
+            <span class="flex-shrink mx-4 text-slate-300 text-[10px] font-black uppercase tracking-widest">O regístrate
+                con</span>
+            <div class="flex-grow border-t border-slate-200"></div>
+        </div>
+
+        <!-- Social Login Grid -->
+        <div class="grid grid-cols-2 gap-3">
+            <button
+                class="bg-white border-2 border-slate-100 text-brandDark py-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="G"
+                    class="w-4 h-4">
+                Google
+            </button>
+            <button
+                class="bg-white border-2 border-slate-100 text-brandDark py-3 rounded-2xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-slate-50 transition-colors">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="A"
+                    class="w-4 h-4">
+                Apple
+            </button>
+        </div>
+
+        <!-- Login Link -->
+        <div class="text-center mt-6">
+            <p class="text-xs font-medium text-slate-400">¿Ya eres cliente? <a href="login.html"
+                    class="text-brandPurple font-black hover:underline">Inicia Sesión</a></p>
+        </div>
+
+    </div>
+
+    <script>
+        function handleRegister(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const name = document.getElementById('reg-name').value.split(' ')[0]; // First name
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin">refresh</span> Creando tu espacio...';
+
+            setTimeout(() => {
+                // Save dummy user data
+                const dashboardData = {
+                    userName: name,
+                    volume: 0,
+                    address: "Por definir",
+                    status: 'active',
+                    pickupDate: '-',
+                    pickupTime: '-',
+                    plan: 'Cuenta Nueva'
+                };
+                // Only save if empty to avoid nuking booking data
+                if (!localStorage.getItem('BOXROOMER_DASHBOARD_DATA')) {
+                    localStorage.setItem('BOXROOMER_DASHBOARD_DATA', JSON.stringify(dashboardData));
+                }
+
+                // Redirect to Dashboard (skip booking for direct register)
+                // OR normally redirect to Wizard if they came from landing
+                window.location.href = 'cliente_dashboard.html';
+            }, 2000);
+        }
+    </script>
+
+</body>
+
+</html>

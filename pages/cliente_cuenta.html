@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mi Cuenta | BOXROOMER</title>
+
+    <!-- Icons & Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../assets/js/tailwind.config.js"></script>
+
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-brandDark">
+
+    <!-- Top Navigation -->
+    <nav
+        class="sticky top-0 z-50 glass-panel border-b border-white/50 px-6 py-4 flex justify-between items-center shadow-sm">
+        <h1 class="text-lg font-black uppercase tracking-widest text-brandDark">Mi Perfil</h1>
+        <button onclick="window.location.href='../index.html'"
+            class="text-brandPurple text-[10px] font-bold uppercase hover:underline">
+            Cerrar Sesión
+        </button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="px-5 pt-6 pb-32 max-w-lg mx-auto">
+
+        <!-- Profile Header -->
+        <div class="flex flex-col items-center mb-8">
+            <div
+                class="w-24 h-24 rounded-full bg-slate-100 border-4 border-white shadow-lg flex items-center justify-center mb-4 relative">
+                <span class="text-2xl font-black text-slate-300">IM</span>
+                <button
+                    class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-brandPurple text-white flex items-center justify-center shadow-md hover:scale-110 transition-transform">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                </button>
+            </div>
+            <h2 class="text-xl font-black text-brandDark">Israel Madrigal</h2>
+            <p class="text-xs text-slate-400 font-bold">Cliente desde Ene 2026</p>
+        </div>
+
+        <!-- Settings List -->
+        <div class="space-y-4">
+
+            <!-- Group 1: Personal -->
+            <div class="bg-white rounded-[2rem] p-2 shadow-sm border border-slate-50">
+                <a href="#" class="flex items-center gap-4 p-4 hover:bg-slate-50 rounded-[1.5rem] transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-purple-50 text-brandPurple flex items-center justify-center">
+                        <span class="material-symbols-outlined">person</span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-bold text-brandDark">Datos Personales</h3>
+                        <p class="text-[10px] text-slate-400">Email, teléfono y dirección</p>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-300">chevron_right</span>
+                </a>
+                <div class="h-px bg-slate-50 mx-4"></div>
+                <a href="#" class="flex items-center gap-4 p-4 hover:bg-slate-50 rounded-[1.5rem] transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-purple-50 text-brandPurple flex items-center justify-center">
+                        <span class="material-symbols-outlined">key</span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-bold text-brandDark">Seguridad</h3>
+                        <p class="text-[10px] text-slate-400">Contraseña y 2FA</p>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-300">chevron_right</span>
+                </a>
+            </div>
+
+            <!-- Group 2: Contracts -->
+            <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2 pt-2">Legal</h3>
+            <div class="bg-white rounded-[2rem] p-2 shadow-sm border border-slate-50">
+                <a href="#" class="flex items-center gap-4 p-4 hover:bg-slate-50 rounded-[1.5rem] transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center">
+                        <span class="material-symbols-outlined">gavel</span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-bold text-brandDark">Mis Contratos</h3>
+                        <p class="text-[10px] text-slate-400">Ver documentos firmados</p>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-300">chevron_right</span>
+                </a>
+            </div>
+
+            <!-- Group 3: Support -->
+            <h3 class="text-[11px] font-black text-slate-400 uppercase tracking-widest pl-2 pt-2">Ayuda</h3>
+            <div class="bg-white rounded-[2rem] p-2 shadow-sm border border-slate-50">
+                <a href="#" class="flex items-center gap-4 p-4 hover:bg-slate-50 rounded-[1.5rem] transition-colors">
+                    <div class="w-10 h-10 rounded-full bg-green-50 text-green-500 flex items-center justify-center">
+                        <span class="material-symbols-outlined">chat</span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-sm font-bold text-brandDark">Contactar Soporte</h3>
+                        <p class="text-[10px] text-slate-400">Hablar con BoxBot o un humano</p>
+                    </div>
+                    <span class="material-symbols-outlined text-slate-300">chevron_right</span>
+                </a>
+            </div>
+
+        </div>
+
+        <p class="text-[10px] text-slate-300 text-center mt-12 mb-4">
+            BOXROOMER App v1.0.0 (Building 2026)
+        </p>
+
+    </main>
+
+    <!-- Bottom Navigation Bar (Fixed) -->
+    <div
+        class="fixed bottom-6 left-4 right-4 max-w-lg mx-auto bg-brandDark text-white rounded-full p-2 shadow-2xl flex justify-between items-center z-50 border border-white/10">
+
+        <button onclick="window.location.href='cliente_dashboard.html'"
+            class="flex-1 flex flex-col items-center gap-1 py-2 text-white/40 hover:text-white transition-colors">
+            <span class="material-symbols-outlined">home</span>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Inicio</span>
+        </button>
+
+        <button onclick="window.location.href='cliente_inventario.html'"
+            class="flex-1 flex flex-col items-center gap-1 py-2 text-white/40 hover:text-white transition-colors">
+            <span class="material-symbols-outlined">grid_view</span>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Cosas</span>
+        </button>
+
+        <!-- Center FAB (Add) -->
+        <div class="relative -top-8">
+            <button
+                class="w-14 h-14 rounded-full bg-brandPurple text-white shadow-lg shadow-brandPurple/40 flex items-center justify-center transform transition-transform hover:scale-110 active:scale-95 border-4 border-slate-50">
+                <span class="material-symbols-outlined text-2xl">add</span>
+            </button>
+        </div>
+
+        <button onclick="window.location.href='cliente_pagos.html'"
+            class="flex-1 flex flex-col items-center gap-1 py-2 text-white/40 hover:text-white transition-colors">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Pagos</span>
+        </button>
+
+        <button class="flex-1 flex flex-col items-center gap-1 py-2 text-brandPurple">
+            <span class="material-symbols-outlined filled">settings</span>
+            <span class="text-[9px] font-bold uppercase tracking-wider">Cuenta</span>
+        </button>
+
+    </div>
+
+</body>
+
+</html>

@@ -1441,12 +1441,28 @@ function confirmOrder() {
         // Hide stepper to avoid confusion
         if (stepperContainer) stepperContainer.classList.add('opacity-30', 'pointer-events-none');
 
-        addAiMessage("¡PAGO CONFIRMADO! 💳🎉 Tu reserva ya es oficial. En breve recibirás un email con el contrato y los próximos pasos. ¡Nos vemos en la recogida!");
+        // SAVE DATA FOR DASHBOARD SIMULATION
+        const dashboardData = {
+            userName: "Israel", // Simulated logged user
+            volume: document.getElementById('reserva-range')?.value || 0,
+            address: document.getElementById('pickup-address')?.value || "Pinto, Madrid",
+            pickupDate: selectedDate ? `${selectedDate.day} ${selectedDate.month}` : 'Pendiente',
+            pickupTime: selectedSlot || 'Pendiente',
+            status: 'pending_pickup', // active, pending_pickup
+            plan: selectedPack === 1 ? 'Pack Mini' : (selectedPack === 2 ? 'Pack Dúo' : 'Plan Personalizado'),
+            bookingDate: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+        };
+        localStorage.setItem('BOXROOMER_DASHBOARD_DATA', JSON.stringify(dashboardData));
+
+        addAiMessage("¡PAGO CONFIRMADO! 💳🎉 Tu reserva ya es oficial. Te redirijo a tu Área de Cliente...");
 
         btn.disabled = false;
-        btn.innerHTML = 'Salir del Asistente <span class="material-symbols-outlined">logout</span>';
+        btn.innerHTML = 'Ir a mi Espacio <span class="material-symbols-outlined">arrow_forward</span>';
         btn.classList.replace('bg-brandDark', 'bg-green-600');
-        btn.onclick = () => window.location.href = '../index.html'; // Or wherever Home is
+
+        setTimeout(() => {
+            window.location.href = 'cliente_dashboard.html';
+        }, 1500);
     }, 2500);
 }
 
