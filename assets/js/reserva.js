@@ -124,13 +124,26 @@ function initAutocomplete() {
     const input = document.getElementById('pickup-address');
     if (!input) return;
 
-    // Create dropdown container for suggestions
+    // Prevent duplicate initialization
+    if (window.autocompleteInitialized) return;
+    window.autocompleteInitialized = true;
+
+    // Create dropdown container attached to body (to avoid z-index issues)
     let dropdown = document.getElementById('photon-dropdown');
     if (!dropdown) {
         dropdown = document.createElement('div');
         dropdown.id = 'photon-dropdown';
         dropdown.className = 'photon-autocomplete-dropdown';
-        input.parentElement.appendChild(dropdown);
+        document.body.appendChild(dropdown); // Append to body instead of input parent
+    }
+
+    // Function to position dropdown below input
+    function positionDropdown() {
+        const rect = input.getBoundingClientRect();
+        dropdown.style.position = 'fixed'; // Use fixed to escape all parent containers
+        dropdown.style.top = `${rect.bottom + 8}px`;
+        dropdown.style.left = `${rect.left}px`;
+        dropdown.style.width = `${rect.width}px`;
     }
 
     // Listen to input changes
@@ -146,10 +159,22 @@ function initAutocomplete() {
             return;
         }
 
+        // Position dropdown before showing
+        positionDropdown();
+
         // Debounce API calls
         autocompleteTimeout = setTimeout(() => {
             fetchAddressSuggestions(query, dropdown);
         }, 300);
+    });
+
+    // Reposition on scroll or resize to keep it attached to input
+    window.addEventListener('scroll', () => {
+        if (dropdown.style.display === 'block') positionDropdown();
+    }, true);
+
+    window.addEventListener('resize', () => {
+        if (dropdown.style.display === 'block') positionDropdown();
     });
 
     // Handle keyboard navigation
