@@ -74,12 +74,18 @@ Para garantizar escalabilidad, seguridad y rapidez de desarrollo, propongo un st
   - Tabla dinámica con filtros rápidos: "Morosos", "Próxima renovación", "Nuevos hoy".
   - Buscador global por Nombre, DNI o Email.
 - **3. Ficha 360º del Cliente (Visión Total)**:
-  - **Estado Vital**: Badge de color (Verde: Al día / Rojo: Impago / Ámbar: En proceso).
+  - **Estado Vital**: Badge de color (Verde: Al día / Rojo: Impago / Ámbar: En proceso / Naranja: Pendiente Llamada).
+  - **DNI/CIF Obligatorio**: Requisito indispensable para la generación de facturas y cumplimiento legal.
   - **Timeline de Servicio**: Cronograma visual de hitos (Contrató el 12/01, Recogida el 14/01, Fotos subidas el 15/01...).
-  - **Gestión Financiera**:
-    - Botón de "Cobro Manual" (abre modal para km extra, mozo fuera de radio, cajas extra).
+  - **Gestión Financiera & Invoicing**:
+    - Historial completo de facturas PDF emitidas.
+    - Botón de "Cobro Manual" (abre modal para km extra, mozo fuera de radio, cajas extra, o gastos de cancelación).
     - Botón de "Devolución" (Stripe Refund directo).
-- **4. Gestión de Servicios (Post-Llamada)**:
+- **4. Facturación Avanzada (Live Analytics)**:
+  - **Dash de MRR & Ingresos**: Gráficas comparativas de ingresos mensuales (Año Actual vs Año Anterior) con cálculo automático de % de crecimiento.
+  - **Próximas Transacciones**: Listado de cobros programados para el mes en curso (Suscripciones Stripe).
+  - **Control de Mora**: Identificación visual inmediata de clientes en estado de "Impago".
+- **5. Gestión de Servicios (Post-Llamada)**:
   - **Confirmación Logística**: Vista de pedidos "Pendientes de Llamada". Al cerrar fecha y hora con el cliente, el admin:
     - Asigna fecha/hora definitiva.
     - **Añade Suplementos (Mozo Extra)**: Selector específico para añadir el coste de 35€ si se detecta la necesidad durante la conversación.
@@ -190,17 +196,25 @@ Se ha completado la construcción de todas las interfaces clave del ecosistema (
 
 - [x] **Landing Page**: Optimizada con calculadora de precios.
 - [x] **Wizard de Reserva**: Flujo de 3 pasos con autocompletado de dirección (Nominatim), validación de zona y chat copiloto.
+- [x] **Sistema de Scroll Inteligente**: Garantizado mediante flexbox (`display: flex`) en todos los pasos para mantener cabeceras fijas y contenido desplazable internamente.
 - [x] **Simulación de Pago**: Botón de confirmación funcional (guarda estado en `localStorage`).
 
-#### **Área de Cliente (Fidelización)**
+#### **Área de Cliente (Fidelización) - Rediseño Premium Dark**
 
-- [x] **Autenticación UI**: Pantallas de `Login` y `Registro` con diseño Glassmorphism.
+- [x] **Autenticación UI**: Pantallas de `Login` y `Registro` con diseño **Premium Dark** (Glassmorphism avanzado, blobs animados y estética futurista).
 - [x] **Dashboard (`/pages/cliente_dashboard.html`)**:
+  - **Premium Dark**: Rediseñado para inmersión total con fondos negros profundos y acentos púrpuras.
   - **Diseño Híbrido**: Barra inferior en Móvil ↔ Sidebar Lateral en Escritorio.
   - Status Card dinámica (con datos hidratados desde reserva).
-- [x] **Inventario (`/pages/cliente_inventario.html`)**: Galería visual simulada de bultos.
-- [x] **Wallet (`/pages/cliente_pagos.html`)**: Historial de facturas y métodos de pago.
-- [x] **Perfil (`/pages/cliente_cuenta.html`)**: Gestión de datos personales.
+- [x] **Inventario (`/pages/cliente_inventario.html`)**:
+  - **Premium Dark**: Galería visual de bultos con efectos de cristal y buscador inteligente.
+  - Selección múltiple para recuperaciones parciales.
+- [x] **Wallet & Pagos (`/pages/cliente_pagos.html`)**:
+  - **Premium Dark**: Gestión de tarjetas y facturación con visuales de alta gama.
+  - Descarga de facturas PDF integrada.
+- [x] **Cuenta & Perfil (`/pages/cliente_cuenta.html`)**:
+  - **Premium Dark**: Settings organizados por categorías con visuales de glassmorphism.
+  - Centro de ayuda dinámico integrado con BoxBot.
 
 #### **Torre de Control (Gestión)**
 
@@ -208,6 +222,15 @@ Se ha completado la construcción de todas las interfaces clave del ecosistema (
   - Recepción en tiempo real de nuevas reservas (lee del `localStorage` compartido).
   - Grid de KPIs operacionales (Ocupación, MRR, Rutas).
   - Tabla de gestión de pedidos live.
+- [x] **Admin Clientes (`/pages/admin_clientes.html`)**:
+  - **Buscador Real-time**: Filtrado instantáneo por nombre, DNI, email o ID.
+  - **Filtros de Estado**: "Todos", "Activos" (por defecto), "Inactivos", "Impagos" y "P. Llamada".
+  - **Modal 360º**: Multi-pestaña para Información Fiscal (DNI/CIF obligatorio), Histórico de Actividad y Centro de Facturación del cliente.
+  - **Módulo de Cobro**: Interfaz para emitir cargos manuales (KM, Mozos, etc) contra el Wallet del cliente.
+- [x] **Admin Facturación (`/pages/admin_facturacion.html`)**:
+  - **Analítica de Ingresos**: Gráfico comparativo 2026 vs 2025 con Chart.js.
+  - **Previsión de Cobros**: Listado de transacciones programadas para el mes activo.
+  - **Status Financiero**: KPIs de MRR, ARPU e Impagos destacados.
 
 ### 🔜 FASE 2: BACKEND & INTEGRACIÓN (PENDIENTE)
 
@@ -215,3 +238,4 @@ Se ha completado la construcción de todas las interfaces clave del ecosistema (
 2. **Autenticación Real (Clerk)**: Implementar protección de rutas.
 3. **Pasarela de Pagos (Stripe)**: Conectar botón de pago con Checkout real.
 4. **Logística Inteligente**: Refinar cálculo de rutas y zonas.
+5. **PDF System**: Conectar con datos dinámicos del servidor para facturación oficial.

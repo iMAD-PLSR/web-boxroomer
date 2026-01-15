@@ -12,8 +12,11 @@
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"
         rel="stylesheet">
+    <link href="../assets/css/style.css" rel="stylesheet">
+    <link href="../assets/css/chat.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="../assets/js/tailwind.config.js"></script>
+    <script src="../assets/js/theme-engine.js"></script>
 
     <style>
         body {
@@ -25,219 +28,609 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
         }
+
+        /* Chat Widget Position Fix for Mobile */
+        @media (max-width: 768px) {
+            #boxbot-widget {
+                bottom: 120px !important;
+                right: 1.5rem !important;
+            }
+        }
     </style>
 </head>
 
-<body class="bg-slate-50 text-brandDark">
+<body
+    class="min-h-screen relative overflow-x-hidden bg-[var(--app-bg)] text-[var(--text-main)] transition-colors duration-300">
 
-    <div class="md:flex min-h-screen">
+    <!-- Background Decor -->
+    <div
+        class="fixed -top-40 -left-40 w-[600px] h-[600px] bg-brandPurple/10 rounded-full blur-[120px] pointer-events-none opacity-50">
+    </div>
+    <div
+        class="fixed -bottom-40 -right-40 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[100px] pointer-events-none opacity-30">
+    </div>
 
-        <!-- Desktop Sidebar (Hidden on Mobile) -->
+    <div class="md:flex min-h-screen relative z-10">
+
+        <!-- Desktop Sidebar -->
         <aside
-            class="hidden md:flex fixed top-0 left-0 h-screen w-72 bg-white border-r border-slate-100 flex-col p-8 z-50 justify-between shadow-xl shadow-slate-200/50">
+            class="hidden md:flex fixed top-0 left-0 h-screen w-72 bg-[var(--sidebar-bg)] backdrop-blur-3xl border-r border-[var(--card-border)] flex-col p-8 z-50 justify-between transition-colors duration-300">
             <div>
-                <img src="../assets/images/logo.png" onclick="window.location.href='../index.html'" alt="LOGO"
-                    class="h-8 object-contain cursor-pointer mb-12">
+                <div class="flex items-center gap-3 mb-12 cursor-pointer group"
+                    onclick="window.location.href='../index.html'">
+                    <img src="../assets/images/logo.png" alt="PLUSER"
+                        class="h-8 md:h-10 w-auto group-hover:scale-105 transition-transform">
+                </div>
 
-                <nav class="space-y-4">
+                <nav class="space-y-3">
                     <a href="cliente_dashboard.html"
-                        class="flex items-center gap-4 px-4 py-3 rounded-2xl text-slate-400 hover:bg-slate-50 hover:text-brandDark transition-all group">
-                        <span class="material-symbols-outlined group-hover:scale-110 transition-transform">home</span>
-                        <span class="font-bold text-sm">Inicio</span>
+                        class="flex items-center gap-4 px-5 py-4 rounded-2xl text-[var(--text-muted)] hover:bg-[var(--card-hover)] hover:text-[var(--text-main)] transition-all group">
+                        <span class="material-symbols-outlined">home</span>
+                        <span class="font-black text-[11px] uppercase tracking-widest">Inicio</span>
                     </a>
                     <a href="cliente_inventario.html"
-                        class="flex items-center gap-4 px-4 py-3 rounded-2xl bg-brandPurple text-white shadow-lg shadow-brandPurple/30 transition-all">
+                        class="flex items-center gap-4 px-5 py-4 rounded-2xl bg-brandPurple text-white shadow-xl shadow-brandPurple/20 transition-all group">
                         <span class="material-symbols-outlined filled">grid_view</span>
-                        <span class="font-bold text-sm">Mis Cosas</span>
+                        <span class="font-black text-[11px] uppercase tracking-widest">Mis Cosas</span>
                     </a>
                     <a href="cliente_pagos.html"
-                        class="flex items-center gap-4 px-4 py-3 rounded-2xl text-slate-400 hover:bg-slate-50 hover:text-brandDark transition-all group">
-                        <span
-                            class="material-symbols-outlined group-hover:scale-110 transition-transform">receipt_long</span>
-                        <span class="font-bold text-sm">Pagos</span>
+                        class="flex items-center gap-4 px-5 py-4 rounded-2xl text-[var(--text-muted)] hover:bg-[var(--card-hover)] hover:text-[var(--text-main)] transition-all group">
+                        <span class="material-symbols-outlined">receipt_long</span>
+                        <span class="font-black text-[11px] uppercase tracking-widest">Pagos</span>
                     </a>
                     <a href="cliente_cuenta.html"
-                        class="flex items-center gap-4 px-4 py-3 rounded-2xl text-slate-400 hover:bg-slate-50 hover:text-brandDark transition-all group">
-                        <span
-                            class="material-symbols-outlined group-hover:scale-110 transition-transform">settings</span>
-                        <span class="font-bold text-sm">Cuenta</span>
+                        class="flex items-center gap-4 px-5 py-4 rounded-2xl text-[var(--text-muted)] hover:bg-[var(--card-hover)] hover:text-[var(--text-main)] transition-all group">
+                        <span class="material-symbols-outlined">settings</span>
+                        <span class="font-black text-[11px] uppercase tracking-widest">Cuenta</span>
                     </a>
                 </nav>
 
-                <button
-                    class="mt-8 w-full py-4 bg-brandDark text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all">
-                    <span class="material-symbols-outlined text-lg">add</span> Guardar Más
+                <!-- Theme Toggle Button -->
+                <button onclick="ThemeEngine.toggle()"
+                    class="mt-6 w-full flex items-center justify-between px-5 py-4 rounded-2xl bg-[var(--icon-bg)] border border-[var(--card-border)] text-[var(--text-main)] hover:bg-[var(--card-hover)] transition-all group">
+                    <span class="font-black text-[10px] uppercase tracking-widest">Modo Visual</span>
+                    <span class="material-symbols-outlined theme-toggle-icon text-brandPurple">dark_mode</span>
+                </button>
+
+                <!-- Action Button -->
+                <!-- Action Button -->
+                <button onclick="window.location.href='../pages/reserva.html?from=inventario'"
+                    class="mt-10 w-full group relative bg-brandPurple text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl hover:shadow-brandPurple/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 overflow-hidden">
+                    <span class="material-symbols-outlined text-lg">add_circle</span> Guardar Más
                 </button>
             </div>
 
-            <div class="flex items-center gap-3 p-3 rounded-2xl border border-slate-100 bg-slate-50 cursor-pointer hover:bg-white transition-colors"
+            <div class="flex items-center gap-4 p-4 rounded-2xl border border-white/5 bg-white/[0.02] cursor-pointer hover:bg-white/[0.05] transition-all group"
                 onclick="window.location.href='../index.html'">
                 <div
-                    class="w-10 h-10 rounded-full bg-brandPurple text-white flex items-center justify-center font-bold">
+                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-brandPurple/20 to-brandPurple/40 text-brandPurple flex items-center justify-center font-black border border-brandPurple/20">
                     IM</div>
                 <div class="flex-1">
-                    <p class="text-xs font-black text-brandDark">Israel M.</p>
-                    <p class="text-[10px] text-slate-400 font-bold">Cerrar Sesión</p>
+                    <p
+                        class="text-xs font-black text-[var(--text-main)] group-hover:text-brandPurple transition-colors">
+                        Israel
+                        Madrigal</p>
+                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Cerrar Sesión</p>
                 </div>
-                <span class="material-symbols-outlined text-slate-300 text-lg">logout</span>
+                <span
+                    class="material-symbols-outlined text-slate-600 text-lg group-hover:text-red-400 group-hover:translate-x-1 transition-all">logout</span>
             </div>
         </aside>
 
-        <!-- Main Content Wrapper -->
+        <!-- Main Content -->
         <div class="flex-1 flex flex-col md:ml-72 transition-all duration-300">
 
-            <!-- Top Navigation (Mobile Only) -->
+            <!-- Mobile Nav -->
+            <!-- Top Mobile Bar (Logo & Profile only) -->
             <nav
-                class="md:hidden sticky top-0 z-50 glass-panel border-b border-white/50 px-6 py-4 flex justify-between items-center shadow-sm">
-                <h1 class="text-lg font-black uppercase tracking-widest text-brandDark">Mis Cosas</h1>
+                class="md:hidden sticky top-0 z-40 bg-[var(--app-bg)] backdrop-blur-xl border-b border-[var(--card-border)] px-6 py-4 flex justify-between items-center transition-colors">
+                <div class="flex items-center gap-2">
+                    <img src="../assets/images/logo.png" alt="PLUSER" class="h-6 w-auto">
+                </div>
                 <div
-                    class="w-9 h-9 rounded-full bg-brandPurple text-white flex items-center justify-center font-bold shadow-lg shadow-brandPurple/20">
+                    class="w-9 h-9 rounded-full bg-brandPurple/20 text-brandPurple flex items-center justify-center font-bold border border-brandPurple/30">
                     IM
                 </div>
             </nav>
 
-            <!-- Main Content -->
-            <main class="px-5 pt-6 pb-32 max-w-lg mx-auto md:max-w-7xl md:mx-0 md:p-12 w-full">
+            <main class="px-5 pt-8 pb-32 max-w-lg mx-auto md:max-w-7xl md:mx-0 md:p-12 w-full">
 
-                <!-- Desktop Header -->
-                <div class="hidden md:flex justify-between items-end mb-10">
-                    <div>
-                        <h1 class="text-3xl font-black text-brandDark tracking-tight">Inventario Virtual</h1>
-                        <p class="text-slate-400 text-sm font-bold mt-1">Gestiona tus pertenencias almacenadas</p>
-                    </div>
+                <!-- Header -->
+                <div class="mb-10">
+                    <h1
+                        class="text-3xl md:text-5xl font-black text-[var(--text-main)] tracking-tighter italic uppercase leading-none">
+                        Tu Inventario <span class="text-brandPurple underline decoration-brandPurple/20">Virtual</span>
+                    </h1>
+                    <p class="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em] mt-4">Gestiona tus
+                        pertenencias con IA</p>
                 </div>
 
-                <!-- Search & Filter -->
-                <div class="flex gap-3 mb-6 md:max-w-md">
-                    <div class="relative flex-1">
+                <!-- Search & Actions -->
+                <div class="flex flex-col md:flex-row gap-4 mb-10">
+                    <div class="relative flex-1 group">
                         <span
-                            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
-                        <input type="text" placeholder="Buscar (ej. bici, ropa...)"
-                            class="w-full bg-white border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-xs font-bold outline-none focus:border-brandPurple transition-colors">
+                            class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-lg group-focus-within:text-brandPurple transition-colors">search</span>
+                        <input type="text" id="inventory-search"
+                            placeholder="Buscar por nombre o ID (ej. bici, caja...)"
+                            class="w-full bg-[var(--icon-bg)] border border-[var(--card-border)] rounded-2xl py-4 pl-12 pr-4 text-xs font-bold outline-none focus:border-brandPurple focus:bg-[var(--card-bg)] transition-all text-[var(--text-main)] placeholder:text-[var(--text-muted)]">
                     </div>
-                    <button
-                        class="w-12 h-12 bg-white border border-slate-200 rounded-xl flex items-center justify-center text-slate-400 hover:text-brandPurple hover:border-brandPurple transition-colors">
-                        <span class="material-symbols-outlined">filter_list</span>
+                    <button onclick="selectAllItems()"
+                        class="px-8 py-4 bg-[var(--icon-bg)] border border-[var(--card-border)] rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-main)] hover:bg-brandPurple/10 hover:border-brandPurple/40 transition-all whitespace-nowrap flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-sm">select_all</span> Recuperar Todo
                     </button>
                 </div>
 
                 <!-- Inventory Grid -->
-                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 md:gap-8">
 
                     <!-- Item 1 -->
-                    <div
-                        class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 group relative overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1">
-                        <div class="aspect-square bg-slate-100 rounded-xl mb-3 relative overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1544233726-9f1d2b27be8b?auto=format&fit=crop&q=80&w=200"
-                                class="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-500">
+                    <div data-item-id="8392" data-item-name="Caja Ropa Invierno"
+                        onclick="toggleItemSelection(this, event)"
+                        class="inventory-item bg-[var(--card-bg)] border border-[var(--card-border)] p-4 rounded-[2.5rem] group relative overflow-hidden transition-all duration-500 hover:border-brandPurple/30 hover:-translate-y-2 cursor-pointer shadow-2xl">
+                        <div
+                            class="aspect-square bg-[var(--app-bg)] rounded-[2rem] mb-4 relative overflow-hidden border border-[var(--card-border)]">
+                            <img src="https://images.unsplash.com/photo-1544233726-9f1d2b27be8b?auto=format&fit=crop&q=80&w=400"
+                                class="w-full h-full object-cover opacity-60 group-hover:scale-110 group-hover:opacity-100 transition-all duration-700">
                             <span
-                                class="absolute top-2 right-2 bg-black/50 text-white text-[9px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">ID:
+                                class="absolute top-3 right-3 bg-[var(--app-bg)]/80 text-[var(--text-main)] text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg backdrop-blur-md border border-[var(--card-border)]">ID:
                                 8392</span>
+
+                            <!-- Checkbox Modern -->
+                            <div class="absolute top-3 left-3">
+                                <label class="relative flex items-center cursor-pointer">
+                                    <input type="checkbox" class="item-checkbox sr-only"
+                                        onchange="updateSelectionBar()">
+                                    <div
+                                        class="w-6 h-6 bg-[var(--app-bg)]/80 border-2 border-[var(--card-border)] rounded-lg backdrop-blur-md flex items-center justify-center transition-all group-hover:border-brandPurple/50 peer-checked:bg-brandPurple peer-checked:border-brandPurple">
+                                        <span
+                                            class="material-symbols-outlined text-[var(--text-main)] text-xs scale-0 transition-transform">check</span>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
-                        <h3 class="text-xs font-black text-brandDark truncate">Caja Ropa Invierno</h3>
-                        <p class="text-[10px] text-slate-400 font-bold mb-2">Entrada: 12 Ene</p>
-                        <button
-                            class="w-full py-2 bg-brandPurple/5 text-brandPurple rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-brandPurple hover:text-white transition-colors">
-                            Recuperar
-                        </button>
+                        <h3
+                            class="text-[11px] font-black text-[var(--text-main)] uppercase tracking-tighter truncate px-1">
+                            Caja Ropa
+                            Invierno</h3>
+                        <div class="flex items-center justify-between px-1 mt-1">
+                            <p
+                                class="text-[9px] text-[var(--text-muted)] font-bold uppercase tracking-widest leading-none">
+                                12 Ene
+                            </p>
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500/80"></span>
+                        </div>
                     </div>
 
                     <!-- Item 2 -->
-                    <div
-                        class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 group relative overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1">
-                        <div class="aspect-square bg-slate-100 rounded-xl mb-3 relative overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=200"
-                                class="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-500">
+                    <div data-item-id="8393" data-item-name="Monitor LG + Stand"
+                        onclick="toggleItemSelection(this, event)"
+                        class="inventory-item bg-white/[0.03] border border-white/10 p-4 rounded-[2.5rem] group relative overflow-hidden transition-all duration-500 hover:border-brandPurple/30 hover:-translate-y-2 cursor-pointer shadow-2xl">
+                        <div
+                            class="aspect-square bg-[#0A0510] rounded-[2rem] mb-4 relative overflow-hidden border border-white/5">
+                            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=400"
+                                class="w-full h-full object-cover opacity-60 group-hover:scale-110 group-hover:opacity-100 transition-all duration-700">
                             <span
-                                class="absolute top-2 right-2 bg-black/50 text-white text-[9px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">ID:
+                                class="absolute top-3 right-3 bg-[var(--app-bg)]/80 text-[var(--text-main)] text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg backdrop-blur-md border border-[var(--card-border)]">ID:
                                 8393</span>
+                            <div class="absolute top-3 left-3">
+                                <label class="relative flex items-center cursor-pointer">
+                                    <input type="checkbox" class="item-checkbox sr-only"
+                                        onchange="updateSelectionBar()">
+                                    <div
+                                        class="w-6 h-6 bg-[#0A0510]/80 border-2 border-white/20 rounded-lg backdrop-blur-md flex items-center justify-center transition-all group-hover:border-brandPurple/50">
+                                        <span
+                                            class="material-symbols-outlined text-[var(--text-main)] text-xs scale-0 transition-transform">check</span>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
-                        <h3 class="text-xs font-black text-brandDark truncate">Monitor LG + Stand</h3>
-                        <p class="text-[10px] text-slate-400 font-bold mb-2">Entrada: 12 Ene</p>
-                        <button
-                            class="w-full py-2 bg-brandPurple/5 text-brandPurple rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-brandPurple hover:text-white transition-colors">
-                            Recuperar
-                        </button>
+                        <h3
+                            class="text-[11px] font-black text-[var(--text-main)] uppercase tracking-tighter truncate px-1">
+                            Monitor
+                            LG + Stand</h3>
+                        <div class="flex items-center justify-between px-1 mt-1">
+                            <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest leading-none">12 Ene
+                            </p>
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500/80"></span>
+                        </div>
                     </div>
 
                     <!-- Item 3 -->
-                    <div
-                        class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 group relative overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1">
-                        <div class="aspect-square bg-slate-100 rounded-xl mb-3 relative overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1629198688000-71f23e745b6e?auto=format&fit=crop&q=80&w=200"
-                                class="w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-500">
+                    <div data-item-id="8394" data-item-name="Documentos 2024" onclick="toggleItemSelection(this, event)"
+                        class="inventory-item bg-[var(--card-bg)] border border-[var(--card-border)] p-4 rounded-[2.5rem] group relative overflow-hidden transition-all duration-500 hover:border-brandPurple/30 hover:-translate-y-2 cursor-pointer shadow-2xl">
+                        <div
+                            class="aspect-square bg-[var(--app-bg)] rounded-[2rem] mb-4 relative overflow-hidden border border-[var(--card-border)]">
+                            <img src="https://images.unsplash.com/photo-1629198688000-71f23e745b6e?auto=format&fit=crop&q=80&w=400"
+                                class="w-full h-full object-cover opacity-60 group-hover:scale-110 group-hover:opacity-100 transition-all duration-700">
                             <span
-                                class="absolute top-2 right-2 bg-black/50 text-white text-[9px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">ID:
+                                class="absolute top-3 right-3 bg-[var(--app-bg)]/80 text-[var(--text-main)] text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-lg backdrop-blur-md border border-[var(--card-border)]">ID:
                                 8394</span>
+                            <div class="absolute top-3 left-3">
+                                <label class="relative flex items-center cursor-pointer">
+                                    <input type="checkbox" class="item-checkbox sr-only"
+                                        onchange="updateSelectionBar()">
+                                    <div
+                                        class="w-6 h-6 bg-[var(--app-bg)]/80 border-2 border-[var(--card-border)] rounded-lg backdrop-blur-md flex items-center justify-center transition-all group-hover:border-brandPurple/50">
+                                        <span
+                                            class="material-symbols-outlined text-[var(--text-main)] text-xs scale-0 transition-transform">check</span>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
-                        <h3 class="text-xs font-black text-brandDark truncate">Documentos 2024</h3>
-                        <p class="text-[10px] text-slate-400 font-bold mb-2">Entrada: 12 Ene</p>
-                        <button
-                            class="w-full py-2 bg-brandPurple/5 text-brandPurple rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-brandPurple hover:text-white transition-colors">
-                            Recuperar
-                        </button>
+                        <h3
+                            class="text-[11px] font-black text-[var(--text-main)] uppercase tracking-tighter truncate px-1">
+                            Documentos 2024</h3>
+                        <div class="flex items-center justify-between px-1 mt-1">
+                            <p
+                                class="text-[9px] text-[var(--text-muted)] font-bold uppercase tracking-widest leading-none">
+                                12 Ene
+                            </p>
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500/80"></span>
+                        </div>
                     </div>
 
-                    <!-- Empty State / Add Placeolder -->
+                    <!-- Empty State Placeholder -->
                     <div
-                        class="bg-slate-50 p-3 rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-center group cursor-pointer hover:border-brandPurple hover:bg-brandPurple/5 transition-all min-h-[180px]">
+                        class="bg-[var(--card-bg)] p-6 rounded-[2.5rem] border-2 border-dashed border-[var(--card-border)] flex flex-col items-center justify-center text-center group cursor-pointer hover:border-brandPurple/30 hover:bg-[var(--card-hover)] transition-all min-h-[180px]">
                         <div
-                            class="w-10 h-10 rounded-full bg-white text-slate-300 flex items-center justify-center mb-2 shadow-sm group-hover:text-brandPurple group-hover:scale-110 transition-transform">
-                            <span class="material-symbols-outlined">add_a_photo</span>
+                            class="w-14 h-14 rounded-2xl bg-[var(--icon-bg)] text-[var(--text-muted)] flex items-center justify-center mb-4 group-hover:scale-110 group-hover:text-brandPurple transition-all">
+                            <span class="material-symbols-outlined text-3xl">add_a_photo</span>
                         </div>
-                        <h3 class="text-[11px] font-bold text-slate-400 group-hover:text-brandPurple">Foto pendiente
-                        </h3>
-                        <p class="text-[9px] text-slate-300 mt-0.5 px-2">Subiremos fotos cuando lleguen a almacén</p>
+                        <h3
+                            class="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest group-hover:text-brandPurple">
+                            Foto IA Pendiente</h3>
+                        <p
+                            class="text-[8px] text-[var(--text-muted)] mt-2 uppercase font-bold tracking-widest leading-relaxed px-4 opacity-60">
+                            Subiremos fotos HD cuando entren en nuestro SGA</p>
                     </div>
 
                 </div>
 
-                <p class="text-[10px] text-slate-400 text-center mt-12 italic px-8">
-                    Estás viendo una simulación. Cuando tus objetos lleguen a Pinto, verás aquí las fotos reales tomadas
-                    por nuestro SGA. 📸
-                </p>
+                <div class="mt-20 flex flex-col items-center">
+                    <div
+                        class="w-12 h-px bg-gradient-to-r from-transparent via-[var(--card-border)] to-transparent mb-6">
+                    </div>
+                    <p
+                        class="text-[9px] font-black text-[var(--text-muted)] text-center italic uppercase tracking-[0.3em] max-w-md leading-relaxed opacity-60">
+                        Simulación de inventario. Fotos reales procesadas por BoxBot al recibir bultos en Pinto. 📸
+                    </p>
+                </div>
 
             </main>
         </div>
     </div>
 
-    <!-- Bottom Navigation Bar (Mobile Only - Fixed) -->
+    <!-- Mobile Nav -->
     <div
-        class="md:hidden fixed bottom-6 left-4 right-4 max-w-lg mx-auto bg-brandDark text-white rounded-full p-2 shadow-2xl flex justify-between items-center z-50 border border-white/10">
-
+        class="md:hidden fixed bottom-8 left-6 right-6 bg-[var(--sidebar-bg)] backdrop-blur-3xl border border-[var(--card-border)] rounded-[2.5rem] p-3 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex justify-between items-center z-50">
         <button onclick="window.location.href='cliente_dashboard.html'"
-            class="flex-1 flex flex-col items-center gap-1 py-2 text-white/40 hover:text-white transition-colors">
+            class="flex-1 flex flex-col items-center gap-1 py-1 text-slate-500 hover:text-white transition-colors">
             <span class="material-symbols-outlined">home</span>
-            <span class="text-[9px] font-bold uppercase tracking-wider">Inicio</span>
+            <span class="text-[8px] font-black uppercase tracking-widest">Inicio</span>
         </button>
-
-        <button class="flex-1 flex flex-col items-center gap-1 py-2 text-brandPurple">
-            <span class="material-symbols-outlined filled">grid_view</span>
-            <span class="text-[9px] font-bold uppercase tracking-wider">Cosas</span>
+        <button class="flex-1 flex flex-col items-center gap-1 py-1 text-brandPurple">
+            <div class="w-10 h-10 rounded-2xl bg-brandPurple/10 flex items-center justify-center">
+                <span class="material-symbols-outlined filled">grid_view</span>
+            </div>
+            <span class="text-[8px] font-black uppercase tracking-widest">Cosas</span>
         </button>
-
-        <!-- Center FAB (Add) -->
-        <div class="relative -top-8">
-            <button
-                class="w-14 h-14 rounded-full bg-brandPurple text-white shadow-lg shadow-brandPurple/40 flex items-center justify-center transform transition-transform hover:scale-110 active:scale-95 border-4 border-slate-50">
+        <div class="relative -top-10">
+            <button onclick="window.location.href='../pages/reserva.html'"
+                class="w-16 h-16 rounded-3xl bg-gradient-to-br from-brandPurple to-purple-400 text-white shadow-2xl shadow-brandPurple/40 flex items-center justify-center transform hover:scale-110 active:scale-90 transition-all border-4 border-[#0A0510]">
                 <span class="material-symbols-outlined text-2xl">add</span>
             </button>
         </div>
-
         <button onclick="window.location.href='cliente_pagos.html'"
-            class="flex-1 flex flex-col items-center gap-1 py-2 text-white/40 hover:text-white transition-colors">
+            class="flex-1 flex flex-col items-center gap-1 py-1 text-slate-500 hover:text-white transition-colors">
             <span class="material-symbols-outlined">receipt_long</span>
-            <span class="text-[9px] font-bold uppercase tracking-wider">Pagos</span>
+            <span class="text-[8px] font-black uppercase tracking-widest">Pagos</span>
         </button>
-
         <button onclick="window.location.href='cliente_cuenta.html'"
-            class="flex-1 flex flex-col items-center gap-1 py-2 text-white/40 hover:text-white transition-colors">
+            class="flex-1 flex flex-col items-center gap-1 py-1 text-slate-500 hover:text-white transition-colors">
             <span class="material-symbols-outlined">settings</span>
-            <span class="text-[9px] font-bold uppercase tracking-wider">Cuenta</span>
+            <span class="text-[8px] font-black uppercase tracking-widest">Cuenta</span>
         </button>
-
     </div>
 
+    <!-- Floating Selection Bar -->
+    <div id="selectionBar"
+        class="hidden fixed bottom-28 md:bottom-12 left-6 right-6 max-w-2xl mx-auto bg-brandPurple/20 backdrop-blur-3xl text-white rounded-[2rem] p-5 shadow-[0_24px_50px_rgba(0,0,0,0.6)] z-[60] border border-brandPurple/40 flex flex-row items-center justify-between">
+        <div class="flex items-center gap-4">
+            <div
+                class="w-10 h-10 bg-brandPurple rounded-xl flex items-center justify-center shadow-lg shadow-brandPurple/40">
+                <span class="material-symbols-outlined text-white">fact_check</span>
+            </div>
+            <div class="hidden sm:block">
+                <p id="selectionCount" class="text-sm font-black uppercase tracking-tighter">0 Seleccionados</p>
+                <p class="text-[9px] text-white/60 font-black uppercase tracking-widest">Listos para recuperar</p>
+            </div>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="clearSelection()"
+                class="px-6 py-3 bg-white/5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-colors">Descartar</button>
+            <button onclick="openRecoveryWizard()"
+                class="px-8 py-3 bg-brandPurple rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-brandPurple/40 hover:scale-[1.05] active:scale-95 transition-all">Recuperar
+                Ahora</button>
+        </div>
+    </div>
+
+    <!-- Recovery Wizard Modal -->
+    <div id="recoveryWizard"
+        class="hidden fixed inset-0 bg-[#0A0510]/80 backdrop-blur-xl z-[100] flex items-center justify-center p-6">
+        <div
+            class="bg-[var(--app-bg)] border border-[var(--card-border)] rounded-[3rem] p-8 md:p-12 max-w-xl w-full shadow-2xl overflow-y-auto max-h-[90vh]">
+            <div class="flex justify-between items-start mb-10">
+                <div>
+                    <h3 class="text-3xl font-black text-[var(--text-main)] italic tracking-tighter uppercase">Asistente
+                        de Volta</h3>
+                    <p class="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mt-2">Configura
+                        tu orden
+                        de entrega</p>
+                </div>
+                <button onclick="closeRecoveryWizard()"
+                    class="w-10 h-10 bg-[var(--icon-bg)] rounded-xl flex items-center justify-center hover:bg-brandPurple hover:text-white transition-all">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <div id="recoveryItemsList" class="space-y-4 mb-10">
+                <!-- Items Populated by JS -->
+            </div>
+
+            <div
+                class="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2.5rem] p-8 mb-10 overflow-hidden relative">
+                <div class="absolute -right-10 -top-10 w-32 h-32 bg-brandPurple/5 rounded-full blur-3xl"></div>
+                <h4 class="text-[10px] font-black text-brandPurple uppercase tracking-[0.3em] mb-6 pl-1">Datos
+                    Logísticos</h4>
+                <div class="space-y-6">
+                    <div class="space-y-2">
+                        <label
+                            class="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest pl-2">Destino
+                            Guardado</label>
+                        <div
+                            class="flex items-center gap-3 px-4 py-3 bg-[var(--icon-bg)] border border-[var(--card-border)] rounded-xl text-sm font-bold text-[var(--text-muted)] italic">
+                            <span class="material-symbols-outlined text-xs">location_on</span> Madrid Central
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label
+                                class="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest pl-2">Fecha
+                                Ideal</label>
+                            <input type="date" id="recoveryDate"
+                                class="w-full px-4 py-3 bg-[var(--icon-bg)] border border-[var(--card-border)] rounded-xl text-xs font-bold text-[var(--text-main)] outline-none focus:border-brandPurple transition-all">
+                        </div>
+                        <div class="space-y-2">
+                            <label
+                                class="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest pl-2">Bloque
+                                Horario</label>
+                            <select id="recoveryTime"
+                                class="w-full px-4 py-3 bg-[var(--icon-bg)] border border-[var(--card-border)] rounded-xl text-xs font-bold text-[var(--text-main)] outline-none focus:border-brandPurple appearance-none cursor-pointer">
+                                <option value="morning" class="bg-[var(--app-bg)] text-[var(--text-main)]">Mañana (10:00
+                                    - 14:00)</option>
+                                <option value="afternoon" class="bg-[var(--app-bg)] text-[var(--text-main)]">Tarde
+                                    (16:00 - 20:00)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 pt-6 border-t border-[var(--card-border)] flex justify-between items-center">
+                    <span class="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest">Coste del
+                        Servicio:</span>
+                    <span
+                        class="px-4 py-1.5 bg-green-500/10 border border-green-500/20 text-green-500 text-[10px] font-black uppercase tracking-widest rounded-full shadow-[0_0_15px_rgba(74,222,128,0.1)]">Gratis
+                        (Plan Activo)</span>
+                </div>
+            </div>
+
+            <button onclick="confirmRecovery()"
+                class="w-full group relative bg-brandPurple text-white py-5 rounded-2xl font-black uppercase text-xs tracking-[0.3em] shadow-2xl shadow-brandPurple/30 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 overflow-hidden">
+                <div
+                    class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000">
+                </div>
+                <span class="relative">Programar Entrega</span>
+                <span class="material-symbols-outlined text-lg relative">local_shipping</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile Nav -->
+    <div
+        class="md:hidden fixed bottom-8 left-6 right-6 bg-[var(--sidebar-bg)] backdrop-blur-3xl border border-[var(--card-border)] rounded-[2.5rem] p-3 shadow-2xl flex justify-between items-center z-50">
+        <button onclick="window.location.href='cliente_dashboard.html'"
+            class="flex-1 flex flex-col items-center gap-1 py-1 text-[var(--text-muted)] hover:text-brandPurple transition-colors">
+            <span class="material-symbols-outlined">home</span>
+            <span class="text-[8px] font-black uppercase tracking-widest">Inicio</span>
+        </button>
+        <button class="flex-1 flex flex-col items-center gap-1 py-1 text-brandPurple">
+            <div class="w-10 h-10 rounded-2xl bg-brandPurple/10 flex items-center justify-center">
+                <span class="material-symbols-outlined filled">grid_view</span>
+            </div>
+            <span class="text-[8px] font-black uppercase tracking-widest">Cosas</span>
+        </button>
+        <div class="relative -top-10">
+            <button onclick="window.location.href='../pages/reserva.html?from=inventario'"
+                class="w-16 h-16 rounded-3xl bg-gradient-to-br from-brandPurple to-purple-400 text-white shadow-2xl shadow-brandPurple/40 flex items-center justify-center transform hover:scale-110 active:scale-90 transition-all border-4 border-[var(--app-bg)]">
+                <span class="material-symbols-outlined text-2xl">add</span>
+            </button>
+        </div>
+        <button onclick="window.location.href='cliente_pagos.html'"
+            class="flex-1 flex flex-col items-center gap-1 py-1 text-[var(--text-muted)] hover:text-brandPurple transition-colors">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span class="text-[8px] font-black uppercase tracking-widest">Pagos</span>
+        </button>
+        <button onclick="window.location.href='cliente_cuenta.html'"
+            class="flex-1 flex flex-col items-center gap-1 py-1 text-[var(--text-muted)] hover:text-brandPurple transition-colors">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="text-[8px] font-black uppercase tracking-widest">Cuenta</span>
+        </button>
+    </div>
+
+    <script src="../assets/js/chat.js"></script>
 </body>
+
+<script>
+    // Search functionality
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('inventory-search');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase().trim();
+                const items = document.querySelectorAll('.inventory-item');
+
+                items.forEach(item => {
+                    const titleEl = item.querySelector('h3');
+                    const title = titleEl ? titleEl.innerText.toLowerCase() : '';
+                    const idEl = item.querySelector('.inventory-item h3 + div p');
+                    const idText = item.getAttribute('data-item-id').toLowerCase();
+
+                    if (title.includes(term) || idText.includes(term)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+
+    // Toggle item selection
+    function toggleItemSelection(itemDiv, event) {
+        if (event.target.closest('label')) return; // Already handled by checkbox click
+
+        const checkbox = itemDiv.querySelector('.item-checkbox');
+        if (checkbox) {
+            checkbox.checked = !checkbox.checked;
+            // Update the UI of the checkbox manually if needed, or let onchange handle it
+            const checkedIcon = itemDiv.querySelector('.material-symbols-outlined.text-xs');
+            if (checkbox.checked) {
+                checkedIcon.style.transform = 'scale(1)';
+                itemDiv.classList.add('border-brandPurple/50', 'bg-brandPurple/5');
+            } else {
+                checkedIcon.style.transform = 'scale(0)';
+                itemDiv.classList.remove('border-brandPurple/50', 'bg-brandPurple/5');
+            }
+            updateSelectionBar();
+        }
+    }
+
+    // Sync UI for checkbox clicks
+    document.addEventListener('change', (e) => {
+        if (e.target.classList.contains('item-checkbox')) {
+            const itemDiv = e.target.closest('.inventory-item');
+            const checkedIcon = itemDiv.querySelector('.material-symbols-outlined.text-xs');
+            if (e.target.checked) {
+                checkedIcon.style.transform = 'scale(1)';
+                itemDiv.classList.add('border-brandPurple/40', 'bg-brandPurple/5');
+            } else {
+                checkedIcon.style.transform = 'scale(0)';
+                itemDiv.classList.remove('border-brandPurple/40', 'bg-brandPurple/5');
+            }
+        }
+    });
+
+    // Selection management
+    function updateSelectionBar() {
+        const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+        const count = checkboxes.length;
+        const bar = document.getElementById('selectionBar');
+        const counter = document.getElementById('selectionCount');
+
+        if (count > 0) {
+            bar.classList.remove('hidden');
+            bar.classList.add('flex');
+            counter.textContent = `${count} Seleccionado${count > 1 ? 's' : ''}`;
+        } else {
+            bar.classList.add('hidden');
+            bar.classList.remove('flex');
+        }
+    }
+
+    function selectAllItems() {
+        const checkboxes = document.querySelectorAll('.item-checkbox');
+        checkboxes.forEach(cb => {
+            cb.checked = true;
+            const itemDiv = cb.closest('.inventory-item');
+            const checkedIcon = itemDiv.querySelector('.material-symbols-outlined.text-xs');
+            checkedIcon.style.transform = 'scale(1)';
+            itemDiv.classList.add('border-brandPurple/40', 'bg-brandPurple/5');
+        });
+        updateSelectionBar();
+        openRecoveryWizard(); // Automatically open wizard as requested
+    }
+
+    function clearSelection() {
+        const checkboxes = document.querySelectorAll('.item-checkbox');
+        checkboxes.forEach(cb => {
+            cb.checked = false;
+            const itemDiv = cb.closest('.inventory-item');
+            const checkedIcon = itemDiv.querySelector('.material-symbols-outlined.text-xs');
+            checkedIcon.style.transform = 'scale(0)';
+            itemDiv.classList.remove('border-brandPurple/40', 'bg-brandPurple/5');
+        });
+        updateSelectionBar();
+    }
+
+    // Recovery Wizard
+    function openRecoveryWizard() {
+        const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+        const listContainer = document.getElementById('recoveryItemsList');
+        listContainer.innerHTML = '';
+
+        checkboxes.forEach(cb => {
+            const item = cb.closest('.inventory-item');
+            const itemName = item.getAttribute('data-item-name');
+            const itemId = item.getAttribute('data-item-id');
+            const imgSrc = item.querySelector('img').src;
+
+            const itemEl = document.createElement('div');
+            itemEl.className = 'flex items-center gap-4 p-4 bg-[var(--icon-bg)] border border-[var(--card-border)] rounded-2xl group';
+            itemEl.innerHTML = `
+                <div class="w-12 h-12 rounded-xl overflow-hidden border border-[var(--card-border)]">
+                    <img src="${imgSrc}" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <p class="text-[10px] font-black text-[var(--text-main)] uppercase tracking-tighter">${itemName}</p>
+                    <p class="text-[8px] text-[var(--text-muted)] font-bold uppercase tracking-widest mt-1">ID: ${itemId}</p>
+                </div>
+                <span class="material-symbols-outlined text-brandPurple/40">task_alt</span>
+            `;
+            listContainer.appendChild(itemEl);
+        });
+
+        const dateInput = document.getElementById('recoveryDate');
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const minDate = tomorrow.toISOString().split('T')[0];
+        dateInput.min = minDate;
+        dateInput.value = minDate;
+
+        document.getElementById('recoveryWizard').classList.remove('hidden');
+    }
+
+    function closeRecoveryWizard() {
+        document.getElementById('recoveryWizard').classList.add('hidden');
+    }
+
+    function confirmRecovery() {
+        const date = document.getElementById('recoveryDate').value;
+        const time = document.getElementById('recoveryTime');
+        const timeText = time.options[time.selectedIndex].text;
+
+        const formattedDate = new Date(date).toLocaleDateString('es-ES', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        alert(`✅ Orden Confirmada.\n\nBoxBot está moviendo tus objetos para que lleguen el ${formattedDate} (${timeText}).\n\nTiene copia en su email.`);
+        closeRecoveryWizard();
+        clearSelection();
+    }
+</script>
+
+
+
 
 </html>

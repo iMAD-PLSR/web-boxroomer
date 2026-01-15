@@ -9,15 +9,27 @@ let currentMonths = 3;
 function setDuration(months) {
     currentMonths = months;
 
+    // Sliding Pill Logic
+    const pill = document.getElementById('pill-duration');
+    const container = document.getElementById('dur-toggle-container');
+    const activeBtn = document.getElementById('dur-' + months);
+
+    if (pill && container && activeBtn) {
+        const left = activeBtn.offsetLeft;
+        const width = activeBtn.offsetWidth;
+        pill.style.width = width + 'px';
+        pill.style.transform = `translateY(-50%) translateX(${left}px)`;
+    }
+
     // Visual update of buttons
     document.querySelectorAll('.dur-btn').forEach(btn => {
-        btn.classList.remove('bg-brandPurple', 'text-white', 'border-brandPurple', 'shadow-md');
-        btn.classList.add('border-slate-100', 'text-slate-400');
+        btn.classList.add('text-slate-400');
+        btn.classList.remove('text-white', 'active');
     });
-    const activeBtn = document.getElementById('dur-' + months);
+
     if (activeBtn) {
-        activeBtn.classList.add('bg-brandPurple', 'text-white', 'border-brandPurple', 'shadow-md');
-        activeBtn.classList.remove('border-slate-100', 'text-slate-400');
+        activeBtn.classList.add('text-white', 'active');
+        activeBtn.classList.remove('text-slate-400');
     }
 
     calculate();
@@ -132,7 +144,11 @@ document.addEventListener('DOMContentLoaded', () => {
 window.setDuration = setDuration;
 window.calculate = calculate;
 window.bookFromCalculator = function () {
-    const vol = range ? range.value : 1;
+    const rangeEl = document.getElementById('m3-range');
+    const vol = rangeEl ? rangeEl.value : 1;
     const months = currentMonths || 3;
-    window.location.href = `pages/reserva.html?vol=${vol}&months=${months}`;
+    // Use clean URL to prevent server redirect stripping params
+    const targetUrl = `pages/reserva?vol=${vol}&months=${months}`;
+    console.log("👉 [Calculator] Redirecting to:", targetUrl);
+    window.location.href = targetUrl;
 };

@@ -28,6 +28,7 @@ Este documento detalla los componentes técnicos y servicios externos que sostie
   - **Stripe Elements**: Para captura segura de tarjetas en el Wizard.
   - **Stripe Radar**: Prevención de fraude automática.
 - **Lógica**: Uso de *SetupIntents* para validación de tarjetas sin cargo inicial.
+- **Facturación**: Requisito de DNI/CIF obligatorio para todos los clientes (B2C y B2B) para cumplir con la normativa española de facturación.
 
 ## 4. Integración Logística (SGA)
 
@@ -42,7 +43,24 @@ Este documento detalla los componentes técnicos y servicios externos que sostie
 - **Diseño**: HTML/CSS responsivo alineado con la identidad visual corporativa (Manrope + BrandPurple).
 - **Transactional**: Notificaciones de pedido, avisos T-7 de renovación, facturas y códigos de recogida.
 
-## 6. Seguridad y Backup
+## 6. Generación de Documentos (PDF)
+
+- **Librería**: `jsPDF` (v2.5.1).
+- **Funcionalidad**: Generación en cliente de Facturas, Albaranes y Contratos Legales.
+- **Seguridad**: Inclusión de hashes de firma en el pie de página del PDF para trazabilidad.
+
+## 7. Arquitectura de Interfaces (Frontend)
+
+- **Layout System**: Basado en **Flexbox avanzado**. El uso de `display: flex` y `flex-direction: column` es mandatorio en los contenedores de los pasos (`.step-content`) para permitir el scroll interno de componentes pesados (formularios, calendarios, inventarios) sin perder de vista los controles de navegación.
+- **Animaciones**: CSS Transitions para micro-interacciones y animaciones de entrada.
+
+## 8. Inteligencia de Soporte (ChatbotBoxBot)
+
+- **Motor**: Motor de reglas locales + Integración futura con OpenAI/Anthropic (vía API).
+- **Interfaz**: Widget flotante `chat.js` personalizado con soporte para WhatsApp Direct y transiciones automáticas a humano.
+- **Logs**: Almacenamiento de sesiones en `localStorage` para persistencia durante la navegación.
+
+## 8. Seguridad y Backup
 
 - **Backup**: SiteGround Daily Backups + Backup redundante de fotos de inventario en bucket S3/Cloud alternativo (Mirroring).
 - **Legal**: Firma digital táctil con captura de IP, User-Agent y Timestamp.

@@ -1,8 +1,8 @@
-/**
+/*
  * BoxBot - Custom WhatsApp Chat Assistant for BOXROOMER
  */
 
-const BoxBot = {
+window.BoxBot = {
     googleSheetUrl: 'https://script.google.com/macros/s/AKfycbxQD7de7JX3Bpmm0Bz72Iees3I8CsV1aWuOfX3KVQBkORCI2OB1FdJOd95JU3dXH42gPg/exec',
     state: {
         isOpen: false,
@@ -54,6 +54,7 @@ const BoxBot = {
     },
 
     init() {
+        if (document.getElementById('boxbot-widget')) return;
         this.injectHTML();
         this.bindEvents();
         this.loadSession();
@@ -172,7 +173,8 @@ const BoxBot = {
             if (this.state.isOpen) {
                 const widget = document.getElementById('boxbot-widget');
                 // If the click is not on the widget or any of its children
-                if (widget && !widget.contains(e.target)) {
+                // AND not on a button intended to open/interact with the chat
+                if (widget && !widget.contains(e.target) && !e.target.closest('[onclick*="loadAndOpenChat"]')) {
                     this.toggleChat();
                 }
             }
@@ -578,7 +580,7 @@ const BoxBot = {
                 </div>
                 <div style="display: flex; gap: 8px; margin-top: 10px;">
                      <button id="cancel-inventory" class="chat-btn" style="flex: 1; padding: 14px; background: rgba(255,255,255,0.05);">Cancelar</button>
-                     <button id="finish-inventory" class="chat-btn primary" style="flex: 2; padding: 14px;">Confirmar ➡️</button>
+                     <button id="finish-inventory" class="chat-btn primary" style="flex: 2; padding: 14px;">Confirmar <span class="material-symbols-outlined" style="font-size: 18px; margin-left: 8px; vertical-align: middle;">check</span></button>
                 </div>
             `;
 
@@ -907,17 +909,23 @@ const BoxBot = {
     },
 
     goToApp() {
-        this.addBotMessage("¡Excelente elección! ⚡ Te redirijo a nuestra plataforma de reservas para que completes el proceso en menos de 2 minutos.", () => {
+        this.addBotMessage("¡Excelente elección! ⚡ Te llevo directamente a nuestro asistente de reservas para que confirmes los detalles sin perder tus datos.", () => {
             setTimeout(() => {
-                window.open("https://app.boxroomer.com/", '_blank');
+                const { volume, duration } = this.state.data;
+                // Default fallback values if something is missing
+                const volParam = volume || 2.0;
+                const durParam = duration || 3;
+
+                // Construct URL just like calculator.js
+                // Note: handling path relative/absolute depending on where chat is loaded
+                const isPageInSubdir = window.location.pathname.includes('/pages/');
+                // Use clean URLs (no .html) to avoid redirects stripping query params
+                const targetPath = isPageInSubdir ? 'reserva' : 'pages/reserva';
+
+                window.location.href = `${targetPath}?vol=${volParam}&months=${durParam}`;
             }, 1000);
 
-            this.addBotMessage("¿Puedo ayudarte con alguna otra cosa mientras completas tu reserva?", () => {
-                this.showOptions([
-                    { text: `<span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle; margin-right: 8px;">undo</span> Volver al inicio`, action: () => this.greet() },
-                    { text: `<span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle; margin-right: 8px;">restart_alt</span> Nuevo cálculo`, action: () => this.startFlow() }
-                ]);
-            });
+            // No need for post-redirect options since we are navigating away in same tab
         });
     },
 
@@ -1017,6 +1025,9 @@ const BoxBot = {
 };
 
 // Initialize BoxBot when page is ready
-document.addEventListener('DOMContentLoaded', () => {
+// Initialize BoxBot when page is ready or immediately if already ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => BoxBot.init());
+} else {
     BoxBot.init();
-});
+}

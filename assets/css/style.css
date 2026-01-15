@@ -1,11 +1,37 @@
 :root {
-    --brandPurple: #642d91;
-    --brandDark: #1A1A1A;
-    --brandGray: #F8F9FA;
+    --brandPurple: #6E44FF;
+    --brandDark: #0A0510;
+
+    /* Light Mode (Default) */
+    --app-bg: #F8FAFC;
+    --sidebar-bg: #FFFFFF;
+    --card-bg: #FFFFFF;
+    --card-hover: rgba(110, 68, 255, 0.05);
+    --card-border: rgba(0, 0, 0, 0.08);
+    --text-main: #0F172A;
+    --text-muted: #64748B;
+    --icon-bg: #F1F5F9;
+    --border-subtle: rgba(0, 0, 0, 0.05);
+}
+
+/* Dark Mode Overrides */
+[data-theme="dark"] {
+    --app-bg: #0A0510;
+    --sidebar-bg: rgba(255, 255, 255, 0.02);
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --card-hover: rgba(255, 255, 255, 0.05);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --text-main: #FFFFFF;
+    --text-muted: #94A3B8;
+    --icon-bg: rgba(255, 255, 255, 0.05);
+    --border-subtle: rgba(255, 255, 255, 0.05);
 }
 
 body {
     font-family: 'Outfit', sans-serif;
+    background-color: var(--app-bg);
+    color: var(--text-main);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .box-shadow-premium {
@@ -63,4 +89,75 @@ input[type=range]::-webkit-slider-runnable-track {
     cursor: pointer;
     background: #f1f1f1;
     border-radius: 4px;
+}
+
+/* --- Sliding Pill System (Global Rule) --- */
+.toggle-container {
+    position: relative;
+    display: flex;
+    z-index: 10;
+    overflow: hidden;
+}
+
+.sliding-pill {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: calc(100% - 8px);
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Dark/Accent variation (Píldora Púrpura) */
+.toggle-container.dark-theme .sliding-pill {
+    background: var(--brandPurple);
+    box-shadow: 0 4px 15px rgba(100, 45, 145, 0.4);
+}
+
+.toggle-container.dark-theme button {
+    color: #475569;
+    /* Slate-600: Contraste perfecto en fondos claros */
+    z-index: 10;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Estado ACTIVO: Forzamos blanco en TODO el contenido del botón */
+.toggle-container.dark-theme button.active,
+.toggle-container.dark-theme button.selected-pill {
+    color: white !important;
+}
+
+/* Regla crítica: Hijos del botón activo también blanquean (ej: spans de ahorro, iconos) */
+.toggle-container.dark-theme button.active *,
+.toggle-container.dark-theme button.selected-pill * {
+    color: white !important;
+    opacity: 1 !important;
+}
+
+/* Hover suave para opciones no seleccionadas */
+.toggle-container.dark-theme button:not(.active):not(.selected-pill):hover {
+    color: var(--brandPurple);
+}
+
+/* --- Assistant Step Transitions & Scroll Fix --- */
+.step-content {
+    display: none;
+    height: 100%;
+    min-height: 0;
+    flex-direction: column !important;
+}
+
+.step-content.active,
+.step-content.reveal {
+    display: flex !important;
+}
+
+/* Ensure the formula area takes remaining space and scrolls */
+.step-content>.flex-grow {
+    min-height: 0;
+    flex-basis: 0;
 }

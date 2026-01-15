@@ -47,12 +47,21 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initStep1() {
+    console.log("🚀 [initStep1] Starting initialization...");
     const range = document.getElementById('reserva-range');
     const manualInput = document.getElementById('manual-m3-input');
 
     if (range) {
-        range.addEventListener('input', (e) => {
+        // Remove previous listeners to avoid duplicates if re-run (good practice)
+        const newRange = range.cloneNode(true);
+        range.parentNode.replaceChild(newRange, range);
+
+        newRange.addEventListener('input', (e) => {
+            console.log("🎚️ [Slider Input] Value:", e.target.value);
             updateM3(parseFloat(e.target.value));
+            // Interaction implies manual override? 
+            // If user drags slider > 2, auto switch manual happens inside updateM3? Or should we trigger here?
+            // Let's keep logic simple. visual sync happens in updateM3.
         });
     }
 
@@ -63,37 +72,67 @@ function initStep1() {
         });
     }
 
-    // Check URL parameters for pre-selection (Updated for new Home)
+    // Check URL parameters for pre-selection (Robust Parsing)
     const urlParams = new URLSearchParams(window.location.search);
     const packParam = urlParams.get('pack'); // 'mini' | 'duo'
     const volParam = urlParams.get('vol');
     const monthsParam = urlParams.get('months');
 
+    console.log("🔍 [URL Params] Pack:", packParam, "Vol:", volParam, "Months:", monthsParam);
+
+    let targetVol = 1.5; // Default fallback
+    let mode = 'packs';  // Default fallback
+
     if (packParam === 'mini') {
-        updateM3(1.0);
-        setDuration(monthsParam ? parseInt(monthsParam) : 3);
-        // Force highlight pack visual logic if exists (optional)
+        targetVol = 1.0;
+        mode = 'packs';
     } else if (packParam === 'duo') {
-        updateM3(2.0);
-        setDuration(monthsParam ? parseInt(monthsParam) : 3);
+        targetVol = 2.0;
+        mode = 'packs';
     } else if (volParam) {
-        updateM3(parseFloat(volParam));
-        if (monthsParam) setDuration(parseInt(monthsParam));
+        targetVol = parseFloat(volParam);
+        if (isNaN(targetVol)) targetVol = 1.5;
+
+        // Logic: >2 => Manual. <=2 => Packs (unless explicitly manual? lets infer form volume)
+        // If it comes from calculator, we want to respect the visual context.
+        // Calculator allows precise inputs.
+        if (targetVol > 2.0) {
+            mode = 'manual';
+        } else {
+            // For small volumes from calculator, sticking to Packs view is usually cleaner 
+            // as it highlights the "Pack" offer.
+            // UNLESS it's a non-standard volume like 1.5. 
+            // Pack Mini is 1.0, Duo is 2.0. But 1.5 also fits efficiently into Duo logic visual.
+            if (targetVol <= 2.0) {
+                mode = 'packs';
+            } else {
+                mode = 'manual';
+            }
+        }
     } else {
-        // Default
-        updateM3(1.5); // Start with a nice middle ground
-        setDuration(3);
+        // No params: Default state -> FORCE PACK DUO (2.0)
+        targetVol = 2.0;
+        mode = 'packs';
     }
 
-    // If no pack or m3 selected, ensure UI is reset
-    if (!selectedPack && !selectedVolume) {
-        resetSelections();
-    }
+    console.log("🎯 [Init Logic] TargetVol:", targetVol, "Mode:", mode);
 
-    // Default to 3 months if not set (ensures prices are visible)
-    if (!selectedDuration) {
-        setDuration(3);
-    }
+    // Sequence: Update Logic -> Update Visuals
+    // 1. Force the Update (Logic & Slider)
+    updateM3(targetVol);
+
+    // 2. Force the Duration
+    const duration = monthsParam ? parseInt(monthsParam) : (selectedDuration || 3);
+    setDuration(duration);
+
+    // 3. Force the Visual Mode (Tab Visibility)
+    // IMPORTANT: This must run AFTER updateM3 to ensure correct state, 
+    // but updateM3 might have side-effects on visual cards.
+    // setSelectMode handles toggling hidden classes.
+    setTimeout(() => {
+        setSelectMode(mode);
+        console.log("✅ [initStep1] Initialization Complete. Mode set to:", mode);
+    }, 50);
 
     // Load saved address from "profile" if exists
     loadSavedAddress();
@@ -363,6 +402,39 @@ let deliveryMode = 'pickup';
 let selectedLoadType = null;
 let selectedAccessType = null;
 let boxCount = 0;
+let customerType = 'individual'; // 'individual' or 'company'
+
+function setCustomerType(type) {
+    customerType = type;
+    const btnInd = document.getElementById('type-individual');
+    const btnComp = document.getElementById('type-company');
+    const labelName = document.getElementById('label-name');
+    const inputName = document.getElementById('auth-name');
+    const labelId = document.getElementById('label-id');
+    const inputId = document.getElementById('auth-id');
+
+    if (type === 'individual') {
+        btnInd.classList.add('bg-brandPurple', 'text-white', 'shadow-sm');
+        btnInd.classList.remove('text-slate-400', 'hover:bg-slate-100');
+        btnComp.classList.remove('bg-brandPurple', 'text-white', 'shadow-sm');
+        btnComp.classList.add('text-slate-400', 'hover:bg-slate-100');
+
+        if (labelName) labelName.innerText = "Nombre Completo";
+        if (inputName) inputName.placeholder = "Ej. Ana García";
+        if (labelId) labelId.innerText = "DNI / NIE";
+        if (inputId) inputId.placeholder = "Ej. 12345678X";
+    } else {
+        btnComp.classList.add('bg-brandPurple', 'text-white', 'shadow-sm');
+        btnComp.classList.remove('text-slate-400', 'hover:bg-slate-100');
+        btnInd.classList.remove('bg-brandPurple', 'text-white', 'shadow-sm');
+        btnInd.classList.add('text-slate-400', 'hover:bg-slate-100');
+
+        if (labelName) labelName.innerText = "Razón Social";
+        if (inputName) inputName.placeholder = "Ej. Boxroomer Solutions SL";
+        if (labelId) labelId.innerText = "CIF de Empresa";
+        if (inputId) inputId.placeholder = "Ej. B-00000000";
+    }
+}
 
 function setDeliveryMode(mode) {
     deliveryMode = mode;
@@ -373,51 +445,51 @@ function setDeliveryMode(mode) {
     const title = document.getElementById('step2-title');
     const subtitle = document.getElementById('step2-subtitle');
 
+    [btnPickup, btnDropoff].forEach(btn => btn.classList.remove('active', 'selected-pill'));
+
     if (mode === 'pickup') {
         if (pill) pill.style.transform = 'translateY(-50%) translateX(0)';
-        btnPickup.classList.add('text-brandPurple');
-        btnPickup.classList.remove('text-slate-400');
-        btnDropoff.classList.add('text-slate-400');
-        btnDropoff.classList.remove('text-brandPurple');
+        btnPickup.classList.add('active', 'selected-pill');
 
         document.getElementById('address-section').classList.remove('hidden');
         document.getElementById('access-section').classList.remove('hidden');
 
-        // Restore boxes, packing and assembly cards invisibility
         toggleLogisticsSections(true);
 
-        title.innerHTML = 'Detalles de <span class="text-brandPurple underline decoration-brandPurple/20">Recogida</span>';
-        subtitle.innerText = 'Dinos dónde y cuándo pasamos a por tus pertenencias de forma GRATUITA.';
+        if (title) title.innerHTML = 'Detalles de <span class="text-brandPurple underline decoration-brandPurple/20">Recogida</span>';
+        if (subtitle) subtitle.innerText = 'Dinos dónde y cuándo pasamos a por tus pertenencias de forma GRATUITA.';
     } else {
         if (pill) pill.style.transform = `translateY(-50%) translateX(${btnPickup.offsetWidth}px)`;
-        btnDropoff.classList.add('text-brandPurple');
-        btnDropoff.classList.remove('text-slate-400');
-        btnPickup.classList.add('text-slate-400');
-        btnPickup.classList.remove('text-brandPurple');
+        btnDropoff.classList.add('active', 'selected-pill');
 
         document.getElementById('address-section').classList.add('hidden');
         document.getElementById('access-section').classList.add('hidden');
 
-        // Hide boxes, packing and assembly cards
+        // Hide all extra services
         toggleLogisticsSections(false);
 
-        title.innerHTML = 'Entrega en <span class="text-brandPurple underline decoration-brandPurple/20">Almacén</span>';
-        subtitle.innerText = 'Indícanos cuándo vendrás a nuestras instalaciones en Pinto (Madrid).';
+        if (title) title.innerHTML = 'Entrega en <span class="text-brandPurple underline decoration-brandPurple/20">Almacén</span>';
+        if (subtitle) subtitle.innerText = 'Indícanos cuándo vendrás a nuestras instalaciones en Pinto (Madrid).';
+
+        addAiMessage("¡Perfecto! Te esperamos en nuestro centro logístico de **Pinto**. Recuerda que esta modalidad no incluye servicios adicionales de mozos o embalaje. 🏠");
     }
     validateStep2();
 }
 
 function toggleLogisticsSections(visible) {
-    const boxes = document.getElementById('extra-boxes-item');
-    const packing = document.getElementById('card-extra-packing');
-    const assembly = document.getElementById('card-extra-assembly');
-    const load = document.getElementById('load-section');
+    const sections = [
+        'extra-boxes-item',      // Cajas extra
+        'card-extra-packing',    // Embalaje
+        'card-extra-assembly',   // Montaje
+        'load-section',          // Tipo de carga (mozos)
+        'access-section'         // Accesos (no necesarios si vienen ellos)
+    ];
 
     const action = visible ? 'remove' : 'add';
-    if (boxes) boxes.classList[action]('hidden');
-    if (packing) packing.classList[action]('hidden');
-    if (assembly) assembly.classList[action]('hidden');
-    if (load) load.classList[action]('hidden');
+    sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList[action]('hidden');
+    });
 }
 
 function setLoadType(type) {
@@ -436,13 +508,11 @@ function setLoadType(type) {
     }
 
     [btnStd, btnHeavy].forEach(btn => {
-        btn.classList.remove('text-brandPurple', 'font-black');
-        btn.classList.add('text-slate-400');
+        btn.classList.remove('active', 'selected-pill');
     });
 
     const selected = (type === 'standard') ? btnStd : btnHeavy;
-    selected.classList.add('text-brandPurple', 'font-black');
-    selected.classList.remove('text-slate-400');
+    selected.classList.add('active', 'selected-pill');
 
     if (type === 'heavy') {
         addAiMessage("¡Anotado! 🦾 Al tener muebles grandes o electrodomésticos, enviaré a un **segundo operario** (coste único de 35€) para asegurar que todo se mueve con total seguridad.");
@@ -470,14 +540,12 @@ function setAccessType(type) {
     }
 
     [btnStreet, btnElevator, btnStairs].forEach(btn => {
-        btn.classList.remove('text-brandPurple', 'font-black');
-        btn.classList.add('text-slate-400');
+        btn.classList.remove('active', 'selected-pill');
     });
 
     const selected = document.getElementById(`access-${type}`);
     if (selected) {
-        selected.classList.add('text-brandPurple', 'font-black');
-        selected.classList.remove('text-slate-400');
+        selected.classList.add('active', 'selected-pill');
     }
 
     if (type === 'street') {
@@ -547,6 +615,7 @@ function goToStep(step) {
 
         setTimeout(() => {
             if (scanDiv) scanDiv.remove();
+            setDeliveryMode('pickup'); // Force initialization
             executeStepTransition(step);
         }, 1500);
     } else {
@@ -926,13 +995,11 @@ function setTimeSlot(slot) {
     }
 
     [btnMorning, btnAfternoon].forEach(btn => {
-        btn.classList.remove('text-brandPurple');
-        btn.classList.add('text-slate-400');
+        btn.classList.remove('active', 'selected-pill');
     });
 
     const selected = (slot === 'morning') ? btnMorning : btnAfternoon;
-    selected.classList.add('text-brandPurple');
-    selected.classList.remove('text-slate-400');
+    selected.classList.add('active', 'selected-pill');
 
     // BoxBot feedback for Time Slots
     if (slot === 'morning') {
@@ -964,21 +1031,17 @@ function setSelectMode(mode) {
     const btnPacks = document.getElementById('mode-btn-packs');
     const btnManual = document.getElementById('mode-btn-manual');
 
+    [btnPacks, btnManual].forEach(btn => btn.classList.remove('active', 'selected-pill'));
+
     if (mode === 'packs') {
         if (pill) pill.style.transform = 'translateY(-50%) translateX(0)';
-        btnPacks.classList.add('text-brandPurple');
-        btnPacks.classList.remove('text-slate-400');
-        btnManual.classList.add('text-slate-400');
-        btnManual.classList.remove('text-brandPurple');
+        btnPacks.classList.add('active', 'selected-pill');
 
         document.getElementById('view-packs').classList.remove('hidden');
         document.getElementById('view-manual').classList.add('hidden');
     } else {
         if (pill) pill.style.transform = `translateY(-50%) translateX(${btnPacks.offsetWidth}px)`;
-        btnManual.classList.add('text-brandPurple');
-        btnManual.classList.remove('text-slate-400');
-        btnPacks.classList.add('text-slate-400');
-        btnPacks.classList.remove('text-brandPurple');
+        btnManual.classList.add('active', 'selected-pill');
 
         document.getElementById('view-packs').classList.add('hidden');
         document.getElementById('view-manual').classList.remove('hidden');
@@ -1032,11 +1095,9 @@ function setDuration(months) {
         if (!btn) return;
 
         if (parseInt(key) === months) {
-            btn.classList.add('text-white', 'selected-pill');
-            btn.classList.remove('text-slate-400');
+            btn.classList.add('active', 'selected-pill');
         } else {
-            btn.classList.add('text-slate-400');
-            btn.classList.remove('text-white', 'selected-pill');
+            btn.classList.remove('active', 'selected-pill');
         }
     });
 
@@ -1101,8 +1162,9 @@ function selectPack(id) {
 
 function updateM3(val) {
     // 1. Magnetic Snap Logic (Assist user in hitting exact pack values)
-    if (val >= 0.8 && val <= 1.3) val = 1.0;
-    else if (val >= 1.8 && val <= 2.3) val = 2.0;
+    // Only apply logic if we are CLOSE, don't force unrelated values.
+    if (val >= 0.8 && val <= 1.2) val = 1.0;
+    else if (val >= 1.8 && val <= 2.2) val = 2.0;
 
     // Round to nearest .5
     val = Math.round(val * 2) / 2;
@@ -1110,18 +1172,18 @@ function updateM3(val) {
     const prevVolume = selectedVolume;
     selectedVolume = val;
 
+    console.log("📏 [updateM3] New Value:", val);
+
     // Update Slider Visualization (Cap at 15)
     const range = document.getElementById('reserva-range');
     if (range) {
-        range.value = Math.min(val, 15);
+        // Only update if different to avoid cursor jumping if dragging
+        if (parseFloat(range.value) !== val) {
+            range.value = Math.min(val, 15);
+        }
     }
 
-    // Update Counter Display with Animation
-    const m3ValDisplay = document.getElementById('m3-val');
-    if (m3ValDisplay) {
-        animateValue('m3-val', prevVolume, selectedVolume, 400, false);
-    }
-
+    // Update Counter Display
     const display = document.getElementById('m3-val');
     if (display) display.innerText = val.toString().replace('.', ',');
 
@@ -1139,11 +1201,11 @@ function updateM3(val) {
         }
     }
 
-    // Match Pack logic (Ranges)
-    if (val <= 1.0) {
+    // Match Pack logic (Ranges) - FLEXIBLE COMPARISON FOR DUO
+    if (val <= 1.0) { // Up to 1.0 is Mini
         selectedPack = 1;
         highlightPackCard(1);
-    } else if (val <= 2.0) {
+    } else if (val <= 2.0) { // Between 1.0 and 2.0 takes Duo logic visually
         selectedPack = 2;
         highlightPackCard(2);
     } else {
@@ -1422,32 +1484,68 @@ function updateSummary() {
 }
 
 function confirmOrder() {
-    const terms = document.getElementById('terms-check');
+    const legalCheck = document.getElementById('legal-check'); // Updated ID from previous task
     const authName = document.getElementById('auth-name');
     const authEmail = document.getElementById('auth-email');
     const authPass = document.getElementById('auth-pass');
+    const authId = document.getElementById('auth-id');
 
-    // 1. Auth Validation (Simple)
+    // 1. Auth Validation (Enhanced with ID and Profile)
     let authError = false;
-    if (!authName || !authName.value.trim()) { authName.classList.add('border-red-500'); authError = true; }
-    else authName.classList.remove('border-red-500');
+    const fields = [authName, authEmail, authPass, authId];
 
-    if (!authEmail || !authEmail.value.trim() || !authEmail.value.includes('@')) { authEmail.classList.add('border-red-500'); authError = true; }
-    else authEmail.classList.remove('border-red-500');
+    fields.forEach(f => {
+        if (!f || !f.value.trim()) {
+            f?.classList.add('border-red-500');
+            authError = true;
+        } else {
+            f?.classList.remove('border-red-500');
+        }
+    });
 
-    if (!authPass || !authPass.value.trim() || authPass.value.length < 8) { authPass.classList.add('border-red-500'); authError = true; }
-    else authPass.classList.remove('border-red-500');
+    // Specific password validation message
+    let passError = false;
+    if (authPass.value.length < 8) {
+        authPass.classList.add('border-red-500');
+        passError = true;
+        authError = true;
+    }
+
+    // Specific Email Validation
+    let emailErrorMsg = "";
+    const emailValue = authEmail.value.trim();
+    // Simple regex for basic validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailValue) {
+        // Already handled by empty check, but ensures consistent flow
+    } else if (!emailRegex.test(emailValue)) {
+        authEmail.classList.add('border-red-500');
+        emailErrorMsg = "El formato del email no parece correcto.";
+        authError = true;
+    } else if (emailValue === 'cliente@boxroomer.com' || emailValue === 'admin@boxroomer.com') {
+        // Simulation of existing user
+        authEmail.classList.add('border-red-500');
+        emailErrorMsg = "Este usuario ya existe. ¿Quizás querías iniciar sesión?";
+        authError = true;
+    }
 
     if (authError) {
-        addAiMessage("⚠️ **Atención**: Para asegurar tu reserva, necesito que completes tus datos de cuenta (Nombre, Email y Contraseña válida).");
-        // Scroll to auth section
+        if (emailErrorMsg) {
+            addAiMessage(`📧 **Ojo al dato**: ${emailErrorMsg}`);
+        } else if (passError) {
+            addAiMessage("🔒 **Seguridad**: La contraseña debe tener al menos **8 caracteres** para proteger tu cuenta.");
+        } else {
+            addAiMessage(`⚠️ **Atención**: Necesito que completes todos tus datos de **${customerType === 'individual' ? 'facturación personal' : 'empresa'}** para poder generar el contrato de alquiler.`);
+        }
         authName.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
     }
 
     // 2. Terms Validation
-    if (!terms || !terms.checked) {
-        addAiMessage("⚠️ Para confirmar tu reserva inteligente, es necesario que aceptes las condiciones generales.");
+    if (!legalCheck || !legalCheck.checked) {
+        addAiMessage("⚠️ Para confirmar tu reserva, es necesario que firmes el contrato y aceptes la política de privacidad marcando la casilla.");
+        legalCheck.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
     }
 
@@ -1464,7 +1562,7 @@ function confirmOrder() {
 
         // UI Changes
         if (backBtn) backBtn.classList.add('hidden');
-        if (terms) terms.disabled = true;
+        if (legalCheck) legalCheck.disabled = true;
         // Lock auth fields
         if (authName) authName.disabled = true;
         if (authEmail) authEmail.disabled = true;
@@ -1479,8 +1577,8 @@ function confirmOrder() {
             userEmail: authEmail.value,
             volume: document.getElementById('reserva-range')?.value || 0,
             address: document.getElementById('pickup-address')?.value || "La dirección no se guardó bien",
-            pickupDate: selectedDate ? `${selectedDate.day} ${selectedDate.month}` : 'Pendiente',
-            pickupTime: selectedSlot || 'Pendiente',
+            pickupDate: selectedDate ? `${selectedDate.day} ${selectedDate.num} ${selectedDate.month}` : 'Pendiente',
+            pickupTime: selectedSlot === 'morning' ? 'Mañana (09:00 - 14:00)' : (selectedSlot === 'afternoon' ? 'Tarde (14:00 - 18:00)' : 'Pendiente'),
             status: 'pending_pickup', // active, pending_pickup
             plan: selectedPack === 1 ? 'Pack Mini' : (selectedPack === 2 ? 'Pack Dúo' : 'Plan Personalizado'),
             bookingDate: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })

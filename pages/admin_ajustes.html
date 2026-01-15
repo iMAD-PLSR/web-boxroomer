@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajustes | BOXROOMER Admin</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../assets/js/tailwind.config.js"></script>
+
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+    </style>
+</head>
+
+<body class="bg-brandDark text-white h-screen overflow-hidden flex">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-[#111] border-r border-white/5 flex flex-col justify-between p-6 shrink-0">
+        <div>
+            <div
+                class="flex items-center gap-3 mb-10 opacity-80 hover:opacity-100 transition-opacity cursor-pointer text-white">
+                <img src="../assets/images/logo.png" alt="LOGO" class="h-6 brightness-0 invert">
+                <span
+                    class="bg-brandPurple text-white text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest">Admin</span>
+            </div>
+
+            <nav class="space-y-2">
+                <a href="admin_dashboard.html"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">space_dashboard</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Dashboard</span>
+                </a>
+                <a href="admin_clientes.html"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">group</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Clientes</span>
+                </a>
+                <a href="admin_logistica.html"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Logística</span>
+                </a>
+                <a href="admin_facturacion.html"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">payments</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Facturación</span>
+                </a>
+                <a href="admin_ajustes.html"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl bg-brandPurple text-white border border-brandPurple/20 shadow-lg shadow-brandPurple/10 transition-all">
+                    <span class="material-symbols-outlined">settings</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Ajustes</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto bg-[#0a0a0a] p-8 scrollbar-hide">
+        <header class="flex justify-between items-end mb-10">
+            <div>
+                <h1 class="text-3xl font-black italic tracking-tighter uppercase">Configuración de Negocio</h1>
+                <p class="text-slate-400 text-sm font-medium mt-1">Gestión de tarifas, packs de suscripción y
+                    estrategias de cupones</p>
+            </div>
+        </header>
+
+        <div class="space-y-12 pb-20">
+            <!-- Sección: Gestión de Precios y Packs -->
+            <section>
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Tarifas y Packs
+                        (Suscripciones)</h3>
+                    <button onclick="openPackModal()"
+                        class="bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-white hover:text-brandDark transition-all">+
+                        Crear Nuevo Pack</button>
+                </div>
+                <div class="bg-[#141414] border border-white/5 rounded-[2rem] overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-white/5">
+                            <tr class="text-[9px] font-black text-slate-500 uppercase tracking-widest leading-none">
+                                <th class="px-6 py-5">Nombre del Pack</th>
+                                <th class="px-6 py-5">Volumen Máx.</th>
+                                <th class="px-6 py-5">Precio Mes</th>
+                                <th class="px-6 py-5">Permanencia</th>
+                                <th class="px-6 py-5">Cajas Incl.</th>
+                                <th class="px-6 py-5 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="packs-table-body"
+                            class="divide-y divide-white/5 text-[11px] font-bold text-slate-300">
+                            <!-- JS populates -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Sección: Cupones de Descuento -->
+            <section>
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Estrategia de Cupones
+                    </h3>
+                    <button onclick="openCouponModal()"
+                        class="bg-brandPurple text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-brandPurple/20 hover:scale-105 transition-all">+
+                        Crear Cupón</button>
+                </div>
+                <div id="coupons-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- JS populates -->
+                </div>
+            </section>
+
+            <!-- Sección: Auditoría de Cambios (Trazabilidad) -->
+            <section>
+                <div class="flex items-center gap-3 mb-6">
+                    <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Trazabilidad (Audit
+                        Log)</h3>
+                    <span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span>
+                </div>
+                <div class="bg-[#141414] border border-white/5 rounded-[2rem] overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-white/5">
+                            <tr class="text-[9px] font-black text-slate-500 uppercase tracking-widest leading-none">
+                                <th class="px-6 py-5">Timestamp</th>
+                                <th class="px-6 py-5">Acción</th>
+                                <th class="px-6 py-5">Admin</th>
+                                <th class="px-6 py-5">Detalle/Origen</th>
+                                <th class="px-6 py-5 text-right">Nivel</th>
+                            </tr>
+                        </thead>
+                        <tbody id="audit-table-body"
+                            class="divide-y divide-white/5 text-[10px] font-medium text-slate-400">
+                            <!-- JS fills -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Danger Zone: Demo Reset -->
+            <section class="mt-12 pt-12 border-t border-white/5">
+                <div class="flex justify-between items-center bg-red-500/5 border border-red-500/20 p-6 rounded-[2rem]">
+                    <div>
+                        <h4 class="text-white font-black uppercase text-sm italic tracking-tighter">Zona de Peligro</h4>
+                        <p class="text-[10px] text-slate-400 mt-1">Acciones destructivas para el entorno de
+                            demostración.</p>
+                    </div>
+                    <button onclick="resetDemoData()"
+                        class="bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/30 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                        Resetear Datos Demo
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal: Pack Editor -->
+    <div id="packModal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+        <div class="bg-[#1a1a1a] border border-white/10 w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl">
+            <h3 id="pack-modal-title" class="text-xl font-black mb-6 uppercase tracking-tight italic">Crear Nuevo Pack
+            </h3>
+            <div class="space-y-4">
+                <div>
+                    <label
+                        class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Nombre</label>
+                    <input type="text" id="pack-name"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Volumen
+                            (m³)</label>
+                        <input type="text" id="pack-volume"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple">
+                    </div>
+                    <div>
+                        <label
+                            class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Cajas</label>
+                        <input type="number" id="pack-boxes"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Precio
+                            (€/mes)</label>
+                        <input type="number" id="pack-price"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple">
+                    </div>
+                    <div>
+                        <label
+                            class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Permanencia</label>
+                        <select id="pack-permanence"
+                            class="w-full bg-[#1A1A1A] border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple">
+                            <option value="Sin Permanencia">Sin Permanencia</option>
+                            <option value="3 Meses">3 Meses</option>
+                            <option value="6 Meses">6 Meses</option>
+                            <option value="12 Meses">12 Meses</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-8">
+                <button onclick="closePackModal()"
+                    class="flex-1 py-4 rounded-xl bg-white/5 text-[10px] font-black uppercase tracking-widest">Cancelar</button>
+                <button onclick="savePack()"
+                    class="flex-1 py-4 rounded-xl bg-brandPurple text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brandPurple/20">Guardar
+                    Pack</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Coupon Editor -->
+    <div id="couponModal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+        <div class="bg-[#1a1a1a] border border-white/10 w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl">
+            <h3 id="coupon-modal-title" class="text-xl font-black mb-6 uppercase tracking-tight italic">Nuevo Cupón</h3>
+            <div class="space-y-4">
+                <div>
+                    <label
+                        class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Código</label>
+                    <input type="text" id="coupon-code" placeholder="EJ: DESCUENTO50"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs font-black uppercase outline-none focus:border-brandPurple">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label
+                            class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Descuento</label>
+                        <div class="relative">
+                            <input type="text" id="coupon-value" placeholder="25"
+                                class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple">
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 font-bold text-xs">% /
+                                €</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label
+                            class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Estado</label>
+                        <select id="coupon-status"
+                            class="w-full bg-[#1A1A1A] border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple">
+                            <option value="Activo">Activo</option>
+                            <option value="Expirado">Expirado</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label
+                        class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Descripción</label>
+                    <input type="text" id="coupon-desc" placeholder="Dto. primer mes"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple">
+                </div>
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Fecha
+                        Expiración (Opcional)</label>
+                    <input type="date" id="coupon-expiry"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple [color-scheme:dark]">
+                </div>
+            </div>
+            <div class="flex gap-3 mt-8">
+                <button onclick="closeCouponModal()"
+                    class="flex-1 py-4 rounded-xl bg-white/5 text-[10px] font-black uppercase tracking-widest">Cancelar</button>
+                <button onclick="saveCoupon()"
+                    class="flex-1 py-4 rounded-xl bg-brandPurple text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brandPurple/20">Guardar
+                    Cupón</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Confirmación Bonito -->
+    <div id="confirmModal"
+        class="fixed inset-0 bg-black/90 backdrop-blur-md z-[200] hidden items-center justify-center p-4">
+        <div class="bg-[#1a1a1a] border border-white/10 w-full max-w-sm rounded-[2.5rem] p-10 text-center shadow-2xl">
+            <div
+                class="w-20 h-20 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span class="material-symbols-outlined text-4xl">warning</span>
+            </div>
+            <h3 class="text-xl font-black text-white italic uppercase tracking-tighter mb-2">¿Estás seguro?</h3>
+            <p class="text-xs text-slate-500 font-bold uppercase tracking-widest leading-relaxed mb-8">Esta acción es
+                irreversible y afectará a la operativa de negocio.</p>
+            <div class="flex gap-3">
+                <button onclick="closeConfirmModal()"
+                    class="flex-1 py-4 rounded-xl bg-white/5 text-[10px] font-black uppercase tracking-widest text-white">Cancelar</button>
+                <button id="confirm-action-btn"
+                    class="flex-1 py-4 rounded-xl bg-red-500 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20">Sí,
+                    Borrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let packs = [
+            { id: 1, name: 'Pack Mini', volume: '1.5 m³', price: 29.00, permanence: '12 Meses', boxes: 10, extra: false, info: 'Incluye 10 cajas L y una recogida' },
+            { id: 2, name: 'Pack Dúo', volume: '3.5 m³', price: 49.00, permanence: '6 Meses', boxes: 15, extra: false, info: 'Incluye 15 cajas L y una recogida' },
+            { id: 3, name: 'Pack Plus', volume: '7.0 m³', price: 89.00, permanence: '6 Meses', boxes: 30, extra: false, info: 'Incluye 30 cajas L y una recogida' },
+            { id: 4, name: 'Gestión / Cancelación', volume: 'Fijo', price: 39.00, permanence: '—', boxes: '—', extra: true, unit: '€/fijo', info: 'Aplicable tras reserva o por cancelación' },
+            { id: 5, name: 'Entrega Parcial / Extra', volume: 'Zona 0', price: 39.00, permanence: '—', boxes: '—', extra: true, unit: '€/viaje', info: 'Coste por devolución parcial' },
+            { id: 6, name: 'Mozo Adicional', volume: 'Hora', price: 35.00, permanence: '—', boxes: '—', extra: true, unit: '€/h', info: 'Servicio de carga profesional' },
+            { id: 7, name: 'Caja BOXROOMER (L)', volume: 'Recambio', price: 4.50, permanence: '—', boxes: '—', extra: true, unit: '€/ud', info: 'Pared doble reforzada' },
+            { id: 8, name: 'Suplemento Seguro', volume: '+500€', price: 15.00, permanence: '—', boxes: '—', extra: true, unit: '€/mes', info: 'Ampliación de cobertura base' }
+        ];
+
+        let coupons = [
+            { id: 1, code: 'BIENVENIDA2026', value: '25%', desc: '25% Dto. primer mes • 132 usos', status: 'Activo', expiry: '' },
+            { id: 2, code: 'AMIGO-BOX', value: '1 Mes', desc: '1 mes gratis referido • Caducado', status: 'Expirado', expiry: '2025-12-31' }
+        ];
+
+        let currentEditingId = null;
+        let deleteCallback = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPacks();
+            renderCoupons();
+            renderAuditLog();
+        });
+
+        function renderAuditLog() {
+            const logs = JSON.parse(localStorage.getItem('BOXROOMER_AUDIT_LOG') || '[]');
+            const table = document.getElementById('audit-table-body');
+            table.innerHTML = logs.map(log => `
+                <tr class="hover:bg-white/[0.02]">
+                    <td class="px-6 py-4">${new Date(log.timestamp).toLocaleString()}</td>
+                    <td class="px-6 py-4 font-black uppercase text-brandPurple">${log.action}</td>
+                    <td class="px-6 py-4 italic">${log.admin}</td>
+                    <td class="px-6 py-4">${log.details} <span class="text-slate-600 ml-2">(${log.origin})</span></td>
+                    <td class="px-6 py-4 text-right">
+                        <span class="px-1.5 py-0.5 rounded text-[8px] font-black border ${log.level === 'ALTA' ? 'border-red-500/40 text-red-500' : 'border-blue-500/40 text-blue-500'}">${log.level}</span>
+                    </td>
+                </tr>
+            `).join('') || '<tr><td colspan="5" class="p-6 text-center text-slate-600 italic uppercase">No hay actividad registrada recientemente</td></tr>';
+        }
+
+        function addAuditLog(action, details, level, target, origin) {
+            const logs = JSON.parse(localStorage.getItem('BOXROOMER_AUDIT_LOG') || '[]');
+            logs.unshift({
+                timestamp: new Date().toISOString(),
+                action,
+                details,
+                level,
+                target,
+                origin,
+                admin: 'Admin Principal'
+            });
+            localStorage.setItem('BOXROOMER_AUDIT_LOG', JSON.stringify(logs.slice(0, 100)));
+            renderAuditLog();
+        }
+
+        function renderPacks() {
+            const table = document.getElementById('packs-table-body');
+            table.innerHTML = packs.map(pack => `
+                <tr class="hover:bg-white/[0.02] transition-all group">
+                    <td class="px-6 py-5">
+                        <span class="text-white font-black italic uppercase tracking-tighter">${pack.name}</span>
+                        ${pack.extra ? '<span class="ml-2 bg-blue-500/10 text-blue-400 text-[7px] px-1.5 py-0.5 rounded leading-none">VAR</span>' : ''}
+                    </td>
+                    <td class="px-6 py-5">${pack.volume}</td>
+                    <td class="px-6 py-5 text-brandPurple font-black">${pack.price.toFixed(2)}${pack.unit || '€'}</td>
+                    <td class="px-6 py-5">${pack.permanence}</td>
+                    <td class="px-6 py-5">${pack.boxes}</td>
+                    <td class="px-6 py-5 text-right flex justify-end gap-2">
+                        <button onclick="editPack(${pack.id})" class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-brandPurple hover:text-white transition-all">
+                            <span class="material-symbols-outlined text-sm">edit</span>
+                        </button>
+                        <button onclick="confirmDelete(() => deletePack(${pack.id}))" class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
+                            <span class="material-symbols-outlined text-sm">delete</span>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderCoupons() {
+            const grid = document.getElementById('coupons-grid');
+            const now = new Date();
+
+            grid.innerHTML = coupons.map(c => {
+                let status = c.status;
+                if (c.expiry && new Date(c.expiry) < now) {
+                    status = 'Expirado';
+                }
+
+                return `
+                <div class="bg-[#141414] border border-white/5 p-6 rounded-[2rem] flex items-center gap-6 group hover:border-brandPurple/20 transition-all ${status === 'Expirado' ? 'opacity-60' : ''}">
+                    <div class="w-14 h-14 shrink-0 rounded-2xl bg-${status === 'Activo' ? 'brandPurple' : 'white'}/10 text-${status === 'Activo' ? 'brandPurple' : 'slate-500'} flex items-center justify-center text-xl font-black italic">
+                        ${c.value}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-black text-white uppercase italic tracking-tighter truncate">${c.code}</p>
+                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mt-1 truncate">${c.desc}</p>
+                        ${c.expiry ? `<p class="text-[8px] text-red-500 font-black mt-1 uppercase">Vence: ${c.expiry}</p>` : ''}
+                    </div>
+                    <div class="flex flex-col gap-2 shrink-0">
+                        <span class="bg-${status === 'Activo' ? 'green-500' : 'white'}/10 text-${status === 'Activo' ? 'green-500' : 'slate-500'} text-[8px] font-black px-2 py-1 rounded uppercase text-center border border-${status === 'Activo' ? 'green-500' : 'white'}/20">${status}</span>
+                        <div class="flex gap-1 justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="editCoupon(${c.id})" class="text-slate-500 hover:text-white transition-colors">
+                                <span class="material-symbols-outlined text-sm">edit</span>
+                            </button>
+                            <button onclick="confirmDelete(() => deleteCoupon(${c.id}))" class="text-slate-500 hover:text-red-500 transition-colors">
+                                <span class="material-symbols-outlined text-sm">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // Pack Functions
+        function openPackModal() {
+            currentEditingId = null;
+            document.getElementById('pack-modal-title').innerText = "Crear Nuevo Pack";
+            document.getElementById('pack-name').value = '';
+            document.getElementById('pack-volume').value = '';
+            document.getElementById('pack-boxes').value = '';
+            document.getElementById('pack-price').value = '';
+            document.getElementById('packModal').classList.remove('hidden');
+            document.getElementById('packModal').classList.add('flex');
+        }
+
+        function closePackModal() {
+            document.getElementById('packModal').classList.add('hidden');
+            document.getElementById('packModal').classList.remove('flex');
+        }
+
+        function savePack() {
+            const name = document.getElementById('pack-name').value;
+            const volume = document.getElementById('pack-volume').value;
+            const boxes = document.getElementById('pack-boxes').value;
+            const price = parseFloat(document.getElementById('pack-price').value);
+            const permanence = document.getElementById('pack-permanence').value;
+
+            if (currentEditingId) {
+                const pack = packs.find(p => p.id === currentEditingId);
+                pack.name = name;
+                pack.volume = volume;
+                pack.boxes = boxes;
+                pack.price = price;
+                pack.permanence = permanence;
+            } else {
+                packs.push({
+                    id: Date.now(),
+                    name, volume, boxes, price, permanence, extra: false
+                });
+            }
+            renderPacks();
+            closePackModal();
+        }
+
+        function editPack(id) {
+            currentEditingId = id;
+            const pack = packs.find(p => p.id === id);
+            document.getElementById('pack-modal-title').innerText = "Editar Pack";
+            document.getElementById('pack-name').value = pack.name;
+            document.getElementById('pack-volume').value = pack.volume;
+            document.getElementById('pack-boxes').value = pack.boxes;
+            document.getElementById('pack-price').value = pack.price;
+            document.getElementById('pack-permanence').value = pack.permanence;
+            document.getElementById('packModal').classList.remove('hidden');
+            document.getElementById('packModal').classList.add('flex');
+        }
+
+        function deletePack(id) {
+            const pack = packs.find(p => p.id === id);
+            addAuditLog('BORRADO_PACK', `Borrado de pack: ${pack.name}`, 'ALTA', id, 'AJUSTES');
+            packs = packs.filter(p => p.id !== id);
+            renderPacks();
+            closeConfirmModal();
+        }
+
+        // Coupon Functions
+        function openCouponModal() {
+            currentEditingId = null;
+            document.getElementById('coupon-modal-title').innerText = "Nuevo Cupón";
+            document.getElementById('coupon-code').value = '';
+            document.getElementById('coupon-value').value = '';
+            document.getElementById('coupon-desc').value = '';
+            document.getElementById('coupon-expiry').value = '';
+            document.getElementById('couponModal').classList.remove('hidden');
+            document.getElementById('couponModal').classList.add('flex');
+        }
+
+        function closeCouponModal() {
+            document.getElementById('couponModal').classList.add('hidden');
+            document.getElementById('couponModal').classList.remove('flex');
+        }
+
+        function saveCoupon() {
+            const code = document.getElementById('coupon-code').value.toUpperCase();
+            const value = document.getElementById('coupon-value').value;
+            const desc = document.getElementById('coupon-desc').value;
+            const status = document.getElementById('coupon-status').value;
+            const expiry = document.getElementById('coupon-expiry').value;
+
+            if (currentEditingId) {
+                const c = coupons.find(x => x.id === currentEditingId);
+                c.code = code;
+                c.value = value;
+                c.desc = desc;
+                c.status = status;
+                c.expiry = expiry;
+                addAuditLog('EDICION_CUPON', `Editado cupón: ${code}`, 'MEDIA', currentEditingId, 'AJUSTES');
+            } else {
+                const id = Date.now();
+                coupons.push({ id, code, value, desc, status, expiry });
+                addAuditLog('CREACION_CUPON', `Nuevo cupón creado: ${code}`, 'MEDIA', id, 'AJUSTES');
+            }
+            renderCoupons();
+            closeCouponModal();
+        }
+
+        function editCoupon(id) {
+            currentEditingId = id;
+            const c = coupons.find(x => x.id === id);
+            document.getElementById('coupon-modal-title').innerText = "Editar Cupón";
+            document.getElementById('coupon-code').value = c.code;
+            document.getElementById('coupon-value').value = c.value;
+            document.getElementById('coupon-desc').value = c.desc;
+            document.getElementById('coupon-status').value = c.status;
+            document.getElementById('coupon-expiry').value = c.expiry || '';
+            document.getElementById('couponModal').classList.remove('hidden');
+            document.getElementById('couponModal').classList.add('flex');
+        }
+
+        function deleteCoupon(id) {
+            const c = coupons.find(x => x.id === id);
+            addAuditLog('BORRADO_CUPON', `Borrado de cupón: ${c.code}`, 'ALTA', id, 'AJUSTES');
+            coupons = coupons.filter(x => x.id !== id);
+            renderCoupons();
+            closeConfirmModal();
+        }
+
+        // Global Confirmation
+        function confirmDelete(callback) {
+            deleteCallback = callback;
+            document.getElementById('confirmModal').classList.remove('hidden');
+            document.getElementById('confirmModal').classList.add('flex');
+
+            document.getElementById('confirm-action-btn').onclick = () => {
+                deleteCallback();
+            };
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+            document.getElementById('confirmModal').classList.remove('flex');
+        }
+        function resetDemoData() {
+            if (confirm('¿Estás seguro de que quieres BORRAR TODOS LOS DATOS de la demo? Esto reiniciará el historial, los ajustes y el estado del dashboard.')) {
+                localStorage.clear();
+                alert('Datos eliminados. La demo se ha reiniciado.');
+                window.location.reload();
+            }
+        }
+    </script>
+</body>
+
+</html>

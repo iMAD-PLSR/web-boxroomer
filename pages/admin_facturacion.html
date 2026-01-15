@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facturación | BOXROOMER Admin</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../assets/js/tailwind.config.js"></script>
+
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-brandDark text-white h-screen overflow-hidden flex">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-[#111] border-r border-white/5 flex flex-col justify-between p-6">
+        <div>
+            <div class="flex items-center gap-3 mb-10 opacity-80 hover:opacity-100 transition-opacity cursor-pointer">
+                <img src="../assets/images/logo.png" alt="LOGO" class="h-6 brightness-0 invert">
+                <span
+                    class="bg-brandPurple text-white text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest">Admin</span>
+            </div>
+
+            <nav class="space-y-2">
+                <a href="admin_dashboard.html"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">space_dashboard</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Dashboard</span>
+                </a>
+                <a href="admin_clientes.html"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">group</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Clientes</span>
+                </a>
+                <a href="admin_logistica.html"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Logística</span>
+                </a>
+                <a href="admin_facturacion.html"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl bg-brandPurple text-white border border-brandPurple/20 shadow-lg shadow-brandPurple/10 transition-all">
+                    <span class="material-symbols-outlined">payments</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Facturación</span>
+                </a>
+                <a href="admin_ajustes.html"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">settings</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Ajustes</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="px-4 py-3 bg-brandPurple/10 rounded-xl border border-brandPurple/20 text-center">
+            <p class="text-[10px] text-brandPurple font-black uppercase tracking-widest mb-1">Stripe Connect</p>
+            <span class="text-[10px] font-bold text-white bg-green-500/20 px-2 py-0.5 rounded">Sincronizado</span>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto bg-[#0a0a0a] p-8 scrollbar-hide">
+
+        <header class="flex justify-between items-end mb-10">
+            <div>
+                <h1 class="text-3xl font-black tracking-tight tracking-tighter">Centro de Facturación</h1>
+                <p class="text-slate-400 text-sm font-medium mt-1">Control de ingresos, modelos de suscripción y pagos
+                </p>
+            </div>
+            <div class="flex gap-4">
+                <button
+                    class="bg-white/5 border border-white/10 text-slate-400 px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:text-white transition-all">
+                    Exportar Trimestre
+                </button>
+                <button
+                    class="bg-brandPurple text-white px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-brandPurple/20 hover:scale-[1.02] transition-all flex items-center gap-3">
+                    <span class="material-symbols-outlined text-sm">add_card</span> Nueva Factura Manual
+                </button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-4 gap-6 mb-10">
+            <div class="bg-[#141414] border border-white/5 p-6 rounded-3xl relative overflow-hidden group">
+                <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2">MRR (Recurrente)</p>
+                <h3 class="text-4xl font-black text-white">12,480€</h3>
+                <div class="flex gap-2 mt-2 items-center">
+                    <span
+                        class="text-[10px] text-green-500 font-bold bg-green-500/10 px-1.5 py-0.5 rounded">+8.2%</span>
+                    <span class="text-[10px] text-slate-500">este mes</span>
+                </div>
+            </div>
+            <div class="bg-[#141414] border border-white/5 p-6 rounded-3xl relative overflow-hidden group">
+                <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2">Ingreso Medio (ARPU)</p>
+                <h3 class="text-4xl font-black text-white">124€</h3>
+                <p class="text-[10px] text-slate-500 mt-2">Pack Dúo es el más popular</p>
+            </div>
+            <div
+                class="bg-[#141414] border border-white/10 p-6 rounded-3xl relative overflow-hidden group border-orange-500/30 bg-orange-500/5 shadow-lg shadow-orange-500/5">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-orange-500 text-[10px] font-black uppercase tracking-widest mb-2">Pendiente Cobro
+                        </p>
+                        <h3 class="text-4xl font-black text-orange-400">432€</h3>
+                    </div>
+                    <span class="material-symbols-outlined text-orange-500 animate-pulse">priority_high</span>
+                </div>
+                <p class="text-[10px] text-orange-500/50 mt-2">3 suscripciones en mora (Impago)</p>
+            </div>
+            <div class="bg-[#141414] border border-white/5 p-6 rounded-3xl relative overflow-hidden group">
+                <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2">Impuestos (IVA 21%)</p>
+                <h3 class="text-4xl font-black text-white">2,620€</h3>
+                <p class="text-[10px] text-slate-500 mt-2">Trimestre en curso</p>
+            </div>
+        </div>
+
+        <!-- Analytics Row -->
+        <div class="grid grid-cols-3 gap-6 mb-10">
+            <!-- Income Chart -->
+            <div class="col-span-2 bg-[#141414] border border-white/5 p-8 rounded-[2.5rem]">
+                <div class="flex justify-between items-center mb-10">
+                    <div>
+                        <h3 class="text-sm font-black text-white uppercase italic tracking-tighter">Comparativa de
+                            Ingresos</h3>
+                        <p class="text-[9px] text-slate-500 font-black uppercase tracking-widest mt-1">2026 vs 2025
+                            (Crecimiento en %)</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-brandPurple"></div>
+                            <span class="text-[9px] font-black uppercase text-slate-400">2026</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-slate-700"></div>
+                            <span class="text-[9px] font-black uppercase text-slate-400">2025</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="h-64 relative">
+                    <canvas id="incomeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Programmed Transactions -->
+            <div class="bg-[#141414] border border-white/5 p-8 rounded-[2.5rem] flex flex-col">
+                <h3 class="text-sm font-black text-white uppercase italic tracking-tighter mb-6">Próximos Cobros</h3>
+                <div class="flex-1 space-y-4">
+                    <div
+                        class="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 group hover:bg-white/[0.04] transition-all">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+                            <span class="material-symbols-outlined text-sm">schedule</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] font-black text-white uppercase tracking-widest">Mañana • ID #C102</p>
+                            <p class="text-[9px] text-slate-500 font-bold uppercase mt-1 italic">Renovación Pack Mini
+                            </p>
+                        </div>
+                        <p class="text-sm font-black text-white italic">29€</p>
+                    </div>
+                    <div
+                        class="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 group hover:bg-white/[0.04] transition-all">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500">
+                            <span class="material-symbols-outlined text-sm">schedule</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] font-black text-white uppercase tracking-widest">18 Ene • ID #C044</p>
+                            <p class="text-[9px] text-slate-500 font-bold uppercase mt-1 italic">Renovación Pack Dúo</p>
+                        </div>
+                        <p class="text-sm font-black text-white italic">49€</p>
+                    </div>
+                    <div
+                        class="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 group hover:bg-white/[0.04] transition-all">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
+                            <span class="material-symbols-outlined text-sm">schedule</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] font-black text-white uppercase tracking-widest">22 Ene • ID #C201</p>
+                            <p class="text-[9px] text-slate-500 font-bold uppercase mt-1 italic">Reserva Personalizado
+                            </p>
+                        </div>
+                        <p class="text-sm font-black text-white italic">124€</p>
+                    </div>
+                </div>
+                <button onclick="openCalendarModal()"
+                    class="w-full mt-6 py-4 rounded-xl border border-white/5 text-[9px] font-black uppercase tracking-widest text-slate-500 hover:text-brandPurple hover:bg-brandPurple/5 transition-all">Ver
+                    calendario completo</button>
+            </div>
+        </div>
+
+        <div class="bg-[#141414] border border-white/5 rounded-[2.5rem] overflow-hidden">
+            <div class="p-6 border-b border-white/5 flex justify-between items-center bg-white/2">
+                <h3 class="text-xs font-black uppercase tracking-widest text-slate-500">Historial Reciente de
+                    Operaciones</h3>
+                <div class="flex items-center gap-2">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg"
+                        alt="Stripe" class="h-4 opacity-40">
+                </div>
+            </div>
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-white/5 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        <th class="p-6">Transacción ID</th>
+                        <th class="p-6">Concepto / Pack</th>
+                        <th class="p-6">Cliente</th>
+                        <th class="p-6">Fecha</th>
+                        <th class="p-6 text-right">Importe Total</th>
+                        <th class="p-6 text-right">Estado</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm font-medium text-slate-300 divide-y divide-white/5" id="billing-table-body">
+                    <!-- Javascript fills this -->
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <!-- Modal: Calendario de Cobros -->
+    <div id="calendarModal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+        <div
+            class="bg-[#1a1a1a] border border-white/10 w-full max-w-4xl rounded-[2.5rem] flex flex-col h-[80vh] overflow-hidden shadow-2xl">
+            <div class="p-8 border-b border-white/5 flex justify-between items-center bg-white/2">
+                <div>
+                    <h3 class="text-xl font-black text-white italic tracking-tight uppercase">Calendario de Facturación
+                    </h3>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Proyecciones de MRR y
+                        cobros programados para Enero 2026</p>
+                </div>
+                <button onclick="closeCalendarModal()"
+                    class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-500 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="p-8 flex-1 overflow-y-auto space-y-8">
+                <div id="calendar-grid"
+                    class="grid grid-cols-7 gap-1 border border-white/5 rounded-3xl overflow-hidden bg-white/5">
+                    <!-- JS Fills this -->
+                </div>
+            </div>
+
+            <!-- Day Detail View (Hidden by default) -->
+            <div id="day-detail" class="hidden p-8 border-t border-white/5 bg-white/[0.02]">
+                <h4 id="detail-date" class="text-xs font-black text-brandPurple uppercase tracking-[0.2em] mb-4">Cobros
+                    para el 18 de Enero</h4>
+                <div id="detail-list" class="space-y-3">
+                    <!-- JS Fills this -->
+                </div>
+            </div>
+
+            <div class="p-6 bg-white/2 border-t border-white/5 flex justify-end gap-3">
+                <button id="close-detail-btn" onclick="hideDayDetail()"
+                    class="hidden px-6 py-3 rounded-xl bg-white/5 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white transition-all">Volver
+                    al Mes</button>
+                <button onclick="closeCalendarModal()"
+                    class="px-8 py-3 rounded-xl bg-brandPurple text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brandPurple/20">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderBilling();
+            initChart();
+            renderCalendar();
+        });
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            const days = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+            let html = days.map(d => `<div class="p-4 text-center text-[10px] font-black text-slate-500 uppercase bg-white/5">${d}</div>`).join('');
+
+            for (let i = 1; i <= 31; i++) {
+                const hasCharge = [5, 12, 18, 22, 25, 29].includes(i);
+                html += `
+                    <div onclick="showDayDetail(${i})" class="min-h-[100px] p-3 border border-white/5 bg-[#141414] relative group hover:bg-brandPurple/5 transition-all cursor-pointer">
+                        <span class="text-[10px] font-bold ${hasCharge ? 'text-brandPurple' : 'text-slate-700'}">${i}</span>
+                        ${hasCharge ? `
+                            <div class="mt-2 space-y-1">
+                                <div class="h-1.5 w-full bg-brandPurple/20 rounded-full overflow-hidden">
+                                    <div class="h-full bg-brandPurple w-2/3"></div>
+                                </div>
+                                <p class="text-[8px] font-black text-white uppercase truncate">${(Math.random() * 500 + 100).toFixed(0)}€</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+            grid.innerHTML = html;
+        }
+
+        function showDayDetail(day) {
+            const detail = document.getElementById('day-detail');
+            const grid = document.getElementById('calendar-grid');
+            const closeDetailBtn = document.getElementById('close-detail-btn');
+
+            document.getElementById('detail-date').innerText = `Cobros para el ${day} de Enero 2026`;
+
+            const hasCharge = [5, 12, 18, 22, 25, 29].includes(day);
+            const list = document.getElementById('detail-list');
+
+            if (hasCharge) {
+                list.innerHTML = `
+                    <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-brandPurple flex items-center justify-center font-black italic text-white">IM</div>
+                            <div>
+                                <p class="text-xs font-black text-white uppercase italic">Israel Madrigal</p>
+                                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Suscripción Pack Dúo • #C102</p>
+                            </div>
+                        </div>
+                        <div class="text-right flex items-center gap-6">
+                            <p class="text-sm font-black text-white italic">49.00€</p>
+                            <a href="admin_clientes.html?id=C102" class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-brandPurple hover:bg-brandPurple hover:text-white transition-all">
+                                <span class="material-symbols-outlined text-sm">open_in_new</span>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            } else {
+                list.innerHTML = `<p class="text-[10px] text-slate-600 font-bold uppercase tracking-widest italic text-center py-4">No hay cobros programados para este día</p>`;
+            }
+
+            detail.classList.remove('hidden');
+            grid.classList.add('opacity-30', 'pointer-events-none');
+            closeDetailBtn.classList.remove('hidden');
+        }
+
+        function hideDayDetail() {
+            document.getElementById('day-detail').classList.add('hidden');
+            document.getElementById('calendar-grid').classList.remove('opacity-30', 'pointer-events-none');
+            document.getElementById('close-detail-btn').classList.add('hidden');
+        }
+
+        function openCalendarModal() {
+            document.getElementById('calendarModal').classList.remove('hidden');
+            document.getElementById('calendarModal').classList.add('flex');
+            hideDayDetail();
+        }
+
+        function closeCalendarModal() {
+            document.getElementById('calendarModal').classList.add('hidden');
+            document.getElementById('calendarModal').classList.remove('flex');
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('incomeChart').getContext('2d');
+
+            // Custom plugin to show % difference labels
+            const labels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
+            const data2026 = [12480, 14200, 15100, 18500, 21000, 24500];
+            const data2025 = [9800, 10500, 12000, 13100, 14500, 15200];
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '2026',
+                            data: data2026,
+                            borderColor: '#6E44FF',
+                            backgroundColor: 'rgba(110, 68, 255, 0.1)',
+                            borderWidth: 4,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#6E44FF',
+                            pointHoverRadius: 8,
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: '2025',
+                            data: data2025,
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderWidth: 2,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#333',
+                            fill: false,
+                            tension: 0.4,
+                            borderDash: [5, 5]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const val = context.raw;
+                                    const index = context.dataIndex;
+                                    if (context.datasetIndex === 0) {
+                                        const diff = ((data2026[index] - data2025[index]) / data2025[index] * 100).toFixed(1);
+                                        return ` Ingreso: ${val}€ (+${diff}%)`;
+                                    }
+                                    return ` Ingreso: ${val}€`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false },
+                            ticks: {
+                                color: '#666',
+                                font: { size: 9, weight: 'bold' },
+                                callback: val => val / 1000 + 'k'
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#666', font: { size: 9, weight: 'bold' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderBilling() {
+            const dataStr = localStorage.getItem('BOXROOMER_DASHBOARD_DATA');
+            const tableBody = document.getElementById('billing-table-body');
+
+            let rowsHtml = `
+                <tr class="hover:bg-white/[0.02] transition-colors opacity-50">
+                    <td class="p-6 text-slate-600 font-mono text-xs">ch_3N8y2X...42Z</td>
+                    <td class="p-6">
+                        <span class="block text-white font-black italic uppercase text-[11px]">Pack Mini</span>
+                        <span class="text-[9px] text-slate-600 font-black uppercase tracking-widest">Suscripción Mensual</span>
+                    </td>
+                    <td class="p-6 flex items-center gap-3">
+                        <div class="w-7 h-7 bg-slate-800 rounded-lg flex items-center justify-center text-[10px] font-black">AG</div>
+                        <div class="text-[11px] text-slate-500 font-bold uppercase">Ana García</div>
+                    </td>
+                    <td class="p-6 text-slate-600 text-[11px]">12 Enero 2026</td>
+                    <td class="p-6 text-right font-black text-white italic">29.00€</td>
+                    <td class="p-6 text-right">
+                        <span class="bg-green-500/10 text-green-500 text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest border border-green-500/20">Pagado</span>
+                    </td>
+                </tr>
+            `;
+
+            if (dataStr) {
+                const data = JSON.parse(dataStr);
+                const priceMatch = (data.price || "€0").match(/\d+/);
+                const amount = priceMatch ? priceMatch[0] : "0";
+
+                rowsHtml = `
+                    <tr class="bg-brandPurple/5 hover:bg-brandPurple/10 transition-colors border-l-4 border-brandPurple group">
+                        <td class="p-6 text-brandPurple font-mono font-black italic text-xs">pi_AUTO_${Math.floor(Math.random() * 9999)}</td>
+                        <td class="p-6">
+                            <span class="block text-white font-black italic uppercase text-[11px]">${data.plan || 'Pack Web'}</span>
+                            <span class="text-[9px] text-brandPurple font-black uppercase tracking-widest">Nueva Contratación</span>
+                        </td>
+                        <td class="p-6">
+                            <p class="text-[11px] text-white font-black italic uppercase tracking-tighter">${data.userName || 'Usuario'}</p>
+                            <p class="text-[9px] text-slate-500 font-bold uppercase">${data.userEmail || ''}</p>
+                        </td>
+                        <td class="p-6 text-slate-300 text-[11px]">${data.bookingDate || '14 Ene 2026'}</td>
+                        <td class="p-6 text-right font-black text-white text-lg italic">${amount}.00€</td>
+                        <td class="p-6 text-right">
+                            <div class="flex flex-col items-end gap-1">
+                                <span class="bg-brandPurple/20 text-brandPurple text-[8px] font-black px-2 py-1 rounded uppercase tracking-widest ring-1 ring-brandPurple/30 animate-pulse">Completado</span>
+                                <span class="text-[8px] text-slate-600 font-bold">Reserva Online</span>
+                            </div>
+                        </td>
+                    </tr>
+                ` + rowsHtml;
+            }
+
+            tableBody.innerHTML = rowsHtml;
+        }
+    </script>
+</body>
+
+</html>
+</body>
+
+</html>

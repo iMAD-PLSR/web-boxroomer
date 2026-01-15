@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logística | BOXROOMER Admin</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;700;900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"
+        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../assets/js/tailwind.config.js"></script>
+
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .warehouse-grid {
+            display: grid;
+            grid-template-columns: repeat(20, 1fr);
+            gap: 2px;
+        }
+    </style>
+</head>
+
+<body class="bg-brandDark text-white h-screen overflow-hidden flex">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-[#111] border-r border-white/5 flex flex-col justify-between p-6">
+        <div>
+            <div class="flex items-center gap-3 mb-10 opacity-80 hover:opacity-100 transition-opacity cursor-pointer">
+                <img src="../assets/images/logo.png" alt="LOGO" class="h-6 brightness-0 invert">
+                <span
+                    class="bg-brandPurple text-white text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest">Admin</span>
+            </div>
+
+            <nav class="space-y-2">
+                <a href="admin_dashboard.html"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">space_dashboard</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Dashboard</span>
+                </a>
+                <a href="admin_clientes.html"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">group</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Clientes</span>
+                </a>
+                <a href="admin_logistica.html"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl bg-brandPurple text-white border border-brandPurple/20 shadow-lg shadow-brandPurple/10 transition-all">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Logística</span>
+                </a>
+                <a href="admin_facturacion.html"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">payments</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Facturación</span>
+                </a>
+                <a href="admin_ajustes.html"
+                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">settings</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Ajustes</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="px-4 py-3 bg-brandPurple/10 rounded-xl border border-brandPurple/20">
+            <p class="text-[10px] text-brandPurple font-black uppercase tracking-widest mb-1">Estado Operativo</p>
+            <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                <span class="text-xs font-bold text-white">Logística Activa</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto bg-[#0a0a0a] p-8">
+
+        <header class="flex justify-between items-end mb-10">
+            <div>
+                <h1 class="text-3xl font-black italic tracking-tighter uppercase">Planificación Logística</h1>
+                <p class="text-slate-400 text-sm font-medium mt-1">Gestión de rutas de transporte y servicios de campo
+                </p>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-12 gap-8">
+            <!-- Left Col: Routes -->
+            <div class="col-span-8 space-y-8">
+                <!-- Daily Summary -->
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="bg-[#141414] border border-white/5 p-6 rounded-3xl">
+                        <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Recogidas Hoy</p>
+                        <h4 class="text-2xl font-black text-white">12</h4>
+                    </div>
+                    <div class="bg-[#141414] border border-white/5 p-6 rounded-3xl">
+                        <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Entregas Hoy</p>
+                        <h4 class="text-2xl font-black text-white">4</h4>
+                    </div>
+                    <div class="bg-[#141414] border border-white/5 p-6 rounded-3xl">
+                        <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Efectividad</p>
+                        <h4 class="text-2xl font-black text-white text-green-500">100%</h4>
+                    </div>
+                </div>
+
+                <!-- Active Routes -->
+                <div class="bg-[#141414] border border-white/5 rounded-[2.5rem] overflow-hidden">
+                    <div class="p-8 border-b border-white/5 flex justify-between items-center">
+                        <h3 class="text-xs font-black uppercase tracking-widest text-slate-500 flex items-center gap-3">
+                            <span class="material-symbols-outlined text-sm">route</span> Ruta Detallada del Día
+                        </h3>
+                        <span
+                            class="bg-brandPurple/20 text-brandPurple text-[10px] font-black px-3 py-1 rounded-full border border-brandPurple/20 ring-4 ring-brandPurple/5">
+                            3 Servicios Activos
+                        </span>
+                    </div>
+                    <div class="divide-y divide-white/5" id="routes-container">
+                        <!-- JS fills this -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Col: Actions & Highlights -->
+            <div class="col-span-4 space-y-6">
+                <div
+                    class="bg-brandPurple p-8 rounded-[2.5rem] shadow-xl shadow-brandPurple/20 relative overflow-hidden group">
+                    <span
+                        class="material-symbols-outlined absolute -right-6 -bottom-6 text-white/10 text-9xl group-hover:scale-110 transition-transform">local_shipping</span>
+                    <h3 class="text-xl font-black text-white mb-2 italic">Nueva Reserva</h3>
+                    <p class="text-white/80 text-xs font-medium mb-6">Hay una orden pendiente de asignar fecha
+                        definitiva y ruta.</p>
+                    <button onclick="window.location.href='admin_dashboard.html'"
+                        class="bg-white text-brandDark px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-brandPurple hover:text-white border border-white transition-all">
+                        Ir a Dashboard
+                    </button>
+                </div>
+
+                <div class="bg-[#141414] border border-white/5 p-6 rounded-3xl">
+                    <h4 class="text-[10px] font-black uppercase text-slate-500 mb-4 tracking-widest">Estado por Servicio
+                    </h4>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-bold text-slate-300">Entrada Física</span>
+                            <span class="text-sm font-black text-white" id="stat-entries">14 hoy</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-bold text-slate-300">Salidas (Devolución)</span>
+                            <span class="text-sm font-black text-white">2 hoy</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-bold text-slate-300">Incidencias</span>
+                            <span class="text-xs font-black text-green-500 bg-green-500/10 px-2 py-0.5 rounded">0
+                                reportadas</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            renderRoutes();
+        });
+
+        function renderRoutes() {
+            const dataStr = localStorage.getItem('BOXROOMER_DASHBOARD_DATA');
+            const container = document.getElementById('routes-container');
+
+            // Dummy route 1
+            let routesHtml = `
+                <div class="p-6 flex items-center justify-between hover:bg-white/5 transition-colors group">
+                    <div class="flex items-center gap-4">
+                        <div class="relative">
+                            <div class="w-10 h-10 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-xs uppercase border border-blue-500/20">AG</div>
+                            <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#141414] flex items-center justify-center">
+                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                            </span>
+                        </div>
+                        <div>
+                            <p class="text-white font-bold group-hover:text-brandPurple transition-colors">Ana García</p>
+                            <div class="flex items-center gap-2">
+                                <span class="bg-blue-500/10 text-blue-400 px-1.5 rounded text-[8px] font-black uppercase tracking-wider">Entrega</span>
+                                <span class="text-[10px] text-slate-500 uppercase font-medium">Calle Velázquez 12</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="flex items-center justify-end gap-2 mb-1">
+                            <span class="material-symbols-outlined text-sm text-slate-500">schedule</span>
+                            <p class="text-sm font-black text-white">10:00 - 12:00</p>
+                        </div>
+                        <span class="text-[9px] font-black text-slate-600 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded">Vehículo B-102</span>
+                    </div>
+                </div>
+            `;
+
+            if (dataStr) {
+                const data = JSON.parse(dataStr);
+                const status = data.status || 'pending_pickup';
+                let statusColor = 'text-brandPurple';
+                let statusBg = 'bg-brandPurple/10';
+                let statusText = 'Recolecta';
+
+                if (status === 'canceled') {
+                    statusColor = 'text-red-500';
+                    statusBg = 'bg-red-500/10';
+                    statusText = 'Cancelada';
+                }
+
+                // Check for highlight param
+                const urlParams = new URLSearchParams(window.location.search);
+                const shouldHighlight = urlParams.get('highlight_user') === 'true';
+
+                const highlightClasses = shouldHighlight
+                    ? 'bg-brandPurple/20 border-l-4 border-brandPurple shadow-[0_0_30px_rgba(110,68,255,0.15)] scale-[1.02] z-10'
+                    : 'bg-white/[0.02] border-l-2 border-brandPurple hover:bg-brandPurple/5';
+
+                routesHtml = `
+                    <div class="p-6 flex items-center justify-between transition-all duration-500 group ${highlightClasses}">
+                        <div class="flex items-center gap-4">
+                            <div class="relative">
+                                <div class="w-10 h-10 rounded-full bg-brandPurple text-white flex items-center justify-center font-bold text-xs border border-white/10 shadow-lg shadow-brandPurple/20">
+                                    ${data.userName ? data.userName.charAt(0).toUpperCase() : 'U'}
+                                </div>
+                                <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#141414] flex items-center justify-center">
+                                    <span class="w-2 h-2 rounded-full bg-brandPurple animate-pulse"></span>
+                                </span>
+                            </div>
+                            <div>
+                                <p class="text-white font-bold group-hover:text-brandPurple transition-colors">${data.userName || 'Usuario'}</p>
+                                <div class="flex items-center gap-2">
+                                    <span class="${statusBg} ${statusColor} px-1.5 rounded text-[8px] font-black uppercase tracking-wider">${statusText}</span>
+                                    <span class="text-[10px] text-slate-500 uppercase font-medium truncate max-w-[150px]">${data.address || 'Madrid Centro'}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="flex items-center justify-end gap-2 mb-1">
+                                <span class="material-symbols-outlined text-sm text-slate-500">event</span>
+                                <p class="text-sm font-black text-white uppercase">${data.pickupDate || 'Pendiente'}</p>
+                            </div>
+                            <span class="text-[9px] font-black text-slate-500 uppercase tracking-tighter">${data.pickupTime || 'Turno Mañana'}</span>
+                        </div>
+                    </div>
+                ` + routesHtml;
+            }
+
+            container.innerHTML = routesHtml;
+        }
+    </script>
+</body>
+
+</html>
