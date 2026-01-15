@@ -208,3 +208,19 @@ Para garantizar una experiencia fluida en el asistente de reserva, se utiliza un
 - **Cabeceras y Navs**: Se mantienen estáticos en la parte superior del flujo flex.
 - **Cuerpo Scrolleable (`.flex-grow.overflow-y-auto`)**: El contenedor de contenido principal utiliza `flex-grow` para ocupar el espacio restante y `overflow-y-auto` para activar el scroll interno si el contenido (calendario, formularios, extras) excede el área visible.
 - **Scrollbar Premium**: Se aplica la clase `.custom-scrollbar` para mantener la estética corporativa incluso en las barras de desplazamiento.
+
+---
+
+## 🏗️ 15. Dynamic Navigation Indicators (Fluid Pills)
+
+Para el área de cliente, se implementa un sistema de navegación con indicadores fluidos ("Sliding Pills") que se desplazan físicamente hacia el item activo, creando una sensación de continuidad y fluidez de alta gama.
+
+- **Estructura**:
+  - Contenedor con clase `.nav-relative` y el id correspondiente (`sidebar-nav-pill` o `bottom-nav-pill`).
+  - Un elemento hijo vacío con clase `.nav-indicator-sidebar` o `.nav-indicator-mobile`.
+  - Los items de navegación deben tener la clase `.nav-item-pill-active` cuando están seleccionados.
+- **Lógica de Movimiento**:
+  - El desplazamiento se calcula en tiempo real mediante JavaScript (`main.js`) midiendo el `offsetTop`/`offsetLeft` y `offsetHeight`/`offsetWidth` del item con la clase activa.
+  - La transición utiliza un easing elástico `cubic-bezier(0.175, 0.885, 0.32, 1.275)` para un efecto premium.
+- **Animaciones de Entrada**:
+  - Todo el contenido principal (`<main>`) debe utilizar la clase `.fade-in-section` para una entrada suave y coordinada con la navegación.

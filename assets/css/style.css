@@ -161,3 +161,80 @@ input[type=range]::-webkit-slider-runnable-track {
     min-height: 0;
     flex-basis: 0;
 }
+
+/* --- Sliding Pill Navigation System --- */
+.nav-relative {
+    position: relative;
+    z-index: 10;
+}
+
+.nav-indicator-sidebar {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    background: var(--brandPurple);
+    border-radius: 1rem;
+    z-index: 0;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 30px -5px rgba(110, 68, 255, 0.4);
+    pointer-events: none;
+    opacity: 0;
+    /* JS lo activa */
+}
+
+/* El item activo debe estar por encima de la pastilla */
+.nav-relative a,
+.nav-relative button {
+    position: relative;
+    z-index: 10;
+}
+
+.nav-indicator-mobile {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--brandPurple);
+    border-radius: 1rem;
+    z-index: 0;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: none;
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .nav-indicator-mobile {
+        display: block;
+    }
+}
+
+/* Micro-animaciones de entrada de sección */
+.fade-in-section {
+    animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Activos sobre la pastilla */
+.nav-item-pill-active {
+    color: white !important;
+}
+
+.nav-item-pill-active span {
+    color: white !important;
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 48 !important;
+}
+
+/* Hover sutil para items no activos */
+.nav-relative a:not(.nav-item-pill-active):hover {
+    color: var(--text-main);
+}

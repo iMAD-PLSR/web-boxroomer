@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
     createScrollToTopButton();
     initCookieBanner();
     initScrollAnimations();
+    initNavPill();
 });
 
 // Scroll Animations Observer
@@ -202,3 +203,44 @@ function scrollToId(id) {
     }
 }
 window.scrollToId = scrollToId;
+
+/**
+ * Nav Pill Dynamization
+ * Handles the sliding indicator for both sidebar and mobile bottom nav
+ */
+function initNavPill() {
+    const sidebarNav = document.querySelector('.sidebar-nav-pill');
+    const bottomNav = document.querySelector('.bottom-nav-pill');
+
+    const updatePills = () => {
+        if (sidebarNav) {
+            const indicator = sidebarNav.querySelector('.nav-indicator-sidebar');
+            const activeItem = sidebarNav.querySelector('.nav-item-pill-active');
+            if (indicator && activeItem) {
+                indicator.style.height = `${activeItem.offsetHeight}px`;
+                indicator.style.top = `${activeItem.offsetTop}px`;
+                indicator.style.opacity = '1';
+            }
+        }
+
+        if (bottomNav) {
+            const indicator = bottomNav.querySelector('.nav-indicator-mobile');
+            const activeItem = bottomNav.querySelector('.nav-item-pill-active');
+            if (indicator && activeItem) {
+                indicator.style.width = `${activeItem.offsetWidth}px`;
+                indicator.style.height = `${activeItem.offsetHeight}px`;
+                indicator.style.left = `${activeItem.offsetLeft}px`;
+                indicator.style.opacity = '1';
+            }
+        }
+    };
+
+    updatePills();
+    window.addEventListener('resize', updatePills);
+
+    // Also trigger after a short delay or when visibility changes to ensure correct layout
+    setTimeout(updatePills, 300);
+}
+
+// Global expose to re-init if needed
+window.initNavPill = initNavPill;

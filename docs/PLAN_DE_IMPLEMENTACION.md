@@ -215,6 +215,9 @@ Se ha completado la construcción de todas las interfaces clave del ecosistema (
 - [x] **Cuenta & Perfil (`/pages/cliente_cuenta.html`)**:
   - **Premium Dark**: Settings organizados por categorías con visuales de glassmorphism.
   - Centro de ayuda dinámico integrado con BoxBot.
+- [x] **Experiencia de Navegación Dinámica**:
+  - **Sliding Pill System**: Navegación fluida con indicadores animados en sidebar y bottom bar.
+  - **Entrance Animations**: Micro-interacciones de carga (`fade-in-section`) en todas las secciones principales.
 
 #### **Torre de Control (Gestión)**
 

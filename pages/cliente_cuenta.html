@@ -93,24 +93,25 @@
                         class="h-8 md:h-10 w-auto group-hover:scale-105 transition-transform">
                 </div>
 
-                <nav class="space-y-3">
+                <nav class="space-y-3 nav-relative sidebar-nav-pill">
+                    <div class="nav-indicator-sidebar"></div>
                     <a href="cliente_dashboard.html"
-                        class="flex items-center gap-4 px-5 py-4 rounded-2xl text-[var(--text-muted)] hover:bg-[var(--card-hover)] hover:text-[var(--text-main)] transition-all group">
+                        class="flex items-center gap-4 px-5 py-4 rounded-2xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all group">
                         <span class="material-symbols-outlined">home</span>
                         <span class="font-black text-[11px] uppercase tracking-widest">Inicio</span>
                     </a>
                     <a href="cliente_inventario.html"
-                        class="flex items-center gap-4 px-5 py-4 rounded-2xl text-[var(--text-muted)] hover:bg-[var(--card-hover)] hover:text-[var(--text-main)] transition-all group">
+                        class="flex items-center gap-4 px-5 py-4 rounded-2xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all group">
                         <span class="material-symbols-outlined">grid_view</span>
                         <span class="font-black text-[11px] uppercase tracking-widest">Mis Cosas</span>
                     </a>
                     <a href="cliente_pagos.html"
-                        class="flex items-center gap-4 px-5 py-4 rounded-2xl text-[var(--text-muted)] hover:bg-[var(--card-hover)] hover:text-[var(--text-main)] transition-all group">
+                        class="flex items-center gap-4 px-5 py-4 rounded-2xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all group">
                         <span class="material-symbols-outlined">receipt_long</span>
                         <span class="font-black text-[11px] uppercase tracking-widest">Pagos</span>
                     </a>
                     <a href="cliente_cuenta.html"
-                        class="flex items-center gap-4 px-5 py-4 rounded-2xl bg-brandPurple text-white shadow-xl shadow-brandPurple/20 transition-all group">
+                        class="nav-item-pill-active flex items-center gap-4 px-5 py-4 rounded-2xl transition-all group">
                         <span class="material-symbols-outlined filled">settings</span>
                         <span class="font-black text-[11px] uppercase tracking-widest">Cuenta</span>
                     </a>
@@ -162,7 +163,7 @@
                 </div>
             </nav>
 
-            <main class="px-5 pt-8 pb-32 max-w-lg mx-auto md:max-w-5xl md:mx-0 md:p-12 w-full">
+            <main class="px-5 pt-8 pb-32 max-w-lg mx-auto md:max-w-5xl md:mx-0 md:p-12 w-full fade-in-section">
 
                 <!-- Profile Header -->
                 <div class="flex flex-col md:flex-row md:items-center md:gap-10 mb-16 px-2">
@@ -370,34 +371,33 @@
         </div>
     </div>
 
-    <!-- Mobile Nav -->
     <div
-        class="md:hidden fixed bottom-8 left-6 right-6 bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-3 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex justify-between items-center z-50">
+        class="md:hidden fixed bottom-8 left-6 right-6 bg-[var(--sidebar-bg)] backdrop-blur-3xl border border-[var(--card-border)] rounded-[2.5rem] p-3 shadow-2xl flex justify-between items-center z-50 nav-relative bottom-nav-pill">
+        <div class="nav-indicator-mobile"></div>
         <button onclick="window.location.href='cliente_dashboard.html'"
-            class="flex-1 flex flex-col items-center gap-1 py-1 text-slate-500 hover:text-white transition-colors">
+            class="flex-1 flex flex-col items-center gap-1 py-1 text-[var(--text-muted)] hover:text-brandPurple transition-colors">
             <span class="material-symbols-outlined">home</span>
             <span class="text-[8px] font-black uppercase tracking-widest">Inicio</span>
         </button>
         <button onclick="window.location.href='cliente_inventario.html'"
-            class="flex-1 flex flex-col items-center gap-1 py-1 text-slate-500 hover:text-white transition-colors">
+            class="flex-1 flex flex-col items-center gap-1 py-1 text-[var(--text-muted)] hover:text-brandPurple transition-colors">
             <span class="material-symbols-outlined">grid_view</span>
             <span class="text-[8px] font-black uppercase tracking-widest">Cosas</span>
         </button>
-        <div class="relative -top-10">
-            <button onclick="window.location.href='../pages/reserva.html'"
-                class="w-16 h-16 rounded-3xl bg-gradient-to-br from-brandPurple to-purple-400 text-white shadow-2xl shadow-brandPurple/40 flex items-center justify-center transform hover:scale-110 active:scale-90 transition-all border-4 border-[#0A0510]">
+        <div class="relative -top-10 z-20">
+            <button onclick="window.location.href='../pages/reserva.html?from=cuenta'"
+                class="w-16 h-16 rounded-3xl bg-brandPurple text-white shadow-2xl shadow-brandPurple/40 flex items-center justify-center transform hover:scale-110 active:scale-90 transition-all border-4 border-[var(--app-bg)]">
                 <span class="material-symbols-outlined text-2xl">add</span>
             </button>
         </div>
         <button onclick="window.location.href='cliente_pagos.html'"
-            class="flex-1 flex flex-col items-center gap-1 py-1 text-slate-500 hover:text-white transition-colors">
+            class="flex-1 flex flex-col items-center gap-1 py-1 text-[var(--text-muted)] hover:text-brandPurple transition-colors">
             <span class="material-symbols-outlined">receipt_long</span>
             <span class="text-[8px] font-black uppercase tracking-widest">Pagos</span>
         </button>
-        <button class="flex-1 flex flex-col items-center gap-1 py-1 text-brandPurple">
-            <div class="w-10 h-10 rounded-2xl bg-brandPurple/10 flex items-center justify-center">
-                <span class="material-symbols-outlined filled">settings</span>
-            </div>
+        <button onclick="window.location.href='cliente_cuenta.html'"
+            class="nav-item-pill-active flex-1 flex flex-col items-center gap-1 py-1 transition-all">
+            <span class="material-symbols-outlined filled">settings</span>
             <span class="text-[8px] font-black uppercase tracking-widest">Cuenta</span>
         </button>
     </div>

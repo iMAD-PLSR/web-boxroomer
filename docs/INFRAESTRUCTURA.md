@@ -60,7 +60,10 @@ Este documento detalla los componentes técnicos y servicios externos que sostie
 - **Interfaz**: Widget flotante `chat.js` personalizado con soporte para WhatsApp Direct y transiciones automáticas a humano.
 - **Logs**: Almacenamiento de sesiones en `localStorage` para persistencia durante la navegación.
 
-## 8. Seguridad y Backup
-
-- **Backup**: SiteGround Daily Backups + Backup redundante de fotos de inventario en bucket S3/Cloud alternativo (Mirroring).
 - **Legal**: Firma digital táctil con captura de IP, User-Agent y Timestamp.
+
+## 9. Sistema de Navegación Dinámica
+
+- **Lógica**: Implementada en `main.js` mediante la función `initNavPill()`.
+- **Funcionamiento**: Calcula coordenadas de elementos activos dinámicamente, permitiendo que el indicador visual "vuele" entre secciones sin recargas bruscas.
+- **Responsividad**: Ajusta el cálculo automáticamente para orientaciones verticales (Sidebar) u horizontales (Barra móvil).
