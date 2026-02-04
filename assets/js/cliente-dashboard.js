@@ -313,21 +313,46 @@ window.openTrackingModal = async function () {
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 
-    // 1. Obtener el lead en tránsito
+    // 1. Obtener el lead en tránsito (con fallback por email si falla el id)
     const { data: { session } } = await window.supabaseClient.auth.getSession();
-    const { data: lead } = await window.supabaseClient
+    let { data: lead } = await window.supabaseClient
         .from('leads_wizard')
         .select('*')
         .eq('user_id', session.user.id)
         .eq('status', 'in_transit')
         .maybeSingle();
 
+    if (!lead) {
+        // Fallback por email
+        const { data: fallbackLeads } = await window.supabaseClient
+            .from('leads_wizard')
+            .select('*')
+            .eq('email', session.user.email)
+            .eq('status', 'in_transit')
+            .maybeSingle();
+        lead = fallbackLeads;
+    }
+
     if (!lead || !lead.assigned_driver_id) {
-        console.warn("No hay conductor asignado o no está en camino.");
+        console.warn("⚠️ [Tracking] No hay conductor asignado o no está en camino.");
+        const distanceText = document.getElementById('tracking-distance-info');
+        if (distanceText) distanceText.innerText = "ESPERANDO ACTUALIZACIÓN GPS...";
         return;
     }
 
-    // 2. Geocodificar la dirección del cliente solo una vez
+    // 2. Obtener Nombre del Conductor real
+    const { data: driverProfile } = await window.supabaseClient
+        .from('profiles')
+        .select('full_name')
+        .eq('id', lead.assigned_driver_id)
+        .maybeSingle();
+
+    if (driverProfile) {
+        const driverNameEl = modal.querySelector('p.text-\\[10px\\].font-black.text-\\[var\\(--text-main\\)\\]');
+        if (driverNameEl) driverNameEl.innerText = `Transportista: ${driverProfile.full_name}`;
+    }
+
+    // 3. Geocodificar la dirección del cliente solo una vez
     if (!clientCoords) {
         const address = `${lead.pickup_address || lead.address}, ${lead.pickup_city || lead.city}`;
         try {
@@ -336,15 +361,14 @@ window.openTrackingModal = async function () {
             const data = await resp.json();
             if (data && data.length > 0) {
                 clientCoords = { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+                console.log("📍 [Tracking] Cliente geocodificado:", clientCoords);
             }
         } catch (e) {
-            console.error("Error geocodificando cliente:", e);
+            console.error("❌ [Tracking] Error geocodificando cliente:", e);
         }
     }
 
-    // 3. Suscribirse a la ubicación real del conductor
-    if (trackingSubscription) trackingSubscription.unsubscribe();
-
+    // 4. Función de actualización de UI
     const updateModalETA = async (driverLat, driverLon) => {
         if (!clientCoords) return;
 
@@ -362,7 +386,7 @@ window.openTrackingModal = async function () {
         let minutes = (distance / 30) * 60 * 1.5 + 4;
         const roundedMinutes = Math.ceil(minutes);
 
-        // Actualizar UI
+        // Actualizar UI con IDs específicos
         const etaText = document.getElementById('tracking-eta-value');
         if (etaText) etaText.innerText = `${roundedMinutes} min`;
 
@@ -370,14 +394,24 @@ window.openTrackingModal = async function () {
         if (distanceText) distanceText.innerText = `CONDUCTOR A ${distance.toFixed(1)} KM • BOXROOMER LIVE`;
     };
 
-    // Primera carga manual para no esperar a la suscripción
+    // 5. Suscribirse a la ubicación real del conductor
+    if (trackingSubscription) trackingSubscription.unsubscribe();
+
+    // Primera carga manual
     const { data: loc } = await window.supabaseClient
         .from('driver_locations')
         .select('*')
         .eq('driver_id', lead.assigned_driver_id)
         .maybeSingle();
 
-    if (loc) updateModalETA(loc.latitude, loc.longitude);
+    if (loc) {
+        console.log("📍 [Tracking] Ubicación conductor inicial encontrada:", loc.latitude, loc.longitude);
+        updateModalETA(loc.latitude, loc.longitude);
+    } else {
+        console.warn("⚠️ [Tracking] El conductor no tiene ubicación activa en driver_locations.");
+        const distanceText = document.getElementById('tracking-distance-info');
+        if (distanceText) distanceText.innerText = "CONDUCTOR FUERA DE RANGO GPS";
+    }
 
     trackingSubscription = window.supabaseClient
         .channel('live-gps')
@@ -387,6 +421,7 @@ window.openTrackingModal = async function () {
             table: 'driver_locations',
             filter: `driver_id=eq.${lead.assigned_driver_id}`
         }, (payload) => {
+            console.log("📍 [Tracking] Movimiento detectado:", payload.new.latitude, payload.new.longitude);
             updateModalETA(payload.new.latitude, payload.new.longitude);
         })
         .subscribe();
