@@ -234,9 +234,7 @@ function updateUI(user, profile, leads) {
         statusColorClass = 'bg-green-400';
         canRecover = true;
     } else if (leads.some(l => l.status === 'in_transit')) {
-        const activeLead = leads.find(l => l.status === 'in_transit');
-        const eta = activeLead.estimated_trip_minutes ? `Llegada en ${activeLead.estimated_trip_minutes} min` : 'CONDUCTOR EN CAMINO';
-        statusLabel = eta;
+        statusLabel = 'CONDUCTOR EN CAMINO';
         statusColorClass = 'bg-blue-500';
         isPulse = true;
     } else if (anyPending) {
@@ -277,10 +275,6 @@ function updateUI(user, profile, leads) {
 function renderTrackingButton(isPending, leads = []) {
     let container = document.getElementById('tracking-btn-container');
 
-    // Buscar si hay algún lead en tránsito para mostrar el ETA en el botón
-    const transitLead = leads.find(l => l.status === 'in_transit');
-    const etaText = transitLead?.estimated_trip_minutes ? ` - ${transitLead.estimated_trip_minutes} min` : '';
-
     // Create container if not exists (in updateUI flow)
     if (!container) {
         const statusCard = document.querySelector('#dashboard-status-text').closest('.glass-panel, .bg-\\[var\\(--card-bg\\)\\]');
@@ -297,7 +291,7 @@ function renderTrackingButton(isPending, leads = []) {
         container.innerHTML = `
             <button onclick="window.openTrackingModal()" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-orange-500/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 group">
                 <span class="material-symbols-outlined text-lg animate-bounce">local_shipping</span>
-                Rastrear Recogida${etaText}
+                Rastrear Recogida
             </button>
         `;
     } else if (container) {
@@ -309,43 +303,104 @@ function renderTrackingButton(isPending, leads = []) {
 // TRACKING MODAL LOGIC
 // ---------------------------------------------------------
 
+let trackingSubscription = null;
+let clientCoords = null;
+
 window.openTrackingModal = async function () {
     const modal = document.getElementById('trackingModal');
-    if (modal) {
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden'; // Lock scroll
+    if (!modal) return;
 
-        // 1. Obtener datos actuales del lead en tránsito
-        const { data: { session } } = await window.supabaseClient.auth.getSession();
-        const { data: leads } = await window.supabaseClient
-            .from('leads_wizard')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .eq('status', 'in_transit')
-            .maybeSingle();
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
 
-        if (leads && leads.en_route_at && leads.estimated_trip_minutes) {
-            const startTime = new Date(leads.en_route_at);
-            const etaMinutes = parseInt(leads.estimated_trip_minutes);
-            const arrivalTime = new Date(startTime.getTime() + etaMinutes * 60000);
+    // 1. Obtener el lead en tránsito
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
+    const { data: lead } = await window.supabaseClient
+        .from('leads_wizard')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .eq('status', 'in_transit')
+        .maybeSingle();
 
-            // Actualizar UI del Modal
-            const etaTimeEl = modal.querySelector('h4');
-            if (etaTimeEl) {
-                etaTimeEl.innerText = arrivalTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    if (!lead || !lead.assigned_driver_id) {
+        console.warn("No hay conductor asignado o no está en camino.");
+        return;
+    }
+
+    // 2. Geocodificar la dirección del cliente solo una vez
+    if (!clientCoords) {
+        const address = `${lead.pickup_address || lead.address}, ${lead.pickup_city || lead.city}`;
+        try {
+            const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
+            const resp = await fetch(geoUrl);
+            const data = await resp.json();
+            if (data && data.length > 0) {
+                clientCoords = { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
             }
-
-            const etaWindowEl = modal.querySelector('p.text-brandPurple'); // Selector del label superior
-            if (etaWindowEl) etaWindowEl.innerText = `LLEGADA ESTIMADA`;
+        } catch (e) {
+            console.error("Error geocodificando cliente:", e);
         }
     }
+
+    // 3. Suscribirse a la ubicación real del conductor
+    if (trackingSubscription) trackingSubscription.unsubscribe();
+
+    const updateModalETA = async (driverLat, driverLon) => {
+        if (!clientCoords) return;
+
+        // Calcular distancia Haversine
+        const R = 6371;
+        const dLat = (clientCoords.lat - driverLat) * Math.PI / 180;
+        const dLon = (clientCoords.lon - driverLon) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(driverLat * Math.PI / 180) * Math.cos(clientCoords.lat * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = R * c;
+
+        // Estimación dinámica (30km/h ciudad + tráfico)
+        let minutes = (distance / 30) * 60 * 1.5 + 4;
+        const roundedMinutes = Math.ceil(minutes);
+
+        // Actualizar UI
+        const etaText = document.getElementById('tracking-eta-value');
+        if (etaText) etaText.innerText = `${roundedMinutes} min`;
+
+        const distanceText = document.getElementById('tracking-distance-info');
+        if (distanceText) distanceText.innerText = `CONDUCTOR A ${distance.toFixed(1)} KM • BOXROOMER LIVE`;
+    };
+
+    // Primera carga manual para no esperar a la suscripción
+    const { data: loc } = await window.supabaseClient
+        .from('driver_locations')
+        .select('*')
+        .eq('driver_id', lead.assigned_driver_id)
+        .maybeSingle();
+
+    if (loc) updateModalETA(loc.latitude, loc.longitude);
+
+    trackingSubscription = window.supabaseClient
+        .channel('live-gps')
+        .on('postgres_changes', {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'driver_locations',
+            filter: `driver_id=eq.${lead.assigned_driver_id}`
+        }, (payload) => {
+            updateModalETA(payload.new.latitude, payload.new.longitude);
+        })
+        .subscribe();
 }
 
 window.closeTrackingModal = function () {
     const modal = document.getElementById('trackingModal');
     if (modal) {
         modal.classList.add('hidden');
-        document.body.style.overflow = ''; // Unlock scroll
+        document.body.style.overflow = '';
+        if (trackingSubscription) {
+            trackingSubscription.unsubscribe();
+            trackingSubscription = null;
+        }
     }
 }
 
