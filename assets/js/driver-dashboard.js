@@ -2324,37 +2324,42 @@ window.showServiceDetails = function (taskId) {
     // Inyectar Fotos
     const photoGrid = document.getElementById('detail-photos-grid');
     photoGrid.innerHTML = '';
+    let foundAnyPhoto = false;
 
-    // Si hay fotos de la entrega (paths)
-    if (evidence.photos && evidence.photos.length > 0) {
+    // 1. Fotos de la entrega (vía Storage)
+    if (evidence.photos && Array.isArray(evidence.photos)) {
         evidence.photos.forEach(path => {
-            photoGrid.innerHTML += `
-                <div class="aspect-square rounded-xl overflow-hidden bg-white/5 border border-white/10 clickable-photo" onclick="window.open('${storageUrl}${path}', '_blank')">
-                    <img src="${storageUrl}${path}" class="w-full h-full object-cover">
-                </div>
-            `;
-        });
-    }
-    // Si hay fotos previas (base64 o paths antiguos del modal de evidencia)
-    else if (Object.keys(evidence).length > 0) {
-        // Recorrer el objeto evidence por si hay fotos previas (before_1, etc)
-        const photoKeys = ['before_1', 'before_2', 'after_1', 'after_2'];
-        let foundAny = false;
-        photoKeys.forEach(key => {
-            if (evidence[key]) {
-                foundAny = true;
-                const src = evidence[key].startsWith('data:') ? evidence[key] : `${storageUrl}${evidence[key]}`;
+            if (path && typeof path === 'string') {
+                foundAnyPhoto = true;
                 photoGrid.innerHTML += `
-                    <div class="aspect-square rounded-xl overflow-hidden bg-white/5 border border-white/10 clickable-photo" onclick="window.open('${src}', '_blank')">
-                        <img src="${src}" class="w-full h-full object-cover">
+                    <div class="aspect-square rounded-xl overflow-hidden bg-white/5 border border-white/10 clickable-photo" onclick="window.open('${storageUrl}${path}', '_blank')">
+                        <img src="${storageUrl}${path}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none'">
                     </div>
                 `;
             }
         });
-        if (!foundAny) photoGrid.innerHTML = '<p class="text-[9px] text-slate-600 uppercase font-black italic">No hay fotos</p>';
     }
-    else {
-        photoGrid.innerHTML = '<p class="text-[9px] text-slate-600 uppercase font-black italic">No hay fotos</p>';
+
+    // 2. Fotos de trayecto/incidencias (vía Base64 u otros slots)
+    const extraSlots = ['before_1', 'before_2', 'after_1', 'after_2'];
+    extraSlots.forEach(key => {
+        if (evidence[key] && typeof evidence[key] === 'string' && evidence[key].length > 100) {
+            foundAnyPhoto = true;
+            const src = evidence[key].startsWith('data:') ? evidence[key] : `${storageUrl}${evidence[key]}`;
+            photoGrid.innerHTML += `
+                <div class="aspect-square rounded-xl overflow-hidden bg-white/5 border border-white/10 clickable-photo" onclick="window.open('${src}', '_blank')">
+                    <img src="${src}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none'">
+                </div>
+            `;
+        }
+    });
+
+    if (!foundAnyPhoto) {
+        photoGrid.innerHTML = `
+            <div class="col-span-3 py-4 text-center bg-white/5 rounded-2xl border border-dashed border-white/10">
+                <p class="text-[9px] text-slate-500 uppercase font-black tracking-widest italic">No se adjuntaron fotos</p>
+            </div>
+        `;
     }
 
     // Firma
