@@ -355,21 +355,27 @@ window.openTrackingModal = async function () {
     // 3. Geocodificar la dirección del cliente solo una vez
     if (!clientCoords) {
         const address = `${lead.pickup_address || lead.address}, ${lead.pickup_city || lead.city}`;
+        console.log("🔍 [Tracking] Geocodificando destino:", address);
         try {
             const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
             const resp = await fetch(geoUrl);
             const data = await resp.json();
             if (data && data.length > 0) {
                 clientCoords = { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
-                console.log("📍 [Tracking] Cliente geocodificado:", clientCoords);
+                console.log("✅ [Tracking] Destino fijado:", clientCoords);
+            } else {
+                console.warn("⚠️ [Tracking] Nominatim no encontró la dirección, usando fallback Madrid Centro");
+                clientCoords = { lat: 40.4168, lon: -3.7038 }; // Fallback
             }
         } catch (e) {
-            console.error("❌ [Tracking] Error geocodificando cliente:", e);
+            console.error("❌ [Tracking] Error en geocoding:", e);
+            clientCoords = { lat: 40.4168, lon: -3.7038 };
         }
     }
 
     // 4. Función de actualización de UI
     const updateModalETA = async (driverLat, driverLon) => {
+        console.log(`📍 [Tracking] Calculando distancia: Driver(${driverLat}, ${driverLon}) -> Client(${clientCoords.lat}, ${clientCoords.lon})`);
         if (!clientCoords) return;
 
         // Calcular distancia Haversine
@@ -381,6 +387,8 @@ window.openTrackingModal = async function () {
             Math.sin(dLon / 2) * Math.sin(dLon / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         const distance = R * c;
+
+        console.log(`📏 [Tracking] Distancia calculada: ${distance.toFixed(2)} km`);
 
         // Estimación dinámica (30km/h ciudad + tráfico)
         let minutes = (distance / 30) * 60 * 1.5 + 4;
