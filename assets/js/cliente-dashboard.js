@@ -93,6 +93,10 @@ function showStatusChangeFeedback(newStatus) {
     } else if (newStatus === 'in_transit') {
         const toast = document.createElement('div');
         toast.className = 'fixed top-6 left-1/2 -translate-x-1/2 z-[100] animate-fade-in-down';
+
+        // Intentar obtener el ETA del payload si existe
+        const eta = payload.new.estimated_trip_minutes || '...';
+
         toast.innerHTML = `
             <div onclick="window.openTrackingModal()" class="glass-panel p-4 rounded-[2rem] border border-brandPurple/30 bg-brandPurple/10 backdrop-blur-xl flex items-center gap-4 shadow-2xl shadow-brandPurple/20 cursor-pointer hover:scale-105 transition-all">
                 <div class="w-10 h-10 rounded-full bg-brandPurple flex items-center justify-center text-white animate-bounce">
@@ -100,7 +104,7 @@ function showStatusChangeFeedback(newStatus) {
                 </div>
                 <div>
                     <h4 class="text-[10px] font-black uppercase text-brandPurple tracking-widest">¡Conductor en Camino!</h4>
-                    <p class="text-[9px] font-bold text-slate-300">Tu recogida ha comenzado. Pulsa para rastrear.</p>
+                    <p class="text-[9px] font-bold text-slate-300">Llegada estimada en ${eta} min. Pulsa para rastrear.</p>
                 </div>
             </div>
         `;
@@ -230,7 +234,9 @@ function updateUI(user, profile, leads) {
         statusColorClass = 'bg-green-400';
         canRecover = true;
     } else if (leads.some(l => l.status === 'in_transit')) {
-        statusLabel = 'CONDUCTOR EN CAMINO';
+        const activeLead = leads.find(l => l.status === 'in_transit');
+        const eta = activeLead.estimated_trip_minutes ? `Llegada en ${activeLead.estimated_trip_minutes} min` : 'CONDUCTOR EN CAMINO';
+        statusLabel = eta;
         statusColorClass = 'bg-blue-500';
         isPulse = true;
     } else if (anyPending) {
@@ -256,7 +262,7 @@ function updateUI(user, profile, leads) {
     }
 
     // Dynamic Tracking Button for Pending Pickup
-    renderTrackingButton(anyPending);
+    renderTrackingButton(anyPending, leads);
 
     if (planNameEl) {
         planNameEl.innerText = leads.length > 1 ? 'Espacio Consolidado' : `Plan ${totalVol.toFixed(1)}m³`;
@@ -268,8 +274,12 @@ function updateUI(user, profile, leads) {
     }
 }
 
-function renderTrackingButton(isPending) {
+function renderTrackingButton(isPending, leads = []) {
     let container = document.getElementById('tracking-btn-container');
+
+    // Buscar si hay algún lead en tránsito para mostrar el ETA en el botón
+    const transitLead = leads.find(l => l.status === 'in_transit');
+    const etaText = transitLead?.estimated_trip_minutes ? ` - ${transitLead.estimated_trip_minutes} min` : '';
 
     // Create container if not exists (in updateUI flow)
     if (!container) {
@@ -287,7 +297,7 @@ function renderTrackingButton(isPending) {
         container.innerHTML = `
             <button onclick="window.openTrackingModal()" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-orange-500/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 group">
                 <span class="material-symbols-outlined text-lg animate-bounce">local_shipping</span>
-                Rastrear Recogida
+                Rastrear Recogida${etaText}
             </button>
         `;
     } else if (container) {
@@ -299,14 +309,35 @@ function renderTrackingButton(isPending) {
 // TRACKING MODAL LOGIC
 // ---------------------------------------------------------
 
-window.openTrackingModal = function () {
+window.openTrackingModal = async function () {
     const modal = document.getElementById('trackingModal');
     if (modal) {
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden'; // Lock scroll
 
-        // Simular efecto de carga de GPS
-        addTimelineEventToTracking();
+        // 1. Obtener datos actuales del lead en tránsito
+        const { data: { session } } = await window.supabaseClient.auth.getSession();
+        const { data: leads } = await window.supabaseClient
+            .from('leads_wizard')
+            .select('*')
+            .eq('user_id', session.user.id)
+            .eq('status', 'in_transit')
+            .maybeSingle();
+
+        if (leads && leads.en_route_at && leads.estimated_trip_minutes) {
+            const startTime = new Date(leads.en_route_at);
+            const etaMinutes = parseInt(leads.estimated_trip_minutes);
+            const arrivalTime = new Date(startTime.getTime() + etaMinutes * 60000);
+
+            // Actualizar UI del Modal
+            const etaTimeEl = modal.querySelector('h4');
+            if (etaTimeEl) {
+                etaTimeEl.innerText = arrivalTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+            }
+
+            const etaWindowEl = modal.querySelector('p.text-brandPurple'); // Selector del label superior
+            if (etaWindowEl) etaWindowEl.innerText = `LLEGADA ESTIMADA`;
+        }
     }
 }
 
