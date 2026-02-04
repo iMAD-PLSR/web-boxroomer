@@ -1657,11 +1657,11 @@ function initializeSortable() {
         dragClass: 'dragging',
         filter: '.no-drag',
         preventOnFilter: false,
-        delay: 50, // Pequeño delay para permitir scroll en móvil
-        delayOnTouchOnly: true, // Solo en táctil para no penalizar desktop
+        delay: 100, // Un poco más de delay para asegurar scroll en móvil
+        delayOnTouchOnly: true,
         handle: '.can-drag',
-        forceFallback: true, // Forzar fallback para mejor control de eventos
-        fallbackTolerance: 3, // Tolerancia al mover antes de iniciar drag
+        bubbleScroll: true, // Permitir que el scroll se propague
+        forceFallback: false, // Usar drag nativo para evitar interferencias con el scroll del ratón
         onMove: function (evt) {
             // No permitir mover un elemento por encima de uno que ya esté iniciado
             const targetStatus = evt.related.getAttribute('data-status');
