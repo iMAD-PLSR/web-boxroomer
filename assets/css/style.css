@@ -224,6 +224,23 @@ input[type=range]::-webkit-slider-runnable-track {
     }
 }
 
+.animate-fade-in {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
 /* Activos sobre la pastilla */
 .nav-item-pill-active {
     color: white !important;

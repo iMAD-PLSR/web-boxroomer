@@ -1,0 +1,10 @@
+// Añadir al final de renderMyRoute() para inicializar SortableJS
+// Esta función debe llamarse después de que se renderice la lista
+
+// Copiar este código y pegarlo manualmente al final de la función renderMyRoute() en driver-dashboard.js
+// justo después de la línea: `}).join('');`
+
+    // Inicializar SortableJS después de renderizar
+    setTimeout(() => {
+        initializeSortable();
+    }, 100);

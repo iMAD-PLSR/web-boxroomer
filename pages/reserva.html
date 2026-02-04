@@ -99,7 +99,7 @@
 
                 <!-- Left: Form Step -->
                 <div
-                    class="w-full lg:w-[60%] h-full min-h-0 bg-white rounded-[2rem] md:rounded-[3rem] shadow-2xl border border-brandPurple/5 p-5 md:p-10 flex flex-col reveal active transition-all duration-500 overflow-hidden">
+                    class="w-full lg:w-[60%] h-full min-h-0 bg-white rounded-[2rem] md:rounded-[3rem] shadow-card-white p-5 md:p-10 flex flex-col reveal active transition-all duration-500 overflow-hidden">
                     <!-- Contenido del Paso -->
                     <div id="wizard-step-1" class="step-content flex flex-col h-full overflow-hidden">
                         <!-- Header del Paso (Fijo) -->
@@ -136,7 +136,7 @@
                         <div id="selection-area" class="flex-grow overflow-y-auto custom-scrollbar px-1 pr-3 min-h-0">
                             <!-- Pack View -->
                             <div id="view-packs" class="flex flex-col gap-4 pb-4">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4 mt-6">
                                     <!-- Pack Mini -->
                                     <div id="pack-card-mini" onclick="selectPack(1)"
                                         class="magnetic-card group cursor-pointer bg-white rounded-[2rem] p-4 md:p-5 border-2 border-slate-100 transition-all relative overflow-hidden h-full flex flex-col justify-between">
@@ -162,9 +162,15 @@
                                                 Ropa de temporada o 10 cajas</p>
                                             <ul
                                                 class="space-y-1 text-[10px] md:text-[11px] font-bold text-slate-500 mb-3 md:mb-4">
-                                                <li class="flex items-center gap-2">✅ Recogida y Entrega GRATIS</li>
-                                                <li class="flex items-center gap-2">✅ Seguro 1.000€/m³</li>
-                                                <li class="flex items-center gap-2">✅ Catálogo Digital App</li>
+                                                <li class="flex items-center gap-2"><span
+                                                        class="material-symbols-outlined text-[14px] text-green-500">verified</span>
+                                                    Recogida y Entrega GRATIS</li>
+                                                <li class="flex items-center gap-2"><span
+                                                        class="material-symbols-outlined text-[14px] text-green-500">verified</span>
+                                                    Seguro 1.000€/m³</li>
+                                                <li class="flex items-center gap-2"><span
+                                                        class="material-symbols-outlined text-[14px] text-green-500">verified</span>
+                                                    Catálogo Digital App</li>
                                             </ul>
                                         </div>
                                         <div class="relative z-10 pt-2 border-t border-slate-50">
@@ -204,9 +210,15 @@
                                                 Bicis o habitación completa</p>
                                             <ul
                                                 class="space-y-1 text-[10px] md:text-[11px] font-bold text-slate-500 mb-3 md:mb-4">
-                                                <li class="flex items-center gap-2">✅ Recogida y Entrega GRATIS</li>
-                                                <li class="flex items-center gap-2">✅ Seguro 1.000€/m³</li>
-                                                <li class="flex items-center gap-2">✅ Catálogo Digital App</li>
+                                                <li class="flex items-center gap-2"><span
+                                                        class="material-symbols-outlined text-[14px] text-green-500">verified</span>
+                                                    Recogida y Entrega GRATIS</li>
+                                                <li class="flex items-center gap-2"><span
+                                                        class="material-symbols-outlined text-[14px] text-green-500">verified</span>
+                                                    Seguro 1.000€/m³</li>
+                                                <li class="flex items-center gap-2"><span
+                                                        class="material-symbols-outlined text-[14px] text-green-500">verified</span>
+                                                    Catálogo Digital App</li>
                                             </ul>
                                         </div>
                                         <div class="relative z-10 pt-2 border-t border-slate-50">
@@ -224,7 +236,7 @@
                             </div>
 
                             <!-- Manual m³ View -->
-                            <div id="view-manual" class="hidden py-1 flex flex-col gap-3">
+                            <div id="view-manual" class="hidden py-1 flex flex-col gap-3 mt-6">
                                 <div
                                     class="bg-white border-2 border-brandPurple/10 rounded-[2rem] p-4 md:p-5 flex flex-col shadow-sm relative overflow-hidden">
                                     <!-- Decorative subtle background -->
@@ -410,9 +422,26 @@
                                 <div id="address-section"
                                     class="staggered-item bg-slate-50/50 p-4 rounded-[2rem] border border-slate-100 flex flex-col gap-3 transition-all duration-500"
                                     style="animation-delay: 0.2s;">
+
+                                    <!-- Saved Addresses Selector (Hidden by default, shown via JS if logged in) -->
+                                    <div id="saved-addresses-container" class="hidden mb-2 animate-fade-in">
+                                        <label
+                                            class="text-[9px] font-black uppercase tracking-[0.2em] text-brandPurple px-1 mb-2 block">Usar
+                                            dirección guardada</label>
+                                        <div id="saved-addresses-list" class="flex flex-col gap-2">
+                                            <!-- Dynamic items -->
+                                        </div>
+                                        <div class="flex items-center gap-4 mt-4 opacity-20">
+                                            <div class="h-px bg-slate-400 flex-grow"></div>
+                                            <span class="text-[8px] font-black uppercase tracking-[0.3em]">O introduce
+                                                una nueva</span>
+                                            <div class="h-px bg-slate-400 flex-grow"></div>
+                                        </div>
+                                    </div>
+
                                     <label
-                                        class="text-[11px] font-black uppercase tracking-[0.2em] text-brandPurple px-1">Dirección
-                                        del Trastero</label>
+                                        class="text-[11px] font-black uppercase tracking-[0.2em] text-brandPurple px-1">Domicilio
+                                        de la recogida</label>
                                     <div class="relative group">
                                         <span
                                             class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">location_on</span>
@@ -427,6 +456,43 @@
                                         <input type="text" id="pickup-city" oninput="saveAddress(); validateStep2()"
                                             placeholder="Ciudad"
                                             class="w-3/4 bg-white border-2 border-slate-100 rounded-xl py-2 px-3 outline-none focus:border-brandPurple transition-all text-xs font-bold shadow-sm placeholder:text-slate-300">
+                                    </div>
+
+                                    <!-- Option to save new address to profile -->
+                                    <!-- Option to save new address to profile -->
+                                    <div id="save-to-profile-container" class="hidden mt-2 px-1">
+                                        <div class="flex flex-col gap-3">
+                                            <label class="flex items-center gap-3 cursor-pointer group">
+                                                <div class="relative flex items-center">
+                                                    <input type="checkbox" id="save-address-check" class="peer sr-only"
+                                                        onchange="toggleAliasField()">
+                                                    <div
+                                                        class="w-8 h-5 bg-slate-200 rounded-full peer peer-checked:bg-brandPurple transition-all duration-300">
+                                                    </div>
+                                                    <div
+                                                        class="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-all duration-300 peer-checked:translate-x-3">
+                                                    </div>
+                                                </div>
+                                                <div class="flex flex-col">
+                                                    <span
+                                                        class="text-[8px] font-black uppercase tracking-widest text-slate-500 group-hover:text-brandPurple transition-colors">Guardar
+                                                        en mi perfil</span>
+                                                    <span class="text-[7px] font-bold text-slate-400 leading-none">Para
+                                                        futuras reservas</span>
+                                                </div>
+                                            </label>
+
+                                            <!-- Alias input field (Hidden by default) -->
+                                            <div id="address-alias-container" class="hidden animate-fade-in">
+                                                <div class="relative">
+                                                    <span
+                                                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-brandPurple/50 text-sm">label</span>
+                                                    <input type="text" id="address-alias"
+                                                        placeholder="Ej: Mi Casa, Oficina..."
+                                                        class="w-full bg-brandPurple/5 border border-brandPurple/10 rounded-xl py-2 pl-9 pr-3 outline-none focus:border-brandPurple transition-all text-[10px] font-bold text-brandDark placeholder:text-slate-400">
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -487,13 +553,13 @@
                                                     enseres</span>
                                             </button>
                                             <button onclick="setLoadType('heavy')" id="load-heavy"
-                                                class="flex-1 flex flex-col items-center justify-center gap-0.5 transition-all text-slate-400">
+                                                class="flex-1 flex flex-col items-center justify-center gap-1 transition-all text-slate-400">
                                                 <span class="material-symbols-outlined text-lg">conveyor_belt</span>
                                                 <span class="text-[11px] font-black uppercase text-center">Muebles
                                                     grandes</span>
                                                 <span
                                                     class="text-[9px] text-brandPurple font-bold italic leading-none">+
-                                                    Mozo extra (35€)</span>
+                                                    Mozo extra</span>
                                             </button>
                                         </div>
                                     </div>
@@ -503,6 +569,7 @@
                                         tramo de 15 min.
                                     </p>
                                 </div>
+
 
                                 <!-- Date & Time Selection -->
                                 <div class="staggered-item bg-white border-2 border-brandPurple/5 rounded-[2rem] p-4 shadow-sm relative"
@@ -521,17 +588,28 @@
 
                                         <button onclick="setTimeSlot('morning')" id="slot-morning"
                                             class="relative z-10 py-2.5 px-3 rounded-xl text-slate-400 font-extrabold text-[9px] uppercase tracking-wider transition-all flex items-center justify-center gap-2">
-                                            <span class="material-symbols-outlined text-sm">light_mode</span> Mañana
+                                            <span class="material-symbols-outlined text-sm">light_mode</span>
+                                            <div>
+                                                <span>Mañana</span>
+                                                <span class="block text-[7px] font-normal opacity-70">09:00 -
+                                                    14:00</span>
+                                            </div>
                                         </button>
                                         <button onclick="setTimeSlot('afternoon')" id="slot-afternoon"
                                             class="relative z-10 py-2.5 px-3 rounded-xl text-slate-400 font-extrabold text-[9px] uppercase tracking-wider transition-all flex items-center justify-center gap-2">
-                                            <span class="material-symbols-outlined text-sm">dark_mode</span> Tarde
+                                            <span class="material-symbols-outlined text-sm">dark_mode</span>
+                                            <div>
+                                                <span>Tarde</span>
+                                                <span class="block text-[7px] font-normal opacity-70">15:00 -
+                                                    18:00</span>
+                                            </div>
                                         </button>
                                     </div>
                                 </div>
 
                                 <!-- Extras / Servicios Premium -->
-                                <div class="staggered-item space-y-3" style="animation-delay: 0.6s;">
+                                <div id="extras-section" class="staggered-item space-y-3"
+                                    style="animation-delay: 0.6s;">
                                     <label
                                         class="text-[9px] font-black uppercase tracking-[0.2em] text-brandPurple px-1 block mb-2">Servicios
                                         Adicionales</label>
@@ -728,6 +806,14 @@
                                                     class="text-2xl font-black text-brandPurple">0,00€<span
                                                         class="text-[11px] text-slate-400 font-bold ml-1">/mes</span></span>
                                             </div>
+
+                                            <!-- Fila de Consolidación (Créditos) -->
+                                            <div id="row-credits"
+                                                class="flex justify-between items-center pt-2 border-t border-slate-100 text-green-600 hidden">
+                                                <span class="text-[14px] font-bold italic">Crédito por recogida
+                                                    pendiente</span>
+                                                <span id="cost-credits" class="text-lg font-black">-0,00€</span>
+                                            </div>
                                         </div>
 
                                         <div id="section-one-time"
@@ -818,11 +904,31 @@
                                     <div class="mb-4">
                                         <h3
                                             class="text-sm font-black uppercase text-brandDark tracking-wider flex items-center gap-2">
-                                            <span class="material-symbols-outlined text-brandPurple">badge</span>
-                                            Tus Datos
+                                            <span class="material-symbols-outlined text-brandPurple">person</span>
+                                            Acceso Rápido
                                         </h3>
-                                        <p class="text-[10px] text-slate-400 font-bold mt-1">Crea tu cuenta segura para
-                                            gestionar tu inventario.</p>
+                                        <p class="text-[10px] text-slate-400 font-bold mt-1">Regístrate en un clic con
+                                            tus cuentas de confianza.</p>
+                                    </div>
+
+                                    <!-- Social Login Buttons -->
+                                    <div class="mb-6">
+                                        <button onclick="loginWithSocial('google')"
+                                            class="w-full flex items-center justify-center gap-2 py-3 px-4 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 hover:border-brandPurple/30 transition-all shadow-sm group">
+                                            <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png"
+                                                class="h-5 w-5 group-hover:scale-110 transition-transform" alt="Google">
+                                            <span
+                                                class="text-[11px] font-black uppercase tracking-widest text-slate-600 group-hover:text-brandPurple transition-colors">Continuar
+                                                con Google</span>
+                                        </button>
+                                    </div>
+
+                                    <!-- Divider -->
+                                    <div class="flex items-center justify-center gap-4 mb-6 opacity-20">
+                                        <div class="h-px bg-slate-400 flex-grow"></div>
+                                        <span class="text-[8px] font-black uppercase tracking-[0.5em] text-slate-500">O
+                                            ÚNETE CON EMAIL</span>
+                                        <div class="h-px bg-slate-400 flex-grow"></div>
                                     </div>
 
                                     <div class="grid grid-cols-1 gap-3">
@@ -868,6 +974,15 @@
                                                 class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-4 text-xs font-bold outline-none focus:border-brandPurple focus:bg-white transition-all">
                                         </div>
 
+                                        <!-- Phone -->
+                                        <div class="group/input focus-within:text-brandPurple transition-colors">
+                                            <label
+                                                class="text-[9px] font-black uppercase tracking-widest text-slate-400 ml-3 group-focus-within/input:text-brandPurple transition-colors">Teléfono
+                                                Móvil</label>
+                                            <input type="tel" id="auth-phone" placeholder="+34 600 000 000"
+                                                class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-4 text-xs font-bold outline-none focus:border-brandPurple focus:bg-white transition-all">
+                                        </div>
+
                                         <!-- Password -->
                                         <div class="group/input focus-within:text-brandPurple transition-colors">
                                             <label
@@ -882,7 +997,7 @@
                                     </div>
 
                                     <div class="mt-3 flex justify-end">
-                                        <a href="login.html"
+                                        <a href="login.html?returnUrl=reserva.html"
                                             class="text-[10px] font-black text-brandPurple hover:underline uppercase tracking-wide">¿Ya
                                             tienes cuenta? Iniciar Sesión</a>
                                     </div>
@@ -946,7 +1061,7 @@
 
                 <!-- Right: BoxBot AI Guide (Enhanced Edge-to-Edge) -->
                 <div
-                    class="w-full lg:w-[40%] bg-brandDark rounded-[2rem] md:rounded-[3rem] shadow-2xl flex flex-col relative overflow-hidden h-[400px] lg:h-full border border-white/10">
+                    class="w-full lg:w-[40%] bg-brandDark rounded-[2rem] md:rounded-[3rem] shadow-card-dark flex flex-col relative overflow-hidden h-[400px] lg:h-full">
                     <div id="reserva-chat-container"
                         class="flex flex-col h-full relative bg-gradient-to-br from-brandDark to-[#21103c]">
 
@@ -990,9 +1105,47 @@
             </div> <!-- End Centered Container -->
     </main>
 
-    <!-- Scripts -->
-    <script src="../assets/js/main.js"></script>
-    <script src="../assets/js/reserva.js?v=20260113_2"></script>
+    <!-- Supabase SDK & Config -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabase-config.js"></script>
+    <script src="../assets/js/supabase-client.js"></script>
+
+    <!-- Generic Confirmation Modal (Premium Design) -->
+    <div id="confirmModal"
+        class="fixed inset-0 bg-brandDark/80 backdrop-blur-xl z-[9999] hidden items-center justify-center p-4 animate-fade-in">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-sm p-8 shadow-2xl relative overflow-hidden reveal active">
+            <!-- Decorative gradient element -->
+            <div class="absolute -top-12 -right-12 w-32 h-32 bg-brandPurple/10 rounded-full blur-2xl"></div>
+
+            <div class="flex flex-col items-center text-center">
+                <div class="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mb-6">
+                    <span class="material-symbols-outlined text-3xl">delete_forever</span>
+                </div>
+
+                <h3 id="confirmModalTitle"
+                    class="text-xl font-black text-brandDark uppercase tracking-tighter italic mb-2">
+                    ¿Estás seguro?
+                </h3>
+                <p id="confirmModalMessage" class="text-slate-500 text-sm font-medium mb-8">
+                    Esta acción no se puede deshacer. La dirección se eliminará permanentemente de tu perfil.
+                </p>
+
+                <div class="flex gap-3 w-full">
+                    <button id="confirmCancelBtn"
+                        class="flex-1 py-4 rounded-2xl bg-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-200 transition-all">
+                        Cancelar
+                    </button>
+                    <button id="confirmActionBtn"
+                        class="flex-1 py-4 rounded-2xl bg-red-500 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20 hover:scale-[1.05] active:scale-95 transition-all">
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reservation Wizard Script -->
+    <script src="../assets/js/reserva-new.js"></script>
     <script>
         function handleExit() {
             // Priority 1: URL Parameter ?from=...
@@ -1023,13 +1176,13 @@
             const emailInput = document.getElementById('auth-email');
 
             if (!nameInput.value || !emailInput.value) {
-                alert("⚠️ Por favor, completa tus datos personales antes de continuar.");
+                alert("Por favor, completa tus datos personales antes de continuar.");
                 nameInput.focus();
                 return;
             }
 
             if (!legalCheck.checked) {
-                alert("🛑 Para formalizar la reserva, debes aceptar los términos legales, el contrato y la política de privacidad.");
+                alert("Para formalizar la reserva, debes aceptar los términos legales, el contrato y la política de privacidad.");
                 return;
             }
 

@@ -31,14 +31,33 @@
             background: #333;
             border-radius: 10px;
         }
+
+        @keyframes pulse-subtle {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        .animate-pulse-subtle {
+            animation: pulse-subtle 2s infinite ease-in-out;
+        }
     </style>
 </head>
 
 <body class="bg-brandDark text-white h-screen overflow-hidden flex">
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-[#111] border-r border-white/5 flex flex-col justify-between p-6">
-        <div>
+    <aside
+        class="w-64 bg-[#111] border-r border-white/5 flex flex-col justify-between p-6 shrink-0 overflow-y-auto scrollbar-hide">
+        <div class="pb-8">
             <div class="flex items-center gap-3 mb-10 opacity-80 hover:opacity-100 transition-opacity cursor-pointer">
                 <img src="../assets/images/logo.png" alt="LOGO" class="h-6 brightness-0 invert">
                 <span
@@ -46,39 +65,63 @@
             </div>
 
             <nav class="space-y-2">
-                <a href="admin_dashboard.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                <a href="admin_dashboard"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
                     <span class="material-symbols-outlined">space_dashboard</span>
                     <span class="text-xs font-bold uppercase tracking-wider">Dashboard</span>
                 </a>
-                <a href="admin_clientes.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl bg-brandPurple text-white border border-brandPurple/20 shadow-lg shadow-brandPurple/10 transition-all">
+                <a href="admin_clientes"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl bg-brandPurple text-white border border-brandPurple/20 shadow-lg shadow-brandPurple/10 transition-all font-bold">
                     <span class="material-symbols-outlined">group</span>
                     <span class="text-xs font-bold uppercase tracking-wider">Clientes</span>
                 </a>
-                <a href="admin_logistica.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                <a href="admin_logistica"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
                     <span class="material-symbols-outlined">inventory_2</span>
-                    <span class="text-xs font-bold uppercase tracking-wider">Logística</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Tu Trastero Inteligente</span>
                 </a>
-                <a href="admin_facturacion.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+
+                <div class="pt-4 pb-2 px-4">
+                    <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Recursos</p>
+                </div>
+                <a href="admin_logistica?page=conductores"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">engineering</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Conductores</span>
+                </a>
+                <a href="admin_logistica?page=vehiculos"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Vehículos</span>
+                </a>
+
+                <a href="admin_facturacion"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
                     <span class="material-symbols-outlined">payments</span>
                     <span class="text-xs font-bold uppercase tracking-wider">Facturación</span>
                 </a>
-                <a href="admin_ajustes.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                <a href="admin_ajustes"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
                     <span class="material-symbols-outlined">settings</span>
                     <span class="text-xs font-bold uppercase tracking-wider">Ajustes</span>
+                </a>
+
+                <a href="driver_dashboard.html" target="_blank"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">directions_car</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Vista Conductor</span>
+                    <span class="material-symbols-outlined text-[10px] ml-auto">open_in_new</span>
                 </a>
             </nav>
         </div>
 
-        <div class="px-4 py-3 bg-brandPurple/10 rounded-xl border border-brandPurple/20">
-            <p class="text-[10px] text-brandPurple font-black uppercase tracking-widest mb-1">Superadmin</p>
+        <div class="px-4 py-3 bg-brandPurple/10 rounded-xl border border-brandPurple/20 cursor-pointer hover:bg-red-500/10 hover:border-red-500/20 transition-all group"
+            onclick="handleLogout()">
+            <p class="text-[10px] text-brandPurple font-black uppercase tracking-widest mb-1 group-hover:text-red-400">
+                Cerrar Sesión</p>
             <div class="flex items-center gap-2">
-                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                <span class="text-xs font-bold text-white">Israel Madrigal</span>
+                <div class="w-2 h-2 rounded-full bg-green-500 group-hover:bg-red-500"></div>
+                <span class="text-xs font-bold text-white group-hover:text-red-400">Israel Madrigal</span>
             </div>
         </div>
     </aside>
@@ -173,6 +216,9 @@
                     <button onclick="switchTab('info')"
                         class="tab-btn active text-[10px] font-black uppercase tracking-[0.2em] pb-2 border-b-2 border-brandPurple text-white transition-all">Información
                         360º</button>
+                    <button onclick="switchTab('logistics')"
+                        class="tab-btn text-[10px] font-black uppercase tracking-[0.2em] pb-2 border-b-2 border-transparent text-slate-500 hover:text-white transition-all">Logística
+                        de Servicio</button>
                     <button onclick="switchTab('history')"
                         class="tab-btn text-[10px] font-black uppercase tracking-[0.2em] pb-2 border-b-2 border-transparent text-slate-500 hover:text-white transition-all">Histórico
                         Actividad</button>
@@ -192,18 +238,53 @@
                                     Datos de Facturación</p>
                                 <div class="bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4">
                                     <div class="flex justify-between items-center">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase">Rol Sistema</span>
+                                        <select id="modal-role" disabled
+                                            class="text-xs font-black text-white bg-transparent border border-transparent rounded px-2 py-1 text-right w-32 focus:bg-white/10 focus:border-brandPurple outline-none transition-all appearance-none cursor-pointer">
+                                            <option value="client" class="bg-[#1a1a1a] text-slate-300">Cliente</option>
+                                            <option value="driver" class="bg-[#1a1a1a] text-yellow-400">Conductor
+                                            </option>
+                                            <option value="admin" class="bg-[#1a1a1a] text-brandPurple">Administrador
+                                            </option>
+                                            <option value="staff" class="bg-[#1a1a1a] text-blue-400">Staff</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex justify-between items-center">
                                         <span class="text-[10px] font-bold text-slate-400 uppercase">DNI / CIF</span>
-                                        <span id="modal-dni" class="text-sm font-black text-white">51234567-Z</span>
+                                        <input id="modal-dni" type="text" disabled
+                                            class="text-sm font-black text-white bg-transparent border border-transparent rounded px-2 py-1 text-right w-32 focus:bg-white/10 focus:border-brandPurple outline-none transition-all">
                                     </div>
                                     <div class="flex justify-between items-center">
                                         <span class="text-[10px] font-bold text-slate-400 uppercase">Razón Social</span>
-                                        <span id="modal-company" class="text-sm font-black text-white">Personal</span>
+                                        <input id="modal-company" type="text" disabled
+                                            class="text-sm font-black text-white bg-transparent border border-transparent rounded px-2 py-1 text-right w-40 focus:bg-white/10 focus:border-brandPurple outline-none transition-all">
                                     </div>
                                     <div class="flex flex-col gap-1">
                                         <span class="text-[10px] font-bold text-slate-400 uppercase">Dirección
                                             Fiscal</span>
-                                        <span id="modal-address" class="text-xs font-medium text-slate-300">C/ Gran Vía
-                                            12, 28013 Madrid</span>
+                                        <textarea id="modal-address" rows="2" disabled
+                                            class="text-xs font-medium text-slate-300 bg-transparent border border-transparent rounded px-2 py-1 resize-none focus:bg-white/10 focus:border-brandPurple outline-none transition-all"></textarea>
+                                    </div>
+                                    <div class="flex justify-between items-center pt-2 border-t border-white/5">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase">Teléfono</span>
+                                        <input id="modal-phone" type="text" disabled
+                                            class="text-sm font-black text-white bg-transparent border border-transparent rounded px-2 py-1 text-right w-40 focus:bg-white/10 focus:border-brandPurple outline-none transition-all">
+                                    </div>
+
+                                    <!-- Botones de Acción Global -->
+                                    <div class="pt-4 border-t border-white/5 flex gap-2">
+                                        <button onclick="toggleEditMode()" id="btn-edit-user"
+                                            class="flex-1 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 text-[10px] font-black uppercase tracking-widest transition-all">
+                                            Editar Datos
+                                        </button>
+                                        <button onclick="saveUserChanges()" id="btn-save-user"
+                                            class="hidden flex-1 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-green-500/20">
+                                            Guardar
+                                        </button>
+                                        <button onclick="deleteUser()"
+                                            class="py-2 px-3 rounded-lg bg-red-500/10 hover:bg-red-500 hover:text-white text-red-500 transition-all">
+                                            <span class="material-symbols-outlined text-sm">delete</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -221,10 +302,18 @@
                                             3.5 m³ • Permanencia 6 meses</p>
                                     </div>
                                     <div class="text-right">
-                                        <p class="text-2xl font-black text-white">49€<span
+                                        <p id="modal-price" class="text-2xl font-black text-white">49€<span
                                                 class="text-xs text-slate-500 font-bold tracking-normal italic">/mes</span>
                                         </p>
                                     </div>
+                                </div>
+                            </div>
+                            <!-- Extras Section -->
+                            <div id="modal-extras-container">
+                                <p class="text-[9px] font-black uppercase text-slate-500 mb-2 tracking-widest px-1">
+                                    Extras del Servicio</p>
+                                <div class="flex flex-wrap gap-2" id="modal-extras-list">
+                                    <!-- Populated by JS -->
                                 </div>
                             </div>
                         </div>
@@ -280,7 +369,8 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="bg-[#111] p-5 rounded-3xl border border-white/5 relative overflow-hidden">
+                            <div id="contract-section"
+                                class="bg-[#111] p-5 rounded-3xl border border-white/5 relative overflow-hidden transition-all duration-300">
                                 <span
                                     class="material-symbols-outlined absolute -right-4 -bottom-4 text-7xl opacity-5">gavel</span>
                                 <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">
@@ -294,6 +384,127 @@
                                         class="text-brandPurple text-[10px] font-black uppercase tracking-widest underline decoration-brandPurple/30">Descargar
                                         PDF</button>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Logistics (NEW) -->
+                <div id="tab-logistics" class="tab-content hidden space-y-8">
+                    <div class="grid grid-cols-2 gap-8">
+                        <!-- Pickup / Delivery Info -->
+                        <div class="space-y-6">
+                            <div>
+                                <p class="text-[9px] font-black uppercase text-slate-500 mb-2 tracking-widest px-1">
+                                    Programación</p>
+                                <div class="bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-5">
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="w-10 h-10 rounded-xl bg-brandPurple/10 flex items-center justify-center">
+                                            <span
+                                                class="material-symbols-outlined text-brandPurple">calendar_today</span>
+                                        </div>
+                                        <div>
+                                            <p class="text-[9px] font-black text-slate-500 uppercase">Fecha Prevista</p>
+                                            <p id="modal-log-date"
+                                                class="text-sm font-black text-white uppercase tracking-tight">-- / -- /
+                                                ----</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="w-10 h-10 rounded-xl bg-brandPurple/10 flex items-center justify-center">
+                                            <span class="material-symbols-outlined text-brandPurple">schedule</span>
+                                        </div>
+                                        <div>
+                                            <p class="text-[9px] font-black text-slate-500 uppercase">Franja Horaria</p>
+                                            <p id="modal-log-slot"
+                                                class="text-sm font-black text-white uppercase tracking-tight">--:-- -
+                                                --:--</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="w-10 h-10 rounded-xl bg-brandPurple/10 flex items-center justify-center">
+                                            <span id="modal-log-mode-icon"
+                                                class="material-symbols-outlined text-brandPurple">local_shipping</span>
+                                        </div>
+                                        <div>
+                                            <p class="text-[9px] font-black text-slate-500 uppercase">Modo de Entrega
+                                            </p>
+                                            <p id="modal-log-mode"
+                                                class="text-sm font-black text-white uppercase tracking-tight">Recogida
+                                                a domicilio</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <p class="text-[9px] font-black uppercase text-slate-500 mb-2 tracking-widest px-1">
+                                    Materiales y Extras</p>
+                                <div class="bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-[10px] font-bold text-slate-400 uppercase">Cajas
+                                            BOXROOMER</span>
+                                        <span id="modal-log-boxes"
+                                            class="text-xs font-black text-white bg-brandPurple/20 px-3 py-1 rounded-lg">0
+                                            ud.</span>
+                                    </div>
+                                    <div id="modal-log-extras-list"
+                                        class="flex flex-wrap gap-2 pt-2 border-t border-white/5">
+                                        <!-- Badges like Embalaje, Desmontaje -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Access Info -->
+                        <div class="space-y-6">
+                            <div>
+                                <p class="text-[9px] font-black uppercase text-slate-500 mb-2 tracking-widest px-1">
+                                    Detalles de Acceso</p>
+                                <div class="bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-5">
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="w-10 h-10 rounded-xl bg-brandPurple/10 flex items-center justify-center">
+                                            <span id="modal-log-access-icon"
+                                                class="material-symbols-outlined text-brandPurple">door_front</span>
+                                        </div>
+                                        <div>
+                                            <p class="text-[9px] font-black text-slate-500 uppercase">Tipo de Acceso</p>
+                                            <p id="modal-log-access"
+                                                class="text-sm font-black text-white uppercase tracking-tight">Pie de
+                                                calle</p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div
+                                class="bg-blue-600/10 border border-blue-500/20 p-5 rounded-3xl relative overflow-hidden">
+                                <span
+                                    class="material-symbols-outlined absolute -right-2 -bottom-2 text-6xl text-blue-500/10">support_agent</span>
+                                <h4 class="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-1">Nota para
+                                    el Admin</h4>
+                                <p class="text-[11px] text-slate-300 font-medium leading-relaxed">Verifica con el
+                                    cliente si el volumen declarado coincide con la realidad para evitar ajustes de
+                                    precio posteriores.</p>
+                            </div>
+
+                            <div class="bg-orange-500/5 border border-orange-500/20 p-6 rounded-[2rem] space-y-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-orange-500 text-sm">engineering</span>
+                                    <h4 class="text-[9px] font-black text-orange-400 uppercase tracking-widest">Notas
+                                        para el Transportista</h4>
+                                </div>
+                                <textarea id="modal-admin-notes" disabled
+                                    class="w-full bg-black/20 border border-white/5 rounded-xl p-3 text-xs text-slate-300 font-medium placeholder:text-slate-600 outline-none focus:border-orange-500/40 transition-all resize-none"
+                                    rows="4"
+                                    placeholder="Escribe aquí instrucciones específicas para el conductor (ej: 'Llamar al timbre 2B', 'Cuidado con el sofá', etc...)"></textarea>
+                                <p class="text-[8px] text-slate-500 font-bold uppercase italic">Estas notas serán
+                                    visibles para el conductor en su terminal.</p>
                             </div>
                         </div>
                     </div>
@@ -338,7 +549,8 @@
                                     <th class="p-4 text-right">PDF</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-white/5 text-[11px] font-bold text-slate-300">
+                            <tbody id="billing-table-body"
+                                class="divide-y divide-white/5 text-[11px] font-bold text-slate-300">
                                 <tr>
                                     <td class="p-4">FACT-2026-001</td>
                                     <td class="p-4">14/01/2026</td>
@@ -369,29 +581,40 @@
             </h3>
             <div class="space-y-6">
                 <div>
-                    <label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Importe
-                        (€)</label>
-                    <input type="number" step="0.01" placeholder="00.00"
-                        class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-xl font-black text-white outline-none focus:border-brandPurple transition-all">
-                </div>
-                <div>
                     <label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Concepto
                         del Cargo</label>
-                    <select
+                    <select id="charge-concept" onchange="updateChargeAmount()"
                         class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-sm font-bold text-white outline-none focus:border-brandPurple appearance-none">
-                        <option value="km" class="bg-[#1a1a1a]">🚙 Kilometraje Extra</option>
-                        <option value="mozo" class="bg-[#1a1a1a]">👨‍🔧 Mozo Adicional</option>
-                        <option value="cajas" class="bg-[#1a1a1a]">📦 Cajas Extra</option>
-                        <option value="cancelacion" class="bg-[#1a1a1a]">❌ Gastos de Cancelación</option>
-                        <option value="otros" class="bg-[#1a1a1a]">✨ Otros Conceptos</option>
+                        <option value="" data-price="0" class="bg-[#1a1a1a]">-- Selecciona un concepto --</option>
+                        <option value="Mozo Adicional" data-price="35" class="bg-[#1a1a1a]">👨‍🔧 Mozo Adicional (35€)
+                        </option>
+                        <option value="Cajas Extra" data-price="1.80" class="bg-[#1a1a1a]">📦 Cajas Extra (1.80€/ud)
+                        </option>
+                        <option value="Transporte Extra" data-price="39" class="bg-[#1a1a1a]">🚙 Transporte Extra (39€)
+                        </option>
+                        <option value="Tiempo Extra (15min)" data-price="15" class="bg-[#1a1a1a]">⏱️ Tiempo Extra 15min
+                            (15€)</option>
+                        <option value="Gastos de Cancelación" data-price="39" class="bg-[#1a1a1a]">❌ Gastos de
+                            Cancelación (39€)</option>
+                        <option value="Gestión Administrativa" data-price="39" class="bg-[#1a1a1a]">📋 Gestión
+                            Administrativa (39€)</option>
+                        <option value="Otros Conceptos" data-price="0" class="bg-[#1a1a1a]">✨ Otros Conceptos
+                            (personalizado)</option>
                     </select>
+                </div>
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Importe
+                        (€)</label>
+                    <input type="number" id="charge-amount" step="0.01" placeholder="00.00"
+                        class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-xl font-black text-white outline-none focus:border-brandPurple transition-all">
                 </div>
                 <div>
                     <label
                         class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Observaciones
                         (Opcional)</label>
-                    <textarea
-                        class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-xs font-medium text-white outline-none focus:border-brandPurple h-20"></textarea>
+                    <textarea id="charge-notes"
+                        class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-xs font-medium text-white outline-none focus:border-brandPurple h-20"
+                        placeholder="Detalles adicionales del cargo..."></textarea>
                 </div>
             </div>
             <div class="flex gap-3 mt-8">
@@ -404,276 +627,10 @@
         </div>
     </div>
 
-    <script>
-        let allClients = [];
-        let currentFilter = 'TODOS';
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadClientsData();
-            setupSearch();
-            renderClients();
-        });
-
-        function loadClientsData() {
-            // Simulated database
-            allClients = [
-                { id: 'RE1022', name: 'Ana García', email: 'ana.garcia@gmail.com', dni: '51239922Z', company: 'Personal', status: 'ACTIVOS', plan: 'Pack Mini', volume: '1.0', months: 12, address: 'C/ Velázquez 45, Madrid', active: true },
-                { id: 'RE3341', name: 'Roberto Sanchidrián', email: 'roberto@enterprise.es', dni: 'B-12345678', company: 'Logistics S.L.', status: 'IMPAGOS', plan: 'Personalizado', volume: '12.5', months: 6, address: 'Pol. Ind. Cobo Calleja', active: true },
-                { id: 'RE8821', name: 'Sergio Martín', email: 's.martin@outlook.com', dni: '05442112K', company: 'Personal', status: 'INACTIVOS', plan: 'Pack Dúo', volume: '3.0', months: 3, address: 'Av. América 4', active: false }
-            ];
-
-            const localData = localStorage.getItem('BOXROOMER_DASHBOARD_DATA');
-            if (localData) {
-                const data = JSON.parse(localData);
-                allClients.unshift({
-                    id: 'RE-NEW',
-                    name: data.userName || 'Usuario Nuevo',
-                    email: data.userEmail || 'email@ejemplo.com',
-                    dni: 'PENDIENTE',
-                    company: 'Pendiente',
-                    status: (data.status === 'pending_pickup') ? 'PENDIENTE_LLAMADA' : 'ACTIVOS',
-                    plan: data.plan || 'Plan Web',
-                    volume: data.volume || '0',
-                    months: 6,
-                    address: data.address || 'Pendiente confirmar',
-                    active: true
-                });
-            }
-        }
-
-        function setupSearch() {
-            const searchInput = document.querySelector('input[type="text"]');
-            searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase();
-                renderClients(query);
-            });
-        }
-
-        function setFilter(filter, btn) {
-            currentFilter = filter;
-            document.querySelectorAll('.filter-btn').forEach(b => {
-                b.classList.remove('bg-white', 'text-brandDark', 'shadow-lg');
-                b.classList.add('text-slate-400');
-            });
-            btn.classList.add('bg-white', 'text-brandDark', 'shadow-lg');
-            btn.classList.remove('text-slate-400', 'hover:text-white');
-            renderClients();
-        }
-
-        function renderClients(searchQuery = '') {
-            const tableBody = document.getElementById('clients-table-body');
-            let filtered = allClients;
-
-            // Apply Status Filter
-            if (currentFilter !== 'TODOS') {
-                filtered = filtered.filter(c => c.status === currentFilter);
-            }
-
-            // Apply Search Query
-            if (searchQuery) {
-                filtered = filtered.filter(c =>
-                    c.name.toLowerCase().includes(searchQuery) ||
-                    c.email.toLowerCase().includes(searchQuery) ||
-                    c.dni.toLowerCase().includes(searchQuery) ||
-                    c.id.toLowerCase().includes(searchQuery)
-                );
-            }
-
-            tableBody.innerHTML = filtered.map(c => `
-                <tr class="hover:bg-white/[0.03] transition-colors group">
-                    <td class="p-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brandPurple to-blue-600 text-white flex items-center justify-center font-black text-xs italic">
-                                ${c.name.charAt(0)}
-                            </div>
-                            <div>
-                                <p class="text-white font-bold group-hover:text-brandPurple transition-colors">${c.name}</p>
-                                <p class="text-[10px] text-slate-500">${c.email}</p>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="p-4 text-[11px] font-bold text-slate-400 font-mono italic">${c.dni} <span class="block opacity-40 text-[9px] font-sans">#${c.id}</span></td>
-                    <td class="p-4">
-                        <span class="block text-white font-black italic uppercase text-[10px]">${c.plan}</span>
-                        <span class="text-[10px] text-slate-500 font-bold uppercase">${c.volume} m³</span>
-                    </td>
-                    <td class="p-4 text-xs font-bold text-slate-400 uppercase tracking-widest">${c.months} Meses</td>
-                    <td class="p-4">
-                        ${getStatusBadge(c.status)}
-                    </td>
-                    <td class="p-4 text-right">
-                        <button onclick="openClientDetail('${c.id}')" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-slate-500 hover:bg-brandPurple hover:text-white transition-all">
-                            <span class="material-symbols-outlined text-lg">visibility</span>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function getStatusBadge(status) {
-            const styles = {
-                'ACTIVOS': 'bg-green-500/10 text-green-500 border-green-500/20',
-                'IMPAGOS': 'bg-red-500/10 text-red-500 border-red-500/20',
-                'INACTIVOS': 'bg-white/5 text-slate-500 border-white/10',
-                'PENDIENTE_LLAMADA': 'bg-orange-500/10 text-orange-400 border-orange-500/20',
-                'CANCELADO': 'bg-red-500/20 text-red-400 border-red-500/30'
-            };
-            const labels = {
-                'ACTIVOS': 'Activo',
-                'IMPAGOS': 'Impago',
-                'INACTIVOS': 'Inactivo',
-                'PENDIENTE_LLAMADA': 'P. Llamada',
-                'CANCELADO': 'Cancelado'
-            };
-            return `<span class="px-2 py-1 rounded-[6px] text-[8px] font-black uppercase tracking-widest border ${styles[status]}">${labels[status]}</span>`;
-        }
-
-        function handleStatusChange(newStatus) {
-            const client = allClients.find(c => c.id === currentClientId);
-            if (client) {
-                client.status = newStatus;
-                renderClients();
-                document.getElementById('modal-status-badge').innerHTML = getStatusBadge(newStatus);
-            }
-
-            if (newStatus === 'CANCELADO') {
-                const confirmCancel = confirm("¿Estás seguro de que deseas cancelar este servicio? El sistema sugerirá cobrar los gastos de gestión (39€).");
-                if (confirmCancel) {
-                    openChargeModal();
-                    document.querySelector('#chargeModal input[type="number"]').value = 39;
-                    document.querySelector('#chargeModal input[type="text"]').value = "Gastos de Gestión y Cancelación";
-                    document.querySelector('#chargeModal textarea').value = "Cobro automático sugerido por cambio de estado a CANCELADO.";
-                }
-            }
-        }
-
-
-        // Modal Logic
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(b => {
-                b.classList.remove('active', 'text-white', 'border-brandPurple');
-                b.classList.add('text-slate-500', 'border-transparent');
-            });
-
-            document.getElementById('tab-' + tabId).classList.remove('hidden');
-            const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.innerText.toLowerCase().includes(tabId === 'info' ? '360' : tabId === 'history' ? 'histórico' : 'facturas'));
-            if (activeBtn) {
-                activeBtn.classList.add('active', 'text-white', 'border-brandPurple');
-                activeBtn.classList.remove('text-slate-500', 'border-transparent');
-            }
-        }
-
-        let currentClientId = null;
-
-        function openClientDetail(id) {
-            currentClientId = id;
-            const c = allClients.find(client => client.id === id);
-            if (!c) return;
-
-            document.getElementById('modal-name').innerText = c.name;
-            document.getElementById('modal-email').innerText = c.email;
-            document.getElementById('modal-dni').innerText = c.dni;
-            document.getElementById('modal-company').innerText = c.company;
-            document.getElementById('modal-address').innerText = c.address;
-            document.getElementById('modal-plan').innerText = c.plan;
-            document.getElementById('modal-volume').innerText = `${c.volume} m³ • Permanencia ${c.months} meses`;
-            document.getElementById('modal-avatar').innerText = c.name.charAt(0);
-            document.getElementById('modal-status-select').value = c.status;
-
-            const badge = document.getElementById('modal-status-badge');
-            badge.innerText = c.status.replace('_', ' ');
-
-            const modal = document.getElementById('clientModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            switchTab('info');
-        }
-
-        function closeClientModal() {
-            document.getElementById('clientModal').classList.add('hidden');
-            document.getElementById('clientModal').classList.remove('flex');
-        }
-
-        function openChargeModal() {
-            document.getElementById('chargeModal').classList.remove('hidden');
-            document.getElementById('chargeModal').classList.add('flex');
-        }
-
-        function closeChargeModal() {
-            document.getElementById('chargeModal').classList.add('hidden');
-            document.getElementById('chargeModal').classList.remove('flex');
-        }
-
-        function executeCharge() {
-            const amountInput = document.querySelector('#chargeModal input[type="number"]');
-            const conceptInput = document.querySelector('#chargeModal input[type="text"]');
-            const amount = parseFloat(amountInput.value);
-
-            if (isNaN(amount) || amount <= 0) {
-                alert('⚠️ El importe del cargo debe ser mayor a 0€');
-                return;
-            }
-
-            const btn = document.querySelector('#chargeModal button:last-child');
-            btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">sync</span> Procesando...';
-            btn.disabled = true;
-
-            setTimeout(() => {
-                btn.innerText = 'Cobro Completado';
-                btn.classList.replace('bg-brandPurple', 'bg-green-500');
-
-                // Add to Audit Log
-                addAuditLog('CARGO_MANUAL', `Cobro de ${amount}€ por concepto: ${conceptInput.value}`, 'ALTA', currentClientId, 'CLIENTES');
-
-                setTimeout(() => {
-                    closeChargeModal();
-                    alert('✅ Cargo procesado a través de Stripe y factura generada.');
-                    btn.innerText = 'Ejecutar Cobro';
-                    btn.classList.replace('bg-green-500', 'bg-brandPurple');
-                    btn.disabled = false;
-                }, 1000);
-            }, 1500);
-        }
-
-        function notifyClient() {
-            const client = allClients.find(c => c.id === currentClientId);
-            if (!client) return;
-
-            const mode = confirm("¿Deseas notificar vía WhatsApp?\n(Si cancelas, se abrirá el gestor de correo)");
-
-            const message = `Hola ${client.name}, te contactamos desde BOXROOMER. Tu servicio está listo. Puedes ver más detalles en tu área privada. ¡Saludos!`;
-
-            if (mode) {
-                // WhatsApp Simulation (assuming a phone field or dummy)
-                const phone = "34600000000"; // Dummy
-                window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
-                addAuditLog('NOTIF_WHATSAPP', 'Notificación enviada vía WhatsApp', 'INFO', currentClientId, 'CLIENTES');
-            } else {
-                const subject = "Actualización de tu servicio BOXROOMER";
-                const body = `Estimado/a ${client.name},\n\nLe contactamos para informarle sobre el estado de su servicio...\n\nAtentamente,\nEquipo BOXROOMER\ncorreo@boxroomer.com`;
-                window.location.href = `mailto:${client.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                addAuditLog('NOTIF_EMAIL', 'Notificación enviada vía Email', 'INFO', currentClientId, 'CLIENTES');
-            }
-        }
-
-        function addAuditLog(action, details, level, target, origin) {
-            const logs = JSON.parse(localStorage.getItem('BOXROOMER_AUDIT_LOG') || '[]');
-            logs.unshift({
-                timestamp: new Date().toISOString(),
-                action,
-                details,
-                level,
-                target,
-                origin,
-                admin: 'Admin Principal'
-            });
-            localStorage.setItem('BOXROOMER_AUDIT_LOG', JSON.stringify(logs.slice(0, 100)));
-        }
-    </script>
+    <!-- Supabase & Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabase-config.js"></script>
+    <script src="../assets/js/supabase-client.js"></script>
+    <script src="../assets/js/main.js"></script>
+    <script src="../assets/js/admin-clientes.js"></script>
 </body>
-
-</html>
-</body>
-
-</html>

@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BOXROOMER Driver - Operativa de Campo</title>
+
+    <!-- Design System -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Inter:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+
+    <!-- SortableJS para drag & drop robusto -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+    <style>
+        :root {
+            --brandPurple: #6E44FF;
+            --brandDark: #0A0510;
+            --bgBase: #0A0510;
+            --bgCard: #1A1525;
+            --bgField: #252030;
+            --textMain: #FFFFFF;
+            --textDim: #94A3B8;
+            --borderCard: rgba(255, 255, 255, 0.05);
+            --headerBg: rgba(10, 5, 16, 0.82);
+            --tabUnselected: #94A3B8;
+        }
+
+        /* Estilos para Modo Claro */
+        body.light-mode {
+            --bgBase: #F8FAFC;
+            --bgCard: #FFFFFF;
+            --bgField: #F1F5F9;
+            --textMain: #0F172A;
+            --textDim: #64748B;
+            --borderCard: #E2E8F0;
+            --headerBg: rgba(248, 250, 252, 0.82);
+            --tabUnselected: #64748B;
+        }
+
+        .bg-brand-purple {
+            background-color: var(--brandPurple);
+        }
+
+        .bg-brand-dark {
+            background-color: var(--brandDark);
+        }
+
+        .text-brand-purple {
+            color: var(--brandPurple);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bgBase);
+            color: var(--textMain);
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        .heading-font {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Estética de Tarjetas */
+        .driver-card {
+            background-color: var(--bgCard);
+            border: 1.5px solid var(--borderCard);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: var(--textMain);
+        }
+
+        .driver-card:active {
+            transform: scale(0.96);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            line-height: normal;
+            white-space: nowrap;
+        }
+
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1;
+        }
+
+        /* Drag & Drop Support */
+        .driver-card {
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            cursor: grab;
+        }
+
+        .dragging {
+            opacity: 0.5;
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 0 20px 40px rgba(110, 68, 255, 0.3);
+            z-index: 1000;
+            border: 2px solid var(--brandPurple) !important;
+        }
+
+        .drag-placeholder {
+            background: linear-gradient(135deg, rgba(110, 68, 255, 0.05), rgba(110, 68, 255, 0.02));
+            border: 2px dashed var(--brandPurple);
+            border-radius: 2rem;
+            height: 180px;
+            margin: 0.75rem 0;
+            animation: pulse-placeholder 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse-placeholder {
+
+            0%,
+            100% {
+                opacity: 0.3;
+                transform: scale(0.98);
+            }
+
+            50% {
+                opacity: 0.6;
+                transform: scale(1);
+            }
+        }
+
+        /* Tab Navigation - Sliding Pill */
+        .tab-nav-container {
+            background-color: var(--bgField);
+            padding: 6px;
+            border-radius: 1.5rem;
+            position: relative;
+        }
+
+        .tab-pill {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            height: calc(100% - 12px);
+            width: calc(33.33% - 8px);
+            background: var(--brandPurple);
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(110, 68, 255, 0.3);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            z-index: 1;
+        }
+
+        .tab-btn {
+            position: relative;
+            z-index: 10;
+            transition: color 0.3s ease;
+            color: var(--textDim);
+        }
+
+        .tab-btn.active {
+            color: white !important;
+        }
+
+        /* Headers & Headers */
+        header {
+            background-color: rgba(10, 5, 16, 0.8);
+            border-bottom: 1.5px solid var(--borderCard);
+        }
+
+        body.light-mode header {
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .modal-bg {
+            background-color: var(--bgCard);
+            color: var(--textMain);
+        }
+
+        /* Mejoras de Visibilidad en Modo Claro */
+        body.light-mode .text-slate-200,
+        body.light-mode .text-slate-300,
+        body.light-mode .text-slate-400 {
+            color: #334155 !important;
+        }
+
+        body.light-mode .text-slate-500,
+        body.light-mode .text-slate-600 {
+            color: #64748B !important;
+        }
+
+        body.light-mode .bg-slate-700 {
+            background-color: #E2E8F0 !important;
+        }
+
+        body.light-mode .bg-slate-800 {
+            background-color: #CBD5E1 !important;
+        }
+
+        body.light-mode .border-white\/10,
+        body.light-mode .border-white\/5 {
+            border-color: #E2E8F0 !important;
+        }
+
+        body.light-mode .bg-white\/5 {
+            background-color: #F1F5F9 !important;
+        }
+
+        body.light-mode .bg-white\/10 {
+            background-color: #E2E8F0 !important;
+        }
+
+        /* Navegación inferior en modo claro */
+        body.light-mode nav {
+            background-color: #FFFFFF !important;
+            border-top-color: #E2E8F0 !important;
+        }
+
+        /* Botones de navegación en modo claro */
+        body.light-mode .group-hover\:text-white {
+            color: #0F172A !important;
+        }
+
+        body.light-mode .group-hover\:text-slate-400 {
+            color: #475569 !important;
+        }
+
+        /* Header en modo claro */
+        body.light-mode header {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(12px);
+        }
+
+        /* Títulos y encabezados */
+        body.light-mode .heading-font {
+            color: #0F172A !important;
+        }
+
+        /* Textos específicos que necesitan ser oscuros en modo claro */
+        body.light-mode .text-white {
+            color: #0F172A !important;
+        }
+
+        /* Badges y etiquetas */
+        body.light-mode .status-badge {
+            border-color: #CBD5E1 !important;
+        }
+
+        body.light-mode .bg-blue-500\/10 {
+            background-color: #DBEAFE !important;
+        }
+
+        body.light-mode .text-blue-400 {
+            color: #2563EB !important;
+        }
+
+        body.light-mode .bg-orange-500\/10 {
+            background-color: #FED7AA !important;
+        }
+
+        body.light-mode .text-orange-400 {
+            color: #EA580C !important;
+        }
+
+        body.light-mode .bg-brandPurple\/10 {
+            background-color: #EDE9FE !important;
+        }
+
+        body.light-mode .text-brandPurple {
+            color: #6E44FF !important;
+        }
+
+        body.light-mode .bg-red-500\/10 {
+            background-color: #FEE2E2 !important;
+        }
+
+        body.light-mode .text-red-400 {
+            color: #DC2626 !important;
+        }
+
+        /* Iconos y símbolos */
+        body.light-mode .material-symbols-outlined {
+            color: inherit;
+        }
+
+        /* Pestañas */
+        body.light-mode .tab-btn {
+            color: #64748B !important;
+        }
+
+        body.light-mode .tab-btn.active {
+            color: white !important;
+        }
+
+        /* Contador de servicios */
+        body.light-mode #count-available {
+            background-color: #6E44FF !important;
+            color: white !important;
+        }
+    </style>
+</head>
+
+<body class="safe-area-inset-top">
+
+    <!-- Sticky Header -->
+    <header
+        class="sticky top-0 z-50 backdrop-blur-xl px-6 py-4 flex items-center justify-between border-b border-white/5 bg-[#0A0510]/80">
+        <div class="flex items-center gap-3">
+            <div
+                class="w-10 h-10 rounded-2xl bg-brandPurple flex items-center justify-center shadow-lg shadow-brandPurple/20">
+                <span class="material-symbols-outlined text-white text-xl">local_shipping</span>
+            </div>
+            <div>
+                <h1 class="heading-font font-black text-xs uppercase tracking-tighter leading-none text-white">Driver
+                    Portal</h1>
+                <p id="driver-name" class="text-[10px] font-bold text-slate-400 mt-0.5">Cargando...</p>
+            </div>
+        </div>
+        <!-- Date Display -->
+        <div class="text-right">
+            <p id="header-date-day" class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-0.5">HOY
+            </p>
+            <p id="header-date-full" class="text-sm font-black text-white leading-none uppercase tracking-tighter">--/--
+            </p>
+        </div>
+    </header>
+
+    <main class="p-4 pb-32 space-y-6">
+
+        <!-- Tab Navigation -->
+        <div class="tab-nav-container flex">
+            <!-- Sliding Pill -->
+            <div id="tab-pill" class="tab-pill"></div>
+
+            <button onclick="switchTab('available')" id="tab-available"
+                class="tab-btn active flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-2xl transition-all">
+                Pendientes
+            </button>
+            <button onclick="switchTab('my-route')" id="tab-my-route"
+                class="tab-btn flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-2xl transition-all">
+                Mi Ruta
+            </button>
+            <button onclick="switchTab('history')" id="tab-history"
+                class="tab-btn flex-1 py-3 text-[9px] font-black uppercase tracking-widest rounded-2xl transition-all">
+                Historial
+            </button>
+        </div>
+
+        <!-- Available Tasks Pool -->
+        <div id="section-available" class="space-y-4">
+            <div class="flex items-center justify-between px-2">
+                <h2 class="heading-font font-black italic uppercase text-xs tracking-tighter text-slate-200">Bandeja de
+                    Servicios</h2>
+                <span id="count-available"
+                    class="bg-brandPurple text-white text-[10px] font-black px-2 py-1 rounded-full">0</span>
+            </div>
+            <div id="available-list" class="space-y-3"></div>
+        </div>
+
+        <!-- My Route Section -->
+        <div id="section-my-route" class="hidden space-y-4">
+            <!-- Big Picture Summary Bar -->
+            <div id="route-summary-bar"
+                class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-[2rem] p-4 text-white shadow-lg shadow-blue-500/20 mb-2">
+                <div class="grid grid-cols-3 gap-2 text-center divide-x divide-white/20">
+                    <div>
+                        <p class="text-[8px] font-black uppercase tracking-widest opacity-70 mb-1">Paradas</p>
+                        <p id="summary-stops" class="text-lg font-black italic tracking-tighter leading-none">0</p>
+                    </div>
+                    <div>
+                        <p class="text-[8px] font-black uppercase tracking-widest opacity-70 mb-1">Carga Total</p>
+                        <p id="summary-volume" class="text-lg font-black italic tracking-tighter leading-none">0m³</p>
+                    </div>
+                    <div>
+                        <p class="text-[8px] font-black uppercase tracking-widest opacity-70 mb-1">Tiempo Est.</p>
+                        <p id="summary-time" class="text-lg font-black italic tracking-tighter leading-none">0h</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between px-2">
+                <div class="flex flex-col">
+                    <h2
+                        class="heading-font font-black italic uppercase text-xs tracking-tighter text-slate-200 leading-none">
+                        Mi Hoja de Ruta</h2>
+                    <div id="workday-status-widget" class="hidden mt-1 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                        <p id="workday-elapsed-time"
+                            class="text-[8px] font-bold text-slate-500 uppercase tracking-widest leading-none">Iniciada:
+                            --:--</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="optimizeMyRoute()"
+                        class="bg-blue-500/10 text-blue-400 px-3 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-widest flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">bolt</span> IA
+                    </button>
+                    <button onclick="viewFullRouteMap()"
+                        class="bg-blue-500/10 text-blue-400 px-3 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-widest flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">map</span> Mapa
+                    </button>
+                    <span id="count-my-route"
+                        class="bg-blue-600 text-white text-[10px] font-black px-2 py-1 rounded-full ml-1">0</span>
+                </div>
+            </div>
+            <div id="my-route-list" class="space-y-3"></div>
+        </div>
+
+        <!-- History Section -->
+        <div id="section-history" class="hidden space-y-4">
+            <div class="flex items-center justify-between px-2">
+                <h2 class="heading-font font-black italic uppercase text-xs tracking-tighter text-slate-400">Trabajos
+                    Completados</h2>
+                <span id="count-history"
+                    class="bg-slate-400 text-white text-[10px] font-black px-2 py-1 rounded-full">0</span>
+            </div>
+            <div id="history-list" class="space-y-3"></div>
+        </div>
+
+    </main>
+
+
+    <!-- Task Detail Modal -->
+    <div id="taskModal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-brandDark/40 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[3rem] p-8 animate-slide-up shadow-2xl">
+            <div class="w-12 h-1 bg-slate-200 rounded-full mx-auto mb-6"></div>
+            <div id="modal-content">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+    </div>
+    <!-- Custom Confirmation Modal (Premium Action Sheet) -->
+    <div id="confirmModal" class="fixed inset-0 z-[110] hidden">
+        <div class="absolute inset-0 bg-[#0A0510]/60 backdrop-blur-sm" onclick="closeConfirmModal()"></div>
+        <div class="absolute bottom-4 left-4 right-4 bg-white rounded-[2.5rem] p-8 shadow-2xl transition-all duration-300 transform translate-y-full"
+            id="confirmModalSheet">
+            <div class="w-12 h-1 bg-slate-100 rounded-full mx-auto mb-8"></div>
+
+            <div class="text-center mb-8">
+                <div id="confirm-icon-container"
+                    class="w-20 h-20 rounded-[2rem] bg-slate-50 flex items-center justify-center mx-auto mb-6 text-slate-400">
+                    <span id="confirm-icon" class="material-symbols-outlined text-4xl">help</span>
+                </div>
+                <h3 id="confirm-title"
+                    class="heading-font font-black italic text-xl uppercase tracking-tighter text-slate-900 mb-2">¿Estás
+                    seguro?</h3>
+                <p id="confirm-desc"
+                    class="text-xs font-bold text-slate-400 uppercase tracking-widest leading-relaxed px-6">Confirma
+                    para continuar con la operación</p>
+            </div>
+
+            <div class="flex flex-col gap-3">
+                <button id="confirm-btn-yes"
+                    class="w-full bg-[#6E44FF] text-white py-5 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-[#6E44FF]/20 active:scale-95 transition-all">
+                    Confirmar Acción
+                </button>
+                <button onclick="closeConfirmModal()"
+                    class="w-full bg-slate-50 text-slate-400 py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.1em] active:scale-95 transition-all">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Completion Modal (Finalize Service) -->
+    <div id="completionModal" class="fixed inset-0 z-[120] hidden overflow-y-auto">
+        <div class="fixed inset-0 bg-[#0A0510]/80 backdrop-blur-md" onclick="closeCompletionModal()"></div>
+        <div class="relative min-h-screen flex items-end sm:items-center justify-center p-4">
+            <div class="bg-white w-full max-w-lg rounded-[2.5rem] p-8 shadow-2xl animate-slide-up relative">
+                <button onclick="closeCompletionModal()"
+                    class="absolute top-8 right-8 w-10 h-10 flex items-center justify-center text-slate-300 hover:text-slate-600 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+                <div class="w-12 h-1 bg-slate-100 rounded-full mx-auto mb-8"></div>
+
+                <h3 class="heading-font font-black italic text-xl uppercase tracking-tighter text-slate-900 mb-6">
+                    Finalizar Servicio</h3>
+
+                <div class="space-y-6">
+                    <!-- Resumen de Tiempo -->
+                    <div class="space-y-2">
+                        <div class="bg-slate-50 rounded-2xl p-4 flex items-center justify-between">
+                            <div>
+                                <p class="text-[8px] font-black uppercase text-slate-400 mb-0.5 tracking-widest">Tiempo
+                                    transcurrido</p>
+                                <p id="time-elapsed" class="text-lg font-black text-[#6E44FF]">00:00:00</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[8px] font-black uppercase text-slate-400 mb-0.5 tracking-widest">Cargo
+                                    Extra
+                                </p>
+                                <p id="extra-charge-preview" class="text-lg font-black text-slate-900">0.00€</p>
+                            </div>
+                        </div>
+                        <div id="mozo-charge-alert"
+                            class="hidden px-4 py-2 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2">
+                            <span class="material-symbols-outlined text-red-500 text-sm">fitness_center</span>
+                            <p class="text-[8px] font-bold text-red-600 uppercase tracking-widest">Tarifa Doble
+                                (Servicio con Mozo Extra)</p>
+                        </div>
+                        <div id="free-time-msg"
+                            class="px-4 text-[8px] font-bold text-green-600 uppercase tracking-widest text-center">
+                            Los primeros 15 minutos son gratuitos
+                        </div>
+                    </div>
+
+                    <!-- Identificación -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label
+                                class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Nombre
+                                del Receptor</label>
+                            <input type="text" id="completion-name"
+                                class="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-5 text-sm font-bold text-slate-900 outline-none focus:border-[#6E44FF]"
+                                placeholder="Nombre completo">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">DNI
+                                / NIE</label>
+                            <input type="text" id="completion-dni"
+                                class="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-5 text-sm font-bold text-slate-900 outline-none focus:border-[#6E44FF]"
+                                placeholder="Ej: 12345678X">
+                        </div>
+                    </div>
+
+                    <!-- Observaciones -->
+                    <div>
+                        <label
+                            class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Observaciones
+                            del Servicio</label>
+                        <textarea id="completion-notes"
+                            class="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-5 text-sm font-medium text-slate-900 outline-none focus:border-[#6E44FF] h-24"
+                            placeholder="Escribe aquí cualquier incidencia o detalle..."></textarea>
+                    </div>
+
+                    <!-- Firma digital Real -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-[9px] font-black uppercase text-slate-500 tracking-widest">Firma del
+                                Cliente</label>
+                            <button type="button" onclick="clearSignature()"
+                                class="text-[9px] font-black uppercase text-blue-600 tracking-widest hover:text-blue-800 transition-colors">Limpiar</button>
+                        </div>
+                        <div
+                            class="relative w-full h-40 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl overflow-hidden">
+                            <canvas id="signature-pad"
+                                class="absolute inset-0 w-full h-full cursor-crosshair touch-none"></canvas>
+                            <div id="signature-placeholder"
+                                class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 pointer-events-none">
+                                <span class="material-symbols-outlined text-3xl mb-1">draw</span>
+                                <p class="text-[8px] font-black uppercase tracking-widest">Firme aquí con el dedo</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fotos con Captura Real -->
+                    <div>
+                        <label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Fotos
+                            de la Recogida</label>
+                        <div class="grid grid-cols-3 gap-3" id="photo-grid">
+                            <!-- Foto 1 -->
+                            <div
+                                class="relative aspect-square bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden hover:border-[#6E44FF] transition-colors group">
+                                <input type="file" accept="image/*" capture="environment"
+                                    class="absolute inset-0 opacity-0 cursor-pointer z-10"
+                                    onchange="handlePhotoSelect(this, 1)">
+                                <div id="preview-1" class="absolute inset-0 hidden">
+                                    <img src="" class="w-full h-full object-cover">
+                                    <div
+                                        class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span class="material-symbols-outlined text-white">refresh</span>
+                                    </div>
+                                </div>
+                                <div id="placeholder-1" class="flex flex-col items-center text-slate-300">
+                                    <span class="material-symbols-outlined">add_a_photo</span>
+                                </div>
+                            </div>
+                            <!-- Foto 2 -->
+                            <div
+                                class="relative aspect-square bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden hover:border-[#6E44FF] transition-colors group">
+                                <input type="file" accept="image/*" capture="environment"
+                                    class="absolute inset-0 opacity-0 cursor-pointer z-10"
+                                    onchange="handlePhotoSelect(this, 2)">
+                                <div id="preview-2" class="absolute inset-0 hidden">
+                                    <img src="" class="w-full h-full object-cover">
+                                    <div
+                                        class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span class="material-symbols-outlined text-white">refresh</span>
+                                    </div>
+                                </div>
+                                <div id="placeholder-2" class="flex flex-col items-center text-slate-300">
+                                    <span class="material-symbols-outlined">add_a_photo</span>
+                                </div>
+                            </div>
+                            <!-- Foto 3 -->
+                            <div
+                                class="relative aspect-square bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden hover:border-[#6E44FF] transition-colors group">
+                                <input type="file" accept="image/*" capture="environment"
+                                    class="absolute inset-0 opacity-0 cursor-pointer z-10"
+                                    onchange="handlePhotoSelect(this, 3)">
+                                <div id="preview-3" class="absolute inset-0 hidden">
+                                    <img src="" class="w-full h-full object-cover">
+                                    <div
+                                        class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span class="material-symbols-outlined text-white">refresh</span>
+                                    </div>
+                                </div>
+                                <div id="placeholder-3" class="flex flex-col items-center text-slate-300">
+                                    <span class="material-symbols-outlined">add_a_photo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <button id="btn-submit-completion"
+                        class="w-full bg-[#6E44FF] text-white py-5 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-[#6E44FF]/20 active:scale-95 transition-all flex items-center justify-center gap-3">
+                        <span class="material-symbols-outlined text-sm">cloud_done</span>
+                        Finalizar y Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Quick Issue Report Modal -->
+    <div id="issueModal"
+        class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] flex items-center justify-center p-6">
+        <div
+            class="modal-bg rounded-[2.5rem] w-full max-w-sm overflow-hidden shadow-2xl animate-fade-in border border-white/5">
+            <div class="p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-red-500/10 text-red-500 rounded-2xl flex items-center justify-center">
+                            <span class="material-symbols-outlined text-2xl">report_problem</span>
+                        </div>
+                        <div>
+                            <h3 class="heading-font font-black italic uppercase text-sm tracking-tighter">Reportar
+                                Incidencia</h3>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Afecta a la jornada
+                                actual</p>
+                        </div>
+                    </div>
+                    <button onclick="closeIssueModal()" class="w-8 h-8 flex items-center justify-center text-slate-500">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+
+                <div class="space-y-3">
+                    <button onclick="submitIssue('no_en_casa')"
+                        class="w-full text-left p-4 rounded-2xl border border-white/5 hover:border-red-500/50 hover:bg-red-500/5 transition-all group">
+                        <p class="text-[10px] font-black uppercase text-slate-300 group-hover:text-red-500">Cliente
+                            Ausente / No responde</p>
+                    </button>
+                    <button onclick="submitIssue('acceso_bloqueado')"
+                        class="w-full text-left p-4 rounded-2xl border border-white/5 hover:border-red-500/50 hover:bg-red-500/5 transition-all group">
+                        <p class="text-[10px] font-black uppercase text-slate-300 group-hover:text-red-500">Acceso
+                            Bloqueado / Imposible</p>
+                    </button>
+                    <button onclick="submitIssue('material_necesario')"
+                        class="w-full text-left p-4 rounded-2xl border border-white/5 hover:border-blue-500/50 hover:bg-blue-500/5 transition-all group">
+                        <p class="text-[10px] font-black uppercase text-slate-300 group-hover:text-blue-500">Material
+                            Extra Necesario</p>
+                    </button>
+                    <button onclick="submitIssue('otro')"
+                        class="w-full text-left p-4 rounded-2xl border border-white/5 hover:border-slate-500/50 hover:bg-white/5 transition-all group">
+                        <p class="text-[10px] font-black uppercase text-slate-300 group-hover:text-white">Otros (Llamar
+                            a Torre de Control)</p>
+                    </button>
+                </div>
+
+                <button onclick="document.getElementById('issueModal').classList.add('hidden')"
+                    class="w-full mt-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Evidence Tracking Modal -->
+    <div id="evidenceModal"
+        class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[200] flex items-center justify-center p-6">
+        <div
+            class="modal-bg rounded-[3rem] w-full max-w-md overflow-hidden shadow-2xl animate-fade-in border border-white/5">
+            <div class="p-8">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h3 class="heading-font font-black italic uppercase text-lg tracking-tighter">Evidencia Digital
+                        </h3>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Documentación visual
+                            del servicio</p>
+                    </div>
+                    <button onclick="document.getElementById('evidenceModal').classList.add('hidden')"
+                        class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-slate-400">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Control oculto de cámara -->
+                    <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden"
+                        onchange="handleImageUpload(event)">
+
+                    <div>
+                        <p class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest">📸 Inicio de
+                            Carga (Check-in)</p>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div id="before_1_container" class="relative group">
+                                <div onclick="triggerCamera('before_1')" id="before_1_placeholder"
+                                    class="aspect-square bg-white/5 rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center text-slate-500 hover:bg-brand-purple/10 hover:border-brand-purple transition-all cursor-pointer">
+                                    <span class="material-symbols-outlined text-lg mb-1">add_a_photo</span>
+                                    <p class="text-[7px] font-black uppercase">Foto 1</p>
+                                </div>
+                                <div id="before_1_preview"
+                                    class="hidden relative aspect-square rounded-2xl overflow-hidden bg-white/5">
+                                    <img src="" class="w-full h-full object-cover">
+                                    <button onclick="removeEvidence('before_1')"
+                                        class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-lg flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+                                        <span class="material-symbols-outlined text-sm">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="before_2_container" class="relative group">
+                                <div onclick="triggerCamera('before_2')" id="before_2_placeholder"
+                                    class="aspect-square bg-white/5 rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center text-slate-500 hover:bg-brand-purple/10 hover:border-brand-purple transition-all cursor-pointer">
+                                    <span class="material-symbols-outlined text-lg mb-1">add_a_photo</span>
+                                    <p class="text-[7px] font-black uppercase">Foto 2</p>
+                                </div>
+                                <div id="before_2_preview"
+                                    class="hidden relative aspect-square rounded-2xl overflow-hidden bg-white/5">
+                                    <img src="" class="w-full h-full object-cover">
+                                    <button onclick="removeEvidence('before_2')"
+                                        class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-lg flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+                                        <span class="material-symbols-outlined text-sm">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest">🚛 Fin de Carga
+                            (Check-out)</p>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div id="after_1_container" class="relative group">
+                                <div onclick="triggerCamera('after_1')" id="after_1_placeholder"
+                                    class="aspect-square bg-white/5 rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center text-slate-500 hover:bg-green-500/10 hover:border-green-500 transition-all cursor-pointer">
+                                    <span class="material-symbols-outlined text-lg mb-1">add_a_photo</span>
+                                    <p class="text-[7px] font-black uppercase">Foto 1</p>
+                                </div>
+                                <div id="after_1_preview"
+                                    class="hidden relative aspect-square rounded-2xl overflow-hidden bg-white/5">
+                                    <img src="" class="w-full h-full object-cover">
+                                    <button onclick="removeEvidence('after_1')"
+                                        class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-lg flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+                                        <span class="material-symbols-outlined text-sm">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="after_2_container" class="relative group">
+                                <div onclick="triggerCamera('after_2')" id="after_2_placeholder"
+                                    class="aspect-square bg-white/5 rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center text-slate-500 hover:bg-green-500/10 hover:border-green-500 transition-all cursor-pointer">
+                                    <span class="material-symbols-outlined text-lg mb-1">add_a_photo</span>
+                                    <p class="text-[7px] font-black uppercase">Foto 2</p>
+                                </div>
+                                <div id="after_2_preview"
+                                    class="hidden relative aspect-square rounded-2xl overflow-hidden bg-white/5">
+                                    <img src="" class="w-full h-full object-cover">
+                                    <button onclick="removeEvidence('after_2')"
+                                        class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-lg flex items-center justify-center shadow-lg active:scale-90 transition-transform">
+                                        <span class="material-symbols-outlined text-sm">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-10">
+                    <button onclick="saveEvidences()"
+                        class="w-full bg-brand-purple text-white py-5 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-brand-purple/20">
+                        Guardar Evidencias
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar (Fixed) -->
+    <!-- Bottom Navigation Bar (Fixed & Highlighted) -->
+    <nav
+        class="fixed bottom-0 left-0 w-full bg-[#0A0510] border-t border-white/10 px-4 py-4 z-50 safe-area-inset-bottom shadow-[0_-5px_30px_rgba(0,0,0,0.8)]">
+        <div class="grid grid-cols-9 gap-4 items-center">
+
+            <!-- Main Action: Jornada (Destacado) -->
+            <div class="col-span-3">
+                <button id="header-workday-toggle" onclick="toggleWorkday()"
+                    class="w-full flex flex-col items-center justify-center gap-1 bg-white/5 border border-white/10 rounded-[1rem] py-3 min-h-[64px] active:scale-95 transition-all group hover:bg-white/10 relative">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-brandPurple/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-[1rem]">
+                    </div>
+                    <div id="workday-icon-container"
+                        class="w-7 h-7 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center mb-0.5 group-hover:scale-110 transition-transform shadow-lg relative z-10">
+                        <span class="material-symbols-outlined text-[18px]">play_circle</span>
+                    </div>
+                    <div class="relative z-50 flex flex-col items-center">
+                        <span id="workday-label"
+                            class="text-[9px] font-black uppercase tracking-widest text-slate-300 group-hover:text-white transition-colors block mt-0.5">Jornada</span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Aux Actions -->
+            <div class="col-span-6 grid grid-cols-4 gap-2">
+                <!-- GPS -->
+                <button id="btn-gps-toggle" onclick="toggleGPS()"
+                    class="flex flex-col items-center gap-1 group w-full py-2 relative">
+                    <div
+                        class="w-8 h-8 rounded-xl bg-white/5 border border-white/10 group-hover:bg-white/10 flex items-center justify-center transition-all active:scale-90 text-slate-500 relative group-hover:text-white">
+                        <span class="material-symbols-outlined text-[22px]">location_off</span>
+                        <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500 hidden shadow-[0_0_5px_red]"
+                            id="gps-status-dot"></span>
+                    </div>
+                    <span
+                        class="text-[8px] font-bold uppercase tracking-wider text-slate-600 group-hover:text-slate-400 transition-colors">GPS</span>
+                </button>
+
+                <button id="btn-theme-toggle" onclick="toggleTheme()"
+                    class="flex flex-col items-center gap-1 group w-full py-2">
+                    <div id="theme-icon-container"
+                        class="w-8 h-8 rounded-xl bg-white/5 border border-white/10 group-hover:bg-white/10 flex items-center justify-center transition-all active:scale-90 text-slate-500 group-hover:text-white">
+                        <span id="theme-icon" class="material-symbols-outlined text-[22px]">light_mode</span>
+                    </div>
+                    <span
+                        class="text-[8px] font-bold uppercase tracking-wider text-slate-600 group-hover:text-slate-400 transition-colors">Tema</span>
+                </button>
+
+                <!-- Soporte -->
+                <a href="tel:911036383" class="flex flex-col items-center gap-1 group w-full py-2">
+                    <div
+                        class="w-8 h-8 rounded-xl bg-white/5 border border-white/10 group-hover:bg-white/10 flex items-center justify-center transition-all active:scale-90 text-slate-500 group-hover:text-white">
+                        <span class="material-symbols-outlined text-[20px]">support_agent</span>
+                    </div>
+                    <span
+                        class="text-[8px] font-bold uppercase tracking-wider text-slate-600 group-hover:text-slate-400 transition-colors">Ayuda</span>
+                </a>
+
+                <!-- Cancel -->
+                <button onclick="logout()" class="flex flex-col items-center gap-1 group w-full py-2">
+                    <div
+                        class="w-8 h-8 rounded-xl bg-red-500/10 border border-red-500/20 group-hover:bg-red-500/20 flex items-center justify-center transition-all active:scale-90 text-red-500 group-hover:text-red-400">
+                        <span class="material-symbols-outlined text-[20px]">logout</span>
+                    </div>
+                    <span
+                        class="text-[8px] font-bold uppercase tracking-wider text-slate-600 group-hover:text-slate-400 transition-colors">Salir</span>
+                </button>
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- Modal: Detalles de Servicio (Historial) -->
+    <div id="serviceDetailsModal"
+        class="fixed inset-0 bg-black/95 backdrop-blur-md z-[100] hidden items-center justify-center p-4 animate-fade-in sm:p-6 overflow-y-auto">
+        <div
+            class="bg-brandDark border border-white/10 w-full max-w-lg rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative my-auto">
+            <button onclick="document.getElementById('serviceDetailsModal').classList.add('hidden')"
+                class="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors w-10 h-10 flex items-center justify-center rounded-full bg-white/5 active:bg-white/10 z-10">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+
+            <div class="mb-8">
+                <div class="flex items-center gap-4 mb-4">
+                    <div id="detail-type-icon" class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-2xl" id="detail-icon-span">check_circle</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black text-white italic tracking-tight uppercase"
+                            id="detail-client-name">...</h3>
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5"
+                            id="detail-date">...</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 px-4 py-3 bg-white/5 rounded-2xl border border-white/5">
+                    <span class="material-symbols-outlined text-slate-400 text-lg">location_on</span>
+                    <p class="text-[11px] font-bold text-slate-300 uppercase tracking-tight" id="detail-address">...
+                    </p>
+                </div>
+            </div>
+
+            <div class="space-y-6 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                <!-- Receptor -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Recibido por
+                        </p>
+                        <p class="text-xs font-bold text-white uppercase" id="detail-receiver">...</p>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                        <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">DNI / NIE</p>
+                        <p class="text-xs font-bold text-white uppercase" id="detail-dni">...</p>
+                    </div>
+                </div>
+
+                <!-- Notas -->
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/5">
+                    <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-2">Notas del
+                        Servicio</p>
+                    <p class="text-[11px] font-medium text-slate-300 italic leading-relaxed" id="detail-notes">Sin
+                        notas adicionales.</p>
+                </div>
+
+                <!-- Tiempos y Costes -->
+                <div class="bg-brandPurple/10 p-5 rounded-[2rem] border border-brandPurple/20">
+                    <div class="flex items-center justify-between mb-4">
+                        <p class="text-[10px] font-black text-brandPurple uppercase tracking-[0.2em]">Resumen de
+                            Servicio</p>
+                        <span class="material-symbols-outlined text-brandPurple">payments</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-[8px] font-bold text-slate-500 uppercase tracking-widest mb-1">Tiempo Total
+                            </p>
+                            <p class="text-sm font-black text-white" id="detail-total-time">0 min</p>
+                        </div>
+                        <div>
+                            <p class="text-[8px] font-bold text-slate-500 uppercase tracking-widest mb-1">Cargos Extra
+                            </p>
+                            <p class="text-sm font-black text-white" id="detail-extra-charge">0.00 €</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fotos -->
+                <div>
+                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">📸 Evidencias
+                        Fotográficas</p>
+                    <div class="grid grid-cols-3 gap-3" id="detail-photos-grid">
+                        <!-- Photos will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Firma -->
+                <div>
+                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">✍️ Firma del
+                        Cliente</p>
+                    <div
+                        class="bg-white/5 p-4 rounded-2xl border border-white/10 aspect-[3/1] flex items-center justify-center overflow-hidden">
+                        <img id="detail-signature-img" src="" class="max-h-full object-contain filter invert opacity-80"
+                            alt="Firma">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <button onclick="document.getElementById('serviceDetailsModal').classList.add('hidden')"
+                    class="w-full py-4 rounded-2xl bg-white/10 text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/20 transition-all">
+                    Cerrar Detalle
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabase-config.js"></script>
+    <script src="../assets/js/supabase-client.js"></script>
+    <script src="../assets/js/driver-dashboard-indicator.js"></script>
+    <script src="../assets/js/driver-dashboard.js"></script>
+</body>
+
+</html>

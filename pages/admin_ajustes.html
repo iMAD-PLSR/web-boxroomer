@@ -27,13 +27,15 @@
             filter: invert(1);
         }
     </style>
+    <script src="../assets/js/reset.js"></script>
 </head>
 
 <body class="bg-brandDark text-white h-screen overflow-hidden flex">
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-[#111] border-r border-white/5 flex flex-col justify-between p-6 shrink-0">
-        <div>
+    <aside
+        class="w-64 bg-[#111] border-r border-white/5 flex flex-col justify-between p-6 shrink-0 overflow-y-auto scrollbar-hide">
+        <div class="pb-8">
             <div
                 class="flex items-center gap-3 mb-10 opacity-80 hover:opacity-100 transition-opacity cursor-pointer text-white">
                 <img src="../assets/images/logo.png" alt="LOGO" class="h-6 brightness-0 invert">
@@ -42,32 +44,64 @@
             </div>
 
             <nav class="space-y-2">
-                <a href="admin_dashboard.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                <a href="admin_dashboard"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
                     <span class="material-symbols-outlined">space_dashboard</span>
                     <span class="text-xs font-bold uppercase tracking-wider">Dashboard</span>
                 </a>
-                <a href="admin_clientes.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                <a href="admin_clientes"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
                     <span class="material-symbols-outlined">group</span>
                     <span class="text-xs font-bold uppercase tracking-wider">Clientes</span>
                 </a>
-                <a href="admin_logistica.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                <a href="admin_logistica"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
                     <span class="material-symbols-outlined">inventory_2</span>
-                    <span class="text-xs font-bold uppercase tracking-wider">Logística</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Tu Trastero Inteligente</span>
                 </a>
-                <a href="admin_facturacion.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+
+                <div class="pt-4 pb-2 px-4">
+                    <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Recursos</p>
+                </div>
+                <a href="admin_logistica?page=conductores"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">engineering</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Conductores</span>
+                </a>
+                <a href="admin_logistica?page=vehiculos"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Vehículos</span>
+                </a>
+
+                <a href="admin_facturacion"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
                     <span class="material-symbols-outlined">payments</span>
                     <span class="text-xs font-bold uppercase tracking-wider">Facturación</span>
                 </a>
-                <a href="admin_ajustes.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl bg-brandPurple text-white border border-brandPurple/20 shadow-lg shadow-brandPurple/10 transition-all">
+                <a href="admin_ajustes"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl bg-brandPurple text-white border border-brandPurple/20 shadow-lg shadow-brandPurple/10 transition-all font-bold">
                     <span class="material-symbols-outlined">settings</span>
                     <span class="text-xs font-bold uppercase tracking-wider">Ajustes</span>
                 </a>
+
+                <a href="driver_dashboard.html" target="_blank"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">directions_car</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Vista Conductor</span>
+                    <span class="material-symbols-outlined text-[10px] ml-auto">open_in_new</span>
+                </a>
             </nav>
+        </div>
+
+        <div class="px-4 py-3 bg-brandPurple/10 rounded-xl border border-brandPurple/20 cursor-pointer hover:bg-red-500/10 hover:border-red-500/20 transition-all group"
+            onclick="handleLogout()">
+            <p class="text-[10px] text-brandPurple font-black uppercase tracking-widest mb-1 group-hover:text-red-400">
+                Cerrar Sesión</p>
+            <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-green-500 group-hover:bg-red-500"></div>
+                <span class="text-xs font-bold text-white group-hover:text-red-400">Israel Madrigal</span>
+            </div>
         </div>
     </aside>
 
@@ -122,6 +156,34 @@
                 </div>
                 <div id="coupons-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- JS populates -->
+                </div>
+            </section>
+
+            <!-- Sección: Tramos de Seguros (Protección) -->
+            <section>
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Configuración de Seguro
+                        (Protección de Bienes)</h3>
+                    <button onclick="openInsuranceModal()"
+                        class="bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-white hover:text-brandDark transition-all">+
+                        Añadir Tramo</button>
+                </div>
+                <div class="bg-[#141414] border border-white/5 rounded-[2rem] overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-white/5">
+                            <tr class="text-[9px] font-black text-slate-500 uppercase tracking-widest leading-none">
+                                <th class="px-6 py-5 whitespace-nowrap">Cobertura Máx.</th>
+                                <th class="px-6 py-5">Tipo de Seguro</th>
+                                <th class="px-6 py-5">Coste Mensual</th>
+                                <th class="px-6 py-5">Popularidad</th>
+                                <th class="px-6 py-5 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="insurance-table-body"
+                            class="divide-y divide-white/5 text-[11px] font-bold text-slate-300">
+                            <!-- JS fills -->
+                        </tbody>
+                    </table>
                 </div>
             </section>
 
@@ -282,6 +344,49 @@
     </div>
 
     <!-- Modal: Confirmación Bonito -->
+    <div id="insuranceModal"
+        class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+        <div class="bg-[#1a1a1a] border border-white/10 w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl">
+            <h3 id="insurance-modal-title"
+                class="text-xl font-black mb-6 uppercase tracking-tight italic text-white flex items-center gap-3">
+                <span class="material-symbols-outlined text-brandPurple">shield</span>
+                Configurar Seguro
+            </h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Cobertura
+                        Máxima (€)</label>
+                    <input type="number" id="ins-coverage" placeholder="500"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple font-bold">
+                </div>
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Coste
+                        Mensual (€)</label>
+                    <input type="number" id="ins-cost" placeholder="0"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple font-bold">
+                </div>
+                <div>
+                    <label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Etiqueta /
+                        Popularidad</label>
+                    <select id="ins-label"
+                        class="w-full bg-[#1A1A1A] border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple">
+                        <option value="estandar">Estándar</option>
+                        <option value="popular">Más Popular</option>
+                        <option value="premium">Premium / Recomendado</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex gap-3 mt-8">
+                <button onclick="closeInsuranceModal()"
+                    class="flex-1 py-4 rounded-xl bg-white/5 text-[10px] font-black uppercase tracking-widest text-slate-400">Cancelar</button>
+                <button onclick="saveInsurance()"
+                    class="flex-1 py-4 rounded-xl bg-brandPurple text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brandPurple/20">Guardar
+                    Tramo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Confirmación Bonito -->
     <div id="confirmModal"
         class="fixed inset-0 bg-black/90 backdrop-blur-md z-[200] hidden items-center justify-center p-4">
         <div class="bg-[#1a1a1a] border border-white/10 w-full max-w-sm rounded-[2.5rem] p-10 text-center shadow-2xl">
@@ -302,29 +407,186 @@
         </div>
     </div>
 
+    <!-- Supabase SDK & Config -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabase-config.js"></script>
+    <script src="../assets/js/supabase-client.js"></script>
+
     <script>
-        let packs = [
-            { id: 1, name: 'Pack Mini', volume: '1.5 m³', price: 29.00, permanence: '12 Meses', boxes: 10, extra: false, info: 'Incluye 10 cajas L y una recogida' },
-            { id: 2, name: 'Pack Dúo', volume: '3.5 m³', price: 49.00, permanence: '6 Meses', boxes: 15, extra: false, info: 'Incluye 15 cajas L y una recogida' },
-            { id: 3, name: 'Pack Plus', volume: '7.0 m³', price: 89.00, permanence: '6 Meses', boxes: 30, extra: false, info: 'Incluye 30 cajas L y una recogida' },
-            { id: 4, name: 'Gestión / Cancelación', volume: 'Fijo', price: 39.00, permanence: '—', boxes: '—', extra: true, unit: '€/fijo', info: 'Aplicable tras reserva o por cancelación' },
-            { id: 5, name: 'Entrega Parcial / Extra', volume: 'Zona 0', price: 39.00, permanence: '—', boxes: '—', extra: true, unit: '€/viaje', info: 'Coste por devolución parcial' },
-            { id: 6, name: 'Mozo Adicional', volume: 'Hora', price: 35.00, permanence: '—', boxes: '—', extra: true, unit: '€/h', info: 'Servicio de carga profesional' },
-            { id: 7, name: 'Caja BOXROOMER (L)', volume: 'Recambio', price: 4.50, permanence: '—', boxes: '—', extra: true, unit: '€/ud', info: 'Pared doble reforzada' },
-            { id: 8, name: 'Suplemento Seguro', volume: '+500€', price: 15.00, permanence: '—', boxes: '—', extra: true, unit: '€/mes', info: 'Ampliación de cobertura base' }
+        let packs = [];
+        let coupons = [];
+        let insuranceTiers = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initSettings();
+        });
+
+        async function initSettings() {
+            if (!window.supabaseClient) {
+                console.warn("⚠️ [Admin] Supabase not initialized. Using defaults.");
+                packs = DEFAULT_PACKS;
+                insuranceTiers = DEFAULT_INSURANCE;
+                renderAll();
+                return;
+            }
+
+            // Auth Check
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const { data: profile } = await window.supabaseClient
+                .from('profiles')
+                .select('role')
+                .eq('id', session.user.id)
+                .maybeSingle();
+
+            const role = profile?.role || session.user.user_metadata?.role || 'client';
+
+            // 🦸‍♂️ SUPERADMIN BYPASS
+            let finalRole = role;
+            if (session.user.email === 'israel.madrigal@pluser.es') {
+                finalRole = 'admin';
+                console.log("👑 [Auth] Superadmin detectado por email en Ajustes.");
+            }
+
+            if (finalRole !== 'admin') {
+                console.warn("⛔ Acceso denegado: Solo administradores.");
+                window.location.href = 'cliente_dashboard.html';
+                return;
+            }
+
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('box_settings')
+                    .select('*');
+
+                if (error) throw error;
+
+                // Map data to local variables
+                const settings = {};
+                data.forEach(item => { settings[item.key] = item.value; });
+
+                packs = settings.packs || DEFAULT_PACKS;
+                insuranceTiers = settings.insurance || DEFAULT_INSURANCE;
+                coupons = settings.coupons || [];
+
+                renderAll();
+            } catch (err) {
+                console.error("❌ Error loading settings:", err);
+            }
+        }
+
+        function renderAll() {
+            renderPacks();
+            renderInsurance();
+            renderCoupons();
+            renderAuditLog();
+        }
+
+        async function saveToStorage(key, value) {
+            // Local sync
+            if (key === 'packs') packs = value;
+            if (key === 'insurance') insuranceTiers = value;
+            if (key === 'coupons') coupons = value;
+
+            if (!window.supabaseClient) {
+                localStorage.setItem(`BOXROOMER_${key.toUpperCase()}`, JSON.stringify(value));
+                return;
+            }
+
+            try {
+                const { error } = await window.supabaseClient
+                    .from('box_settings')
+                    .upsert({ key: key, value: value, updated_at: new Date().toISOString() });
+
+                if (error) throw error;
+                console.log(`✅ [Admin] Saved ${key} to Supabase`);
+            } catch (err) {
+                alert("Error al guardar en base de datos: " + err.message);
+            }
+        }
+
+        // Factory Defaults
+        const DEFAULT_PACKS = [
+            // --- PACS DE SUSCRIPCIÓN (Referencia: reserva.js -> PRICES constants + User Specs) ---
+            // Pack Mini (1.0m³): 139€ (3m), 199€ (6m), 319€ (12m)
+            {
+                id: 1,
+                name: 'Pack Mini',
+                volume: '1.0 m³',
+                price: 26.60,
+                permanence: 'variable',
+                boxes: 0,
+                extra: false,
+                price3: 139,
+                price6: 199,
+                price12: 319,
+                info: 'Recogida y Entrega GRATIS (+15min cortesía), Seguro 1000€/m³, App.'
+            },
+            // Pack Dúo (2.0m³): 199€ (3m), 309€ (6m), 529€ (12m)
+            {
+                id: 2,
+                name: 'Pack Dúo',
+                volume: '2.0 m³',
+                price: 44.10,
+                permanence: 'variable',
+                boxes: 0,
+                extra: false,
+                price3: 199,
+                price6: 309,
+                price12: 529,
+                info: 'Recogida y Entrega GRATIS (+15min cortesía), Seguro, App.'
+            },
+
+            // --- TARIFAS VARIABLES (Referencia: reserva.js -> BASE_M1 / ADDITIONAL_M2) ---
+            { id: 10, name: 'Precio Base (1er m³)', volume: 'Base', price: 39.00, permanence: '—', boxes: '—', extra: true, unit: '€/m³', info: 'Precio del primer metro cúbico (Cálculo Manual)' },
+            { id: 11, name: 'Precio m³ Adicional', volume: 'Extra', price: 16.00, permanence: '—', boxes: '—', extra: true, unit: '€/m³', info: 'Por cada m³ adicional al primero (Cálculo Manual)' },
+
+            // --- LOGÍSTICA Y EXTRAS (Referencia: calculo manual) ---
+            // Recogida es GRATIS en packs. Devolución (Entrega posterior) se cobra como transporte si no está incluida en promo.
+            { id: 5, name: 'Devolución / Transporte', volume: 'Zona 0', price: 39.00, permanence: '—', boxes: '—', extra: true, unit: '€/viaje', info: 'Coste de entrega desde almacén a cliente (Zona 0)' },
+
+            // "Mozo Extra"
+            { id: 6, name: 'Mozo Adicional (Ayuda)', volume: 'Carga', price: 35.00, permanence: '—', boxes: '—', extra: true, unit: '€/viaje', info: 'Suplemento por carga pesada (ayuda extra)' },
+
+            // "Cajas"
+            { id: 7, name: 'Caja BOXROOMER (L)', volume: 'Venta', price: 1.80, permanence: '—', boxes: '—', extra: true, unit: '€/ud', info: 'Precio unitario de venta de caja' },
+
+            // --- OTROS SUPLEMENTOS ---
+            { id: 20, name: 'Tiempo Extra (15min)', volume: 'Bloque', price: 15.00, permanence: '—', boxes: '—', extra: true, unit: '€/15m', info: 'Exceso de tiempo en carga/descarga' },
+            { id: 4, name: 'Gestión / Cancelación', volume: 'Admin', price: 39.00, permanence: '—', boxes: '—', extra: true, unit: '€/caso', info: 'Cargo administrativo' }
         ];
 
-        let coupons = [
-            { id: 1, code: 'BIENVENIDA2026', value: '25%', desc: '25% Dto. primer mes • 132 usos', status: 'Activo', expiry: '' },
-            { id: 2, code: 'AMIGO-BOX', value: '1 Mes', desc: '1 mes gratis referido • Caducado', status: 'Expirado', expiry: '2025-12-31' }
+        // Seguros: En reserva.js no hay selección de seguro con precio.
+        // Seguros incluidos en el pack ("Seguro a Todo Riesgo" mencionado en chat pero sin coste extra visible).
+        // Dejamos estructura vacía o básica gratutita por si acaso, pero sin costes extra "inventados".
+        const DEFAULT_INSURANCE = [
+            { id: 1, coverage: 500, cost: 0, label: 'Protección Básica', popular: true }
         ];
+
+        // State (Loaded from LS or Defaults)
+        // COUPONS: Default to empty if nothing in LS (Clean Slate)
+        let packs = loadData('BOXROOMER_PACKS', DEFAULT_PACKS);
+        let coupons = loadData('BOXROOMER_COUPONS', []);
+        let insuranceTiers = loadData('BOXROOMER_INSURANCE_TIERS', DEFAULT_INSURANCE);
 
         let currentEditingId = null;
         let deleteCallback = null;
 
+        // Persist Helpers
+        function saveToStorage() {
+            localStorage.setItem('BOXROOMER_PACKS', JSON.stringify(packs));
+            localStorage.setItem('BOXROOMER_COUPONS', JSON.stringify(coupons));
+            localStorage.setItem('BOXROOMER_INSURANCE_TIERS', JSON.stringify(insuranceTiers));
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             renderPacks();
             renderCoupons();
+            renderInsurance();
             renderAuditLog();
         });
 
@@ -359,6 +621,100 @@
             renderAuditLog();
         }
 
+        function renderInsurance() {
+            const table = document.getElementById('insurance-table-body');
+            if (!table) return;
+            table.innerHTML = insuranceTiers.map(tier => `
+                <tr class="hover:bg-white/[0.02] transition-all group">
+                    <td class="px-6 py-5 whitespace-nowrap">
+                        <span class="text-white font-black italic uppercase tracking-tighter">Hasta ${tier.coverage}€</span>
+                    </td>
+                    <td class="px-6 py-5 text-[10px] text-slate-400 uppercase tracking-widest font-black">${tier.label}</td>
+                    <td class="px-6 py-5 text-brandPurple font-black italic">${tier.cost === 0 ? 'GRATIS' : tier.cost.toFixed(2) + '€'}</td>
+                    <td class="px-6 py-5">
+                        <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase ${tier.popular ? 'bg-orange-500/10 text-orange-500 border border-orange-500/20' : 'bg-white/5 text-slate-500'}">
+                            ${tier.popular ? 'Más Popular' : 'Estándar'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-5 text-right">
+                        <div class="flex justify-end gap-2">
+                            <button onclick="editInsurance(${tier.id})" class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-brandPurple hover:text-white transition-all text-slate-500">
+                                <span class="material-symbols-outlined text-sm">tune</span>
+                            </button>
+                            <button onclick="confirmDelete(() => deleteInsurance(${tier.id}))" class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all text-slate-500">
+                                <span class="material-symbols-outlined text-sm">delete</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openInsuranceModal() {
+            currentEditingId = null;
+            document.getElementById('insurance-modal-title').innerHTML = '<span class="material-symbols-outlined text-brandPurple">shield</span> Configurar Seguro';
+            document.getElementById('ins-coverage').value = '';
+            document.getElementById('ins-cost').value = '';
+            document.getElementById('insuranceModal').classList.remove('hidden');
+            document.getElementById('insuranceModal').classList.add('flex');
+        }
+
+        function closeInsuranceModal() {
+            document.getElementById('insuranceModal').classList.add('hidden');
+            document.getElementById('insuranceModal').classList.remove('flex');
+        }
+
+        function saveInsurance() {
+            const coverage = parseInt(document.getElementById('ins-coverage').value);
+            const cost = parseFloat(document.getElementById('ins-cost').value);
+            const labelValue = document.getElementById('ins-label').value;
+
+            const labelsMap = {
+                'estandar': 'Protección Estándar',
+                'popular': 'Favorito del Cliente',
+                'premium': 'Máxima Cobertura'
+            };
+
+            if (currentEditingId) {
+                const tier = insuranceTiers.find(t => t.id === currentEditingId);
+                tier.coverage = coverage;
+                tier.cost = cost;
+                tier.label = labelsMap[labelValue];
+                tier.popular = labelValue === 'popular';
+                addAuditLog('EDICION_SEGURO', `Tramo seguro editado: ${coverage}€`, 'MEDIA', currentEditingId, 'AJUSTES');
+            } else {
+                const id = Date.now();
+                insuranceTiers.push({
+                    id, coverage, cost,
+                    label: labelsMap[labelValue],
+                    popular: labelValue === 'popular'
+                });
+                addAuditLog('CREACION_SEGURO', `Nuevo tramo seguro: ${coverage}€`, 'MEDIA', id, 'AJUSTES');
+            }
+            saveToStorage('insurance', insuranceTiers);
+            renderInsurance();
+            closeInsuranceModal();
+        }
+
+        function editInsurance(id) {
+            currentEditingId = id;
+            const tier = insuranceTiers.find(t => t.id === id);
+            document.getElementById('insurance-modal-title').innerHTML = '<span class="material-symbols-outlined text-brandPurple">settings</span> Editar Seguro';
+            document.getElementById('ins-coverage').value = tier.coverage;
+            document.getElementById('ins-cost').value = tier.cost;
+            document.getElementById('insuranceModal').classList.remove('hidden');
+            document.getElementById('insuranceModal').classList.add('flex');
+        }
+
+        function deleteInsurance(id) {
+            const tier = insuranceTiers.find(t => t.id === id);
+            addAuditLog('BORRADO_SEGURO', `Tramo seguro eliminado: ${tier?.coverage}€`, 'ALTA', id, 'AJUSTES');
+            insuranceTiers = insuranceTiers.filter(t => t.id !== id);
+            saveToStorage('insurance', insuranceTiers);
+            renderInsurance();
+            closeConfirmModal();
+        }
+
         function renderPacks() {
             const table = document.getElementById('packs-table-body');
             table.innerHTML = packs.map(pack => `
@@ -368,7 +724,16 @@
                         ${pack.extra ? '<span class="ml-2 bg-blue-500/10 text-blue-400 text-[7px] px-1.5 py-0.5 rounded leading-none">VAR</span>' : ''}
                     </td>
                     <td class="px-6 py-5">${pack.volume}</td>
-                    <td class="px-6 py-5 text-brandPurple font-black">${pack.price.toFixed(2)}${pack.unit || '€'}</td>
+                    <td class="px-6 py-5 text-brandPurple font-bold text-sm">
+                        ${pack.price3 ?
+                    `<div class="flex flex-col gap-0.5">
+                                <span class="whitespace-nowrap"><span class="text-white/40 text-[10px]">3m:</span> ${pack.price3}€</span>
+                                <span class="whitespace-nowrap"><span class="text-white/40 text-[10px]">6m:</span> ${pack.price6}€</span>
+                                <span class="whitespace-nowrap"><span class="text-white/40 text-[10px]">12m:</span> ${pack.price12}€</span>
+                             </div>`
+                    : `${pack.price.toFixed(2)}${pack.unit || '€'}`
+                }
+                    </td>
                     <td class="px-6 py-5">${pack.permanence}</td>
                     <td class="px-6 py-5">${pack.boxes}</td>
                     <td class="px-6 py-5 text-right flex justify-end gap-2">
@@ -386,6 +751,16 @@
         function renderCoupons() {
             const grid = document.getElementById('coupons-grid');
             const now = new Date();
+
+            if (!coupons || coupons.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 flex flex-col items-center justify-center opacity-40 border border-dashed border-white/10 rounded-[2rem]">
+                        <span class="material-symbols-outlined text-4xl mb-2 text-slate-500">local_activity</span>
+                        <p class="text-xs font-black uppercase tracking-widest text-slate-500">No hay cupones activos</p>
+                    </div>
+                 `;
+                return;
+            }
 
             grid.innerHTML = coupons.map(c => {
                 let status = c.status;
@@ -456,6 +831,7 @@
                     name, volume, boxes, price, permanence, extra: false
                 });
             }
+            saveToStorage('packs', packs);
             renderPacks();
             closePackModal();
         }
@@ -477,6 +853,7 @@
             const pack = packs.find(p => p.id === id);
             addAuditLog('BORRADO_PACK', `Borrado de pack: ${pack.name}`, 'ALTA', id, 'AJUSTES');
             packs = packs.filter(p => p.id !== id);
+            saveToStorage('packs', packs);
             renderPacks();
             closeConfirmModal();
         }
@@ -518,6 +895,7 @@
                 coupons.push({ id, code, value, desc, status, expiry });
                 addAuditLog('CREACION_CUPON', `Nuevo cupón creado: ${code}`, 'MEDIA', id, 'AJUSTES');
             }
+            saveToStorage('coupons', coupons);
             renderCoupons();
             closeCouponModal();
         }
@@ -539,6 +917,7 @@
             const c = coupons.find(x => x.id === id);
             addAuditLog('BORRADO_CUPON', `Borrado de cupón: ${c.code}`, 'ALTA', id, 'AJUSTES');
             coupons = coupons.filter(x => x.id !== id);
+            saveToStorage('coupons', coupons);
             renderCoupons();
             closeConfirmModal();
         }
@@ -559,11 +938,31 @@
             document.getElementById('confirmModal').classList.remove('flex');
         }
         function resetDemoData() {
-            if (confirm('¿Estás seguro de que quieres BORRAR TODOS LOS DATOS de la demo? Esto reiniciará el historial, los ajustes y el estado del dashboard.')) {
-                localStorage.clear();
-                alert('Datos eliminados. La demo se ha reiniciado.');
-                window.location.reload();
-            }
+            // Personalizamos la modal de confirmación para el Reset Nuclear
+            const modal = document.getElementById('confirmModal');
+            const iconContainer = modal.querySelector('.w-20.h-20');
+            const icon = modal.querySelector('.material-symbols-outlined');
+            const title = modal.querySelector('h3');
+            const desc = modal.querySelector('p');
+            const confirmBtn = document.getElementById('confirm-action-btn');
+
+            // Configuración visual "Nuclear"
+            iconContainer.classList.replace('bg-red-500/10', 'bg-brandPurple/10');
+            iconContainer.classList.replace('text-red-500', 'text-brandPurple');
+            icon.innerText = 'restart_alt';
+            title.innerText = '¿RESETEO TOTAL?';
+            desc.innerText = 'Esta acción borrará todas las reservas, clientes y configuraciones. El sistema volverá a su estado inicial de fábrica.';
+            confirmBtn.innerText = 'SÍ, REINICIAR TODO';
+            confirmBtn.classList.replace('bg-red-500', 'bg-brandPurple');
+            confirmBtn.classList.replace('shadow-red-500/20', 'shadow-brandPurple/20');
+
+            // Acción al confirmar
+            confirmBtn.onclick = () => {
+                BoxroomerReset.execute();
+            };
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
     </script>
 </body>

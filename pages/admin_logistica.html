@@ -14,6 +14,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="../assets/js/tailwind.config.js"></script>
 
+    <!-- Supabase SDK & Config -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabase-config.js"></script>
+    <script src="../assets/js/supabase-client.js"></script>
+
+    <!-- Leaflet (Mapas OpenSource) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
     <style>
         body {
             font-family: 'Outfit', sans-serif;
@@ -24,235 +35,810 @@
             grid-template-columns: repeat(20, 1fr);
             gap: 2px;
         }
-    </style>
-</head>
 
-<body class="bg-brandDark text-white h-screen overflow-hidden flex">
+        /* Fix for Drag and Drop selection issues */
+        .route-stop-card {
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            -webkit-user-drag: element !important;
+        }
 
-    <!-- Sidebar -->
-    <aside class="w-64 bg-[#111] border-r border-white/5 flex flex-col justify-between p-6">
-        <div>
-            <div class="flex items-center gap-3 mb-10 opacity-80 hover:opacity-100 transition-opacity cursor-pointer">
-                <img src="../assets/images/logo.png" alt="LOGO" class="h-6 brightness-0 invert">
-                <span
-                    class="bg-brandPurple text-white text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest">Admin</span>
-            </div>
+        .route-stop-card * {
+            pointer-events: none;
+        }
 
-            <nav class="space-y-2">
-                <a href="admin_dashboard.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
-                    <span class="material-symbols-outlined">space_dashboard</span>
-                    <span class="text-xs font-bold uppercase tracking-wider">Dashboard</span>
-                </a>
-                <a href="admin_clientes.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
-                    <span class="material-symbols-outlined">group</span>
-                    <span class="text-xs font-bold uppercase tracking-wider">Clientes</span>
-                </a>
-                <a href="admin_logistica.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl bg-brandPurple text-white border border-brandPurple/20 shadow-lg shadow-brandPurple/10 transition-all">
-                    <span class="material-symbols-outlined">inventory_2</span>
-                    <span class="text-xs font-bold uppercase tracking-wider">Logística</span>
-                </a>
-                <a href="admin_facturacion.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
-                    <span class="material-symbols-outlined">payments</span>
-                    <span class="text-xs font-bold uppercase tracking-wider">Facturación</span>
-                </a>
-                <a href="admin_ajustes.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
-                    <span class="material-symbols-outlined">settings</span>
-                    <span class="text-xs font-bold uppercase tracking-wider">Ajustes</span>
-                </a>
-            </nav>
-        </div>
+        .route-stop-card a,
+        .route-stop-card button {
+            pointer-events: auto;
+        }
 
-        <div class="px-4 py-3 bg-brandPurple/10 rounded-xl border border-brandPurple/20">
-            <p class="text-[10px] text-brandPurple font-black uppercase tracking-widest mb-1">Estado Operativo</p>
-            <div class="flex items-center gap-2">
-                <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                <span class="text-xs font-bold text-white">Logística Activa</span>
-            </div>
-        </div>
-    </aside>
+        .route-stop-card:active {
+            cursor: grabbing !important;
+        }
 
-    <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto bg-[#0a0a0a] p-8">
+        [draggable="true"] {
+            -webkit-user-drag: element !important;
+            cursor: grab;
+        }
 
-        <header class="flex justify-between items-end mb-10">
-            <div>
-                <h1 class="text-3xl font-black italic tracking-tighter uppercase">Planificación Logística</h1>
-                <p class="text-slate-400 text-sm font-medium mt-1">Gestión de rutas de transporte y servicios de campo
-                </p>
-            </div>
-        </header>
+        <script src="../assets/js/admin-logistica-map.js" defer></script></head><body class="bg-brandDark text-white h-screen overflow-hidden flex">< !-- Sidebar --><aside class="w-64 bg-[#111] border-r border-white/5 flex flex-col justify-between p-6 shrink-0 overflow-y-auto scrollbar-hide"><div class="pb-8"><div class="flex items-center gap-3 mb-10 opacity-80 hover:opacity-100 transition-opacity cursor-pointer"><img src="../assets/images/logo.png" alt="LOGO" class="h-6 brightness-0 invert"><span class="bg-brandPurple text-white text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest">Admin</span></div><nav class="space-y-2"><a href="admin_dashboard"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all"><span class="material-symbols-outlined">space_dashboard</span><span class="text-xs font-bold uppercase tracking-wider">Dashboard</span></a><a href="admin_clientes"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all"><span class="material-symbols-outlined">group</span><span class="text-xs font-bold uppercase tracking-wider">Clientes</span></a><a href="admin_logistica"
+        class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all"
+        data-page="logistica"><span class="material-symbols-outlined">inventory_2</span><span class="text-xs font-bold uppercase tracking-wider">Tu Trastero Inteligente</span></a><div class="pt-4 pb-2 px-4"><p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Recursos</p></div><a href="admin_logistica?tab=fleet&page=conductores"
+        class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all"
+        data-page="conductores"><span class="material-symbols-outlined">engineering</span><span class="text-xs font-bold uppercase tracking-wider">Conductores</span></a><a href="admin_logistica?tab=fleet&page=vehiculos"
+        class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all"
+        data-page="vehiculos"><span class="material-symbols-outlined">local_shipping</span><span class="text-xs font-bold uppercase tracking-wider">Vehículos</span></a><a href="admin_facturacion"
+        class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all"><span class="material-symbols-outlined">payments</span><span class="text-xs font-bold uppercase tracking-wider">Facturación</span></a><a href="admin_ajustes"
+        class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all"><span class="material-symbols-outlined">settings</span><span class="text-xs font-bold uppercase tracking-wider">Ajustes</span></a><a href="driver_dashboard.html" target="_blank"
+        class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all"><span class="material-symbols-outlined">directions_car</span><span class="text-xs font-bold uppercase tracking-wider">Vista Conductor</span><span class="material-symbols-outlined text-[10px] ml-auto">open_in_new</span></a></nav></div><div class="px-4 py-3 bg-brandPurple/10 rounded-xl border border-brandPurple/20 cursor-pointer hover:bg-red-500/10 hover:border-red-500/20 transition-all group"
+        onclick="handleLogout()"><p class="text-[10px] text-brandPurple font-black uppercase tracking-widest mb-1 group-hover:text-red-400">Cerrar Sesión</p><div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-green-500 group-hover:bg-red-500"></div><span class="text-xs font-bold text-white group-hover:text-red-400">Israel Madrigal</span></div></div></aside>< !-- Main Content --><main class="flex-1 overflow-y-auto bg-[#0a0a0a] p-8"><header class="flex justify-between items-end mb-10"><div><h1 class="text-3xl font-black italic tracking-tighter uppercase">Torre de Control Logística</h1><p class="text-slate-400 text-sm font-medium mt-1">Gestión de recursos,
+        flota y rutas de servicio</p></div>< !-- Tab Switcher --><div class="flex bg-[#141414] p-1.5 rounded-2xl border border-white/5 shadow-inner"><button onclick="switchLogisticsTab('routes')" id="tab-routes"
+        class="flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all bg-brandPurple text-white shadow-lg shadow-brandPurple/20"><span class="material-symbols-outlined text-[16px]">map</span>Planificación Rutas </button><button onclick="switchLogisticsTab('drivers')" id="tab-drivers"
+        class="flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-all"><span class="material-symbols-outlined text-[16px]">engineering</span>Conductores </button><button onclick="switchLogisticsTab('vehicles')" id="tab-vehicles"
+        class="flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-all"><span class="material-symbols-outlined text-[16px]">local_shipping</span>Vehículos </button><button onclick="switchLogisticsTab('customers')" id="tab-customers"
+        class="flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-all"><span class="material-symbols-outlined text-[16px]">support_agent</span>Atención / Post-Venta </button></div></header>< !-- Routes View --><div id="view-routes" class="grid grid-cols-12 gap-8 animate-fade-in">< !-- Left Col: Routes List --><div class="col-span-4 space-y-6">< !-- Daily Summary --><div class="grid grid-cols-3 gap-4"><div class="bg-[#141414] border border-white/5 p-4 rounded-3xl opacity-80"><p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Recogidas</p><h4 class="text-xl font-black text-white">0</h4></div><div class="bg-[#141414] border border-white/5 p-4 rounded-3xl opacity-80"><p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Entregas</p><h4 class="text-xl font-black text-white">0</h4></div><div class="bg-[#141414] border border-white/5 p-4 rounded-3xl opacity-80"><p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Eficacia</p><h4 class="text-xl font-black text-white text-slate-500">--%</h4></div></div>< !-- Active Routes List --><div class="bg-[#141414] border border-white/5 rounded-[2.5rem] overflow-hidden flex-1 h-[calc(100vh-340px)] flex flex-col"><div class="p-6 border-b border-white/5 flex justify-between items-center shrink-0"><h3 class="text-xs font-black uppercase tracking-widest text-slate-500 flex items-center gap-2"><span class="material-symbols-outlined text-sm">toc</span>Ruta del Día </h3><span id="route-count-badge"
+        class="text-slate-500 text-[9px] font-black px-2 py-0.5 rounded-full border border-white/5">0</span></div><div class="divide-y divide-white/5 overflow-y-auto" id="routes-container">< !-- JS fills this --></div></div></div>< !-- Right Col: Map & Actions --><div class="col-span-8 space-y-6">< !-- Live Map --><div class="bg-[#141414] border border-white/5 rounded-[2.5rem] overflow-hidden relative h-[calc(100vh-240px)]"><div id="logistics-map" class="w-full h-full z-0"></div>< !-- Map Overlay Controls --><div class="absolute top-4 right-4 z-[400] flex flex-col gap-2"><button onclick="centerMapOnDepot()"
+        class="bg-black/80 backdrop-blur text-white w-10 h-10 rounded-xl flex items-center justify-center border border-white/10 hover:bg-brandPurple transition-colors shadow-lg"
+        title="Centrar en Almacén"><span class="material-symbols-outlined">warehouse</span></button><button onclick="refreshMapData()"
+        class="bg-black/80 backdrop-blur text-white w-10 h-10 rounded-xl flex items-center justify-center border border-white/10 hover:bg-brandPurple transition-colors shadow-lg"
+        title="Actualizar Datos"><span class="material-symbols-outlined">refresh</span></button></div>< !-- Leyenda Flotante --><div class="absolute bottom-4 left-4 z-[400] bg-black/80 backdrop-blur border border-white/10 p-4 rounded-2xl shadow-xl"><h5 class="text-[9px] font-black uppercase text-slate-400 mb-2 tracking-widest">Leyenda</h5><div class="space-y-1.5 w-32"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></span><span class="text-[9px] font-bold text-slate-300">Conductor</span></div><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-yellow-500"></span><span class="text-[9px] font-bold text-slate-300">Pendiente</span></div><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-500"></span><span class="text-[9px] font-bold text-slate-300">Completado</span></div></div></div></div></div></div>< !-- Drivers View --><div id="view-drivers" class="hidden animate-fade-in"><div class="grid grid-cols-1 md:grid-cols-12 gap-8"><div class="md:col-span-8"><div class="bg-[#141414] border border-white/5 rounded-[2.5rem] overflow-hidden"><div class="p-8 border-b border-white/5 flex justify-between items-center"><div><h3 class="text-xl font-black text-white italic tracking-tight">Plantilla de Conductores </h3><p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-1">Gestión activa de personal de campo</p></div><button onclick="openResourceModal('driver')"
+        class="bg-brandPurple text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-brandPurple/20">+Nuevo Conductor </button></div><div class="p-8 grid grid-cols-1 gap-4" id="drivers-container">< !-- JS fills this --></div></div></div><div class="md:col-span-4 space-y-6"><div class="bg-[#141414] border border-white/5 p-8 rounded-[2.5rem] text-white relative overflow-hidden group"><span class="material-symbols-outlined absolute -right-4 -top-4 text-9xl text-white/5 group-hover:rotate-12 transition-transform">how_to_reg</span><h4 class="text-xs font-black uppercase tracking-widest mb-2 text-slate-500">Disponibilidad</h4><p class="text-3xl font-black italic mb-4 text-slate-400">--%</p><p class="text-slate-500 text-[10px] font-medium leading-relaxed uppercase tracking-wider">No hay conductores activos.</p></div><div class="bg-[#141414] border border-white/5 p-8 rounded-[2.5rem]"><h4 class="text-[10px] font-black uppercase text-slate-500 mb-6 tracking-widest">Resumen de Turnos</h4><div class="space-y-4"><div class="flex justify-between items-center p-4 bg-white/[0.02] border border-white/5 rounded-2xl"><span class="text-xs font-bold text-slate-500">Mañana</span><span class="text-xs font-black text-slate-500">0 Activos</span></div><div class="flex justify-between items-center p-4 bg-white/[0.02] border border-white/5 rounded-2xl"><span class="text-xs font-bold text-slate-500">Tarde</span><span class="text-xs font-black text-slate-500">0 Activos</span></div></div></div></div></div></div>< !-- Vehicles View --><div id="view-vehicles" class="hidden animate-fade-in"><div class="grid grid-cols-1 md:grid-cols-12 gap-8"><div class="md:col-span-8"><div class="bg-[#141414] border border-white/5 rounded-[2.5rem] overflow-hidden"><div class="p-8 border-b border-white/5 flex justify-between items-center"><div><h3 class="text-xl font-black text-white italic tracking-tight">Flota de Vehículos</h3><p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest mt-1">Monitoreo de activos y mantenimiento</p></div><button onclick="openResourceModal('vehicle')"
+        class="bg-white text-brandDark px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-brandPurple hover:text-white border border-white transition-all shadow-lg">+Añadir Vehículo </button></div><div class="p-8 grid grid-cols-1 gap-4" id="vehicles-container">< !-- JS fills this --></div></div></div><div class="md:col-span-4 space-y-6"><div class="bg-gradient-to-br from-slate-800 to-black p-8 rounded-[2.5rem] text-white border border-white/10 relative overflow-hidden group"><span class="material-symbols-outlined absolute -right-4 -top-4 text-9xl text-white/5 group-hover:scale-110 transition-transform">build</span><h4 class="text-xs font-black uppercase tracking-widest mb-2 text-slate-500">Mantenimiento</h4><p class="text-3xl font-black italic mb-4 text-slate-400">0</p><p class="text-slate-500 text-[10px] font-medium leading-relaxed uppercase tracking-wider">Sin alertas de mantenimiento.</p></div><div class="bg-[#141414] border border-white/5 p-8 rounded-[2.5rem]"><h4 class="text-[10px] font-black uppercase text-slate-500 mb-6 tracking-widest">Eficiencia Energética</h4><div class="space-y-4"><div class="flex justify-between items-center p-4 bg-white/[0.02] border border-white/5 rounded-2xl opacity-50"><span class="text-xs font-bold text-slate-400">Eléctricos</span><span class="text-xs font-black text-slate-400">--%</span></div><div class="flex justify-between items-center p-4 bg-white/[0.02] border border-white/5 rounded-2xl opacity-50"><span class="text-xs font-bold text-slate-400">Combustión</span><span class="text-xs font-black text-slate-400">--%</span></div></div></div></div></div>< !-- Post-Venta View --><div id="view-customers" class="hidden animate-fade-in space-y-8"><div class="flex justify-between items-center bg-white/5 border border-white/10 p-8 rounded-[2.5rem]"><div><h2 class="text-2xl font-black italic tracking-tighter uppercase mb-2">Pedidos en Espera de Acción</h2><p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Flujo Post-Llamada: Confirmación de fechas y suplementos</p></div><div class="flex gap-4"><div class="text-right"><p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-1">Pendientes Hoy </p><p id="pending-call-count" class="text-2xl font-black text-brandPurple italic">0</p></div></div></div><div class="bg-[#141414] border border-white/5 rounded-[2.5rem] overflow-hidden"><table class="w-full text-left"><thead class="bg-white/5"><tr class="text-[9px] font-black text-slate-500 uppercase tracking-widest leading-none"><th class="px-8 py-6">Cliente y Estado</th><th class="px-8 py-6">Volumen</th><th class="px-8 py-6">Dirección</th><th class="px-8 py-6">Suplementos</th><th class="px-8 py-6 text-right">Acción</th></tr></thead><tbody id="customers-list" class="divide-y divide-white/5">< !-- JS fills --></tbody></table></div></div></main>< !-- Modal: Resource Editor (Driver / Vehicle) --><div id="resourceModal"
+        class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden items-center justify-center p-4"><div class="bg-[#1a1a1a] border border-white/10 w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl relative"><button onclick="closeResourceModal()"
+        class="absolute right-6 top-6 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:text-white transition-all"><span class="material-symbols-outlined">close</span></button><h3 id="resource-modal-title" class="text-xl font-black mb-6 uppercase tracking-tight italic text-white">Alta Recurso</h3><div class="space-y-4" id="driver-fields"><div id="driver-email-container"><label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Seleccionar Usuario Registrado</label><div class="relative"><select id="driver-user-select"
+        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple appearance-none"><option value="" class="bg-[#1a1a1a]">Cargando usuarios...</option></select><div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500"><span class="material-symbols-outlined text-sm">unfold_more</span></div></div><p class="text-[8px] text-slate-500 mt-2 uppercase tracking-tight">Si no aparece,
+        el conductor debe <a href="/pages/registro.html" target="_blank" class="text-brandPurple underline">registrarse aquí</a>primero. </p></div>< !-- Campo oculto para el email si se necesita editar --><input type="hidden" id="driver-email"><div><label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Nombre Completo</label><input type="text" id="driver-name"
+        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple"></div><div class="grid grid-cols-2 gap-4"><div><label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Licencia</label><input type="text" id="driver-license" placeholder="Ej: B1, C1"
+        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple"></div><div><label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Teléfono</label><input type="text" id="driver-phone"
+        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple"></div></div></div><div class="space-y-4 hidden" id="vehicle-fields"><div class="grid grid-cols-2 gap-4"><div class="col-span-1"><label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Modelo / Marca</label><input type="text" id="vehicle-model"
+        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple"></div><div class="col-span-1"><label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Matrícula</label><input type="text" id="vehicle-plate"
+        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple font-mono uppercase"></div></div><div class="grid grid-cols-3 gap-4"><div><label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Cap. (m³)</label><input type="number" id="vehicle-capacity"
+        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple"></div><div><label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Carga (kg)</label><input type="number" id="vehicle-kg"
+        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple"></div><div><label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Alto (cm)</label><input type="number" id="vehicle-height"
+        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple"></div></div><div class="grid grid-cols-2 gap-4"><div><label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Largo Caja (cm)</label><input type="number" id="vehicle-length"
+        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple"></div><div><label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Ancho (Pasos Rueda)</label><input type="number" id="vehicle-width-wheel" placeholder="Ej: 138"
+        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple"></div></div><div class="grid grid-cols-2 gap-4"><div><label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Carga Útil Total (kg)</label><input type="number" id="vehicle-payload" placeholder="Ej: 1256"
+        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple"></div><div><label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Cap. Trampilla (kg)</label><input type="number" id="vehicle-lift-capacity" placeholder="Ej: 750"
+        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple"></div></div><div class="grid grid-cols-2 gap-4"><div><label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Estado</label><select id="vehicle-status"
+        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-[10px] font-black uppercase outline-none focus:border-brandPurple"><option value="OPERATIVO" class="bg-[#1a1a1a]">OPERATIVO</option><option value="MANTENIMIENTO" class="bg-[#1a1a1a]">MANTENIMIENTO</option><option value="FUERA_SERVICIO" class="bg-[#1a1a1a]">FUERA SERVICIO</option></select></div></div><div><label class="text-[9px] font-black uppercase text-slate-500 mb-2 block tracking-widest">Observaciones / Notas</label><textarea id="vehicle-notes" rows="2"
+        class="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-xs outline-none focus:border-brandPurple resize-none"></textarea></div></div><div class="flex gap-3 mt-8"><button onclick="closeResourceModal()"
+        class="flex-1 py-4 rounded-xl bg-white/5 text-[10px] font-black uppercase tracking-widest text-slate-400">Cancelar</button><button onclick="saveResource()"
+        class="flex-1 py-4 rounded-xl bg-brandPurple text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-brandPurple/20">Guardar</button></div></div></div></div>< !-- Modal: Detalle de Servicio / Evidencias --><div id="serviceDetailModal"
+        class="fixed inset-0 bg-black/90 backdrop-blur-md z-[200] hidden items-center justify-center p-4"><div class="bg-[#1a1a1a] border border-white/10 w-full max-w-4xl h-[90vh] rounded-[2.5rem] flex overflow-hidden shadow-2xl relative"><button onclick="closeServiceDetailModal()"
+        class="absolute right-6 top-6 z-50 w-10 h-10 rounded-full bg-black/50 backdrop-blur border border-white/10 flex items-center justify-center text-white hover:bg-brandPurple transition-all"><span class="material-symbols-outlined">close</span></button>< !-- Izquierda: Info & Historial --><div class="w-1/3 bg-[#111] border-r border-white/5 p-8 overflow-y-auto"><div class="mb-8"><span id="detail-status-badge"
+        class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-slate-800 text-slate-400 mb-4 inline-block">Cargando...</span><h2 id="detail-client-name" class="text-2xl font-black italic text-white leading-tight mb-1">Cliente </h2><p id="detail-service-id" class="text-[10px] font-mono text-slate-500">ID: ...</p></div><div class="space-y-6"><div><h4 class="text-[9px] font-black uppercase text-slate-500 mb-2 tracking-widest">Dirección</h4><p id="detail-address" class="text-sm font-medium text-slate-300">...</p></div><div><h4 class="text-[9px] font-black uppercase text-slate-500 mb-2 tracking-widest">Conductor Asignado</h4><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-brandPurple flex items-center justify-center text-white font-black text-xs">D</div><p id="detail-driver-name" class="text-sm font-medium text-white">...</p></div></div><div><h4 class="text-[9px] font-black uppercase text-slate-500 mb-4 tracking-widest">Línea de Tiempo </h4><div id="detail-timeline" class="space-y-4 pl-2 border-l border-white/10">< !-- JS fills timeline --></div></div></div></div>< !-- Derecha: Evidencias (Fotos y Firma) --><div class="w-2/3 bg-[#1a1a1a] p-8 overflow-y-auto"><h3 class="text-xl font-black italic text-white uppercase tracking-tight mb-6">Evidencias de Entrega </h3>< !-- Firma --><div class="mb-8"><h4 class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest">Firma del Destinatario</h4><div class="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[160px]"><img id="detail-signature-img" src="" alt="Firma no disponible" class="max-h-32 hidden"><p id="detail-signature-placeholder" class="text-slate-500 text-xs italic">Sin firma registrada </p></div><div class="flex justify-between items-center mt-2 px-2"><div><p class="text-[9px] text-slate-500 uppercase">Recibido por</p><p id="detail-receiver-name" class="text-sm font-bold text-white">---</p></div><div class="text-right"><p class="text-[9px] text-slate-500 uppercase">DNI / NIE</p><p id="detail-receiver-dni" class="text-sm font-mono text-slate-300">---</p></div></div></div>< !-- Fotos --><div><h4 class="text-[10px] font-black uppercase text-slate-500 mb-3 tracking-widest">Fotografías del Servicio</h4><div id="detail-photos-grid" class="grid grid-cols-2 gap-4">< !-- JS fills photos --><div class="aspect-square bg-white/5 rounded-2xl flex items-center justify-center text-slate-600 border border-white/5 border-dashed"><span class="material-symbols-outlined text-3xl">image_not_supported</span></div></div></div>< !-- Notas del Conductor --><div class="mt-8 bg-brandPurple/5 border border-brandPurple/10 rounded-2xl p-6"><h4 class="text-[10px] font-black uppercase text-brandPurple mb-2 tracking-widest">Observaciones del Conductor</h4><p id="detail-driver-notes" class="text-sm italic text-slate-300">"..." </p></div></div></div></div><script> // Fleet Data (Supabase Integration)
+        let drivers=[];
+        let vehicles=[];
+        let leads=[];
 
-        <div class="grid grid-cols-12 gap-8">
-            <!-- Left Col: Routes -->
-            <div class="col-span-8 space-y-8">
-                <!-- Daily Summary -->
-                <div class="grid grid-cols-3 gap-6">
-                    <div class="bg-[#141414] border border-white/5 p-6 rounded-3xl">
-                        <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Recogidas Hoy</p>
-                        <h4 class="text-2xl font-black text-white">12</h4>
-                    </div>
-                    <div class="bg-[#141414] border border-white/5 p-6 rounded-3xl">
-                        <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Entregas Hoy</p>
-                        <h4 class="text-2xl font-black text-white">4</h4>
-                    </div>
-                    <div class="bg-[#141414] border border-white/5 p-6 rounded-3xl">
-                        <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-2">Efectividad</p>
-                        <h4 class="text-2xl font-black text-white text-green-500">100%</h4>
-                    </div>
-                </div>
+        async function fetchFleet() {
+            if ( !window.supabaseClient) return;
 
-                <!-- Active Routes -->
-                <div class="bg-[#141414] border border-white/5 rounded-[2.5rem] overflow-hidden">
-                    <div class="p-8 border-b border-white/5 flex justify-between items-center">
-                        <h3 class="text-xs font-black uppercase tracking-widest text-slate-500 flex items-center gap-3">
-                            <span class="material-symbols-outlined text-sm">route</span> Ruta Detallada del Día
-                        </h3>
-                        <span
-                            class="bg-brandPurple/20 text-brandPurple text-[10px] font-black px-3 py-1 rounded-full border border-brandPurple/20 ring-4 ring-brandPurple/5">
-                            3 Servicios Activos
-                        </span>
-                    </div>
-                    <div class="divide-y divide-white/5" id="routes-container">
-                        <!-- JS fills this -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Col: Actions & Highlights -->
-            <div class="col-span-4 space-y-6">
-                <div
-                    class="bg-brandPurple p-8 rounded-[2.5rem] shadow-xl shadow-brandPurple/20 relative overflow-hidden group">
-                    <span
-                        class="material-symbols-outlined absolute -right-6 -bottom-6 text-white/10 text-9xl group-hover:scale-110 transition-transform">local_shipping</span>
-                    <h3 class="text-xl font-black text-white mb-2 italic">Nueva Reserva</h3>
-                    <p class="text-white/80 text-xs font-medium mb-6">Hay una orden pendiente de asignar fecha
-                        definitiva y ruta.</p>
-                    <button onclick="window.location.href='admin_dashboard.html'"
-                        class="bg-white text-brandDark px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-brandPurple hover:text-white border border-white transition-all">
-                        Ir a Dashboard
-                    </button>
-                </div>
-
-                <div class="bg-[#141414] border border-white/5 p-6 rounded-3xl">
-                    <h4 class="text-[10px] font-black uppercase text-slate-500 mb-4 tracking-widest">Estado por Servicio
-                    </h4>
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-bold text-slate-300">Entrada Física</span>
-                            <span class="text-sm font-black text-white" id="stat-entries">14 hoy</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-bold text-slate-300">Salidas (Devolución)</span>
-                            <span class="text-sm font-black text-white">2 hoy</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm font-bold text-slate-300">Incidencias</span>
-                            <span class="text-xs font-black text-green-500 bg-green-500/10 px-2 py-0.5 rounded">0
-                                reportadas</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            renderRoutes();
-        });
-
-        function renderRoutes() {
-            const dataStr = localStorage.getItem('BOXROOMER_DASHBOARD_DATA');
-            const container = document.getElementById('routes-container');
-
-            // Dummy route 1
-            let routesHtml = `
-                <div class="p-6 flex items-center justify-between hover:bg-white/5 transition-colors group">
-                    <div class="flex items-center gap-4">
-                        <div class="relative">
-                            <div class="w-10 h-10 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-xs uppercase border border-blue-500/20">AG</div>
-                            <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#141414] flex items-center justify-center">
-                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                            </span>
-                        </div>
-                        <div>
-                            <p class="text-white font-bold group-hover:text-brandPurple transition-colors">Ana García</p>
-                            <div class="flex items-center gap-2">
-                                <span class="bg-blue-500/10 text-blue-400 px-1.5 rounded text-[8px] font-black uppercase tracking-wider">Entrega</span>
-                                <span class="text-[10px] text-slate-500 uppercase font-medium">Calle Velázquez 12</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="flex items-center justify-end gap-2 mb-1">
-                            <span class="material-symbols-outlined text-sm text-slate-500">schedule</span>
-                            <p class="text-sm font-black text-white">10:00 - 12:00</p>
-                        </div>
-                        <span class="text-[9px] font-black text-slate-600 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded">Vehículo B-102</span>
-                    </div>
-                </div>
-            `;
-
-            if (dataStr) {
-                const data = JSON.parse(dataStr);
-                const status = data.status || 'pending_pickup';
-                let statusColor = 'text-brandPurple';
-                let statusBg = 'bg-brandPurple/10';
-                let statusText = 'Recolecta';
-
-                if (status === 'canceled') {
-                    statusColor = 'text-red-500';
-                    statusBg = 'bg-red-500/10';
-                    statusText = 'Cancelada';
+            // Debug: Quién soy yo?
+            const {
+                data: {
+                    session
                 }
-
-                // Check for highlight param
-                const urlParams = new URLSearchParams(window.location.search);
-                const shouldHighlight = urlParams.get('highlight_user') === 'true';
-
-                const highlightClasses = shouldHighlight
-                    ? 'bg-brandPurple/20 border-l-4 border-brandPurple shadow-[0_0_30px_rgba(110,68,255,0.15)] scale-[1.02] z-10'
-                    : 'bg-white/[0.02] border-l-2 border-brandPurple hover:bg-brandPurple/5';
-
-                routesHtml = `
-                    <div class="p-6 flex items-center justify-between transition-all duration-500 group ${highlightClasses}">
-                        <div class="flex items-center gap-4">
-                            <div class="relative">
-                                <div class="w-10 h-10 rounded-full bg-brandPurple text-white flex items-center justify-center font-bold text-xs border border-white/10 shadow-lg shadow-brandPurple/20">
-                                    ${data.userName ? data.userName.charAt(0).toUpperCase() : 'U'}
-                                </div>
-                                <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#141414] flex items-center justify-center">
-                                    <span class="w-2 h-2 rounded-full bg-brandPurple animate-pulse"></span>
-                                </span>
-                            </div>
-                            <div>
-                                <p class="text-white font-bold group-hover:text-brandPurple transition-colors">${data.userName || 'Usuario'}</p>
-                                <div class="flex items-center gap-2">
-                                    <span class="${statusBg} ${statusColor} px-1.5 rounded text-[8px] font-black uppercase tracking-wider">${statusText}</span>
-                                    <span class="text-[10px] text-slate-500 uppercase font-medium truncate max-w-[150px]">${data.address || 'Madrid Centro'}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <div class="flex items-center justify-end gap-2 mb-1">
-                                <span class="material-symbols-outlined text-sm text-slate-500">event</span>
-                                <p class="text-sm font-black text-white uppercase">${data.pickupDate || 'Pendiente'}</p>
-                            </div>
-                            <span class="text-[9px] font-black text-slate-500 uppercase tracking-tighter">${data.pickupTime || 'Turno Mañana'}</span>
-                        </div>
-                    </div>
-                ` + routesHtml;
             }
 
-            container.innerHTML = routesHtml;
-        }
-    </script>
-</body>
+            =await window.supabaseClient.auth.getSession();
 
-</html>
+            if ( !session) {
+                window.location.href='login.html';
+                return;
+            }
+
+            const {
+                data: myProfile
+            }
+
+            =await window.supabaseClient.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+            const role=myProfile?.role || session.user.user_metadata?.role || 'client';
+
+            // 🦸‍♂️ SUPERADMIN BYPASS
+            let finalRole=role;
+
+            if (session.user.email==='israel.madrigal@pluser.es') {
+                finalRole='admin';
+            }
+
+            if (finalRole !=='admin') {
+                window.location.href='cliente_dashboard.html';
+                return;
+            }
+
+            try {
+
+                // 1. Fetch Drivers 
+                const {
+                    data: driversData
+                }
+
+                =await window.supabaseClient .from('profiles') .select('*') .or('role.eq.driver,role.eq.admin');
+
+                drivers=(driversData || []).map(d=> ({
+                        id: d.id,
+                        name: d.full_name || 'Sin Nombre',
+                        email: d.email,
+                        license: d.license || 'B1',
+                        phone: d.phone || 'S/N',
+                        status: 'Disponible'
+                    }));
+
+            // 2. Fetch Vehicles
+            const {
+                data: vehiclesData
+            }
+
+            =await window.supabaseClient .from('vehicles') .select('*');
+
+            vehicles=(vehiclesData || []).map(v=> ({
+                    id: v.id,
+                    model: v.model,
+                    plate: v.plate,
+                    capacity: v.capacity_m3,
+                    capacity_kg: v.capacity_kg,
+                    length: v.length_cm,
+                    height: v.height_cm,
+                    notes: v.notes,
+                    status: v.status,
+                    info: v.notes || 'Operativo'
+                }));
+
+        // 3. Fetch ALL Leads for Logistics
+        const {
+            data: leadsData
+        }
+
+        =await window.supabaseClient .from('leads_wizard') .select('*') .order('created_at', {
+            ascending: false
+        });
+
+        leads=leadsData || [];
+
+        renderFleet();
+        renderRoutes();
+        renderCustomers();
+        }
+
+        catch (err) {
+            console.error("❌ Error fetching data:", err);
+        }
+        }
+
+        let currentModalType=null;
+        let currentModalId=null;
+
+        document.addEventListener('DOMContentLoaded', ()=> {
+                fetchFleet();
+                renderRoutes();
+                updateSidebarActiveState();
+                handleURLParameters();
+
+                // Intercept sidebar clicks to ensure reaction even without page reload
+                document.querySelectorAll('.sidebar-item').forEach(link=> {
+                        link.addEventListener('click', (e)=> {
+                                const href=link.getAttribute('href');
+
+                                if (href && href.includes('admin_logistica.html')) {
+
+                                    // Delay to let browser update URL before check
+                                    setTimeout(()=> {
+                                            updateSidebarActiveState();
+                                            handleURLParameters();
+                                        }
+
+                                        , 50);
+                                }
+                            });
+                    });
+            });
+
+        // Listen for URL changes
+        window.addEventListener('popstate', ()=> {
+                updateSidebarActiveState();
+                handleURLParameters();
+            });
+
+        function handleURLParameters() {
+            const urlParams=new URLSearchParams(window.location.search);
+            const page=urlParams.get('page');
+
+            if (page==='conductores') {
+                switchLogisticsTab('drivers');
+            }
+
+            else if (page==='vehiculos') {
+                switchLogisticsTab('vehicles');
+            }
+
+            else if (page==='postventa') {
+                switchLogisticsTab('customers');
+            }
+
+            else {
+                switchLogisticsTab('routes');
+            }
+        }
+
+        function updateSidebarActiveState() {
+            const urlParams=new URLSearchParams(window.location.search);
+            const tab=urlParams.get('tab');
+            const pageParam=urlParams.get('page');
+
+            const inactiveClass="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all";
+            const activeClass="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl bg-brandPurple text-white border border-brandPurple/20 shadow-lg shadow-brandPurple/10 transition-all";
+
+            document.querySelectorAll('.sidebar-item').forEach(item=> {
+                    const page=item.getAttribute('data-page');
+                    let isActive=false;
+
+                    if (tab==='fleet') {
+                        if (pageParam===page) isActive=true;
+                    }
+
+                    else if ( !tab && page==='logistica') {
+                        isActive=true;
+                    }
+
+                    if (isActive) {
+                        item.className=activeClass;
+                        const icon=item.querySelector('.material-symbols-outlined');
+
+                        if (icon) {
+                            icon.style.color='white';
+                        }
+                    }
+
+                    else {
+                        item.className=inactiveClass;
+                        const icon=item.querySelector('.material-symbols-outlined');
+
+                        if (icon) {
+                            icon.style.color='';
+                        }
+                    }
+                });
+        }
+
+        function switchLogisticsTab(tab) {
+            const routesView=document.getElementById('view-routes');
+            const driversView=document.getElementById('view-drivers');
+            const vehiclesView=document.getElementById('view-vehicles');
+            const customersView=document.getElementById('view-customers');
+
+            const routesTab=document.getElementById('tab-routes');
+            const driversTab=document.getElementById('tab-drivers');
+            const vehiclesTab=document.getElementById('tab-vehicles');
+            const customersTab=document.getElementById('tab-customers');
+
+            // Hide all views
+            [routesView,
+            driversView,
+            vehiclesView,
+            customersView].forEach(v=> {
+                    if (v) v.classList.add('hidden');
+                });
+
+            // Inactive style for all tabs
+            [routesTab,
+            driversTab,
+            vehiclesTab,
+            customersTab].forEach(t=> {
+                    if (t) {
+                        t.classList.remove('bg-brandPurple', 'text-white', 'shadow-brandPurple/20', 'shadow-lg');
+                        t.classList.add('text-slate-500');
+                    }
+                });
+
+            const activeView=document.getElementById(`view-$ {
+                    tab
+                }
+
+                `);
+
+            const activeTab=document.getElementById(`tab-$ {
+                    tab
+                }
+
+                `);
+
+            if (activeView) activeView.classList.remove('hidden');
+
+            if (activeTab) {
+                activeTab.classList.add('bg-brandPurple', 'text-white', 'shadow-brandPurple/20', 'shadow-lg');
+                activeTab.classList.remove('text-slate-500');
+            }
+
+            if (tab==='drivers' || tab==='vehicles') {
+                renderFleet();
+            }
+
+            else if (tab==='customers') {
+                renderCustomers();
+            }
+        }
+
+        async function renderCustomers() {
+            const list=document.getElementById('customers-list');
+            if ( !list) return;
+
+            // Filter for post-sale attention
+            const pendingOrders=leads.filter(b=> b.status==='pending_call' || b.status==='confirmed');
+
+            const countEl=document.getElementById('pending-call-count');
+            if (countEl) countEl.innerText=pendingOrders.length;
+
+            if (pendingOrders.length===0) {
+                list.innerHTML=` <tr><td colspan="5" class="p-20 text-center"><div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4"><span class="material-symbols-outlined text-slate-500 text-3xl">done_all</span></div><p class="text-slate-500 font-bold uppercase tracking-widest text-xs">No hay pedidos pendientes de atención post-venta</p></td></tr>`;
+                return;
+            }
+
+            list.innerHTML=pendingOrders.map(order=> {
+                    const isConsolidate=order.is_consolidation || order.consolidated_with;
+
+                    return ` <tr class="hover:bg-white/[0.02] transition-colors group" > <td class="px-8 py-6" > <div class="flex items-center gap-4" > <div class="w-10 h-10 rounded-full bg-brandPurple text-white flex items-center justify-center font-black italic uppercase" > $ {
+                        order.full_name ? order.full_name.charAt(0) : 'U'
+                    }
+
+                    </div> <div> <p class="text-white font-black italic uppercase tracking-tighter" > $ {
+                        order.full_name || 'Prospecto'
+                    }
+
+                    $ {
+                        isConsolidate ? '<span class="ml-2 bg-brandPurple text-[7px] px-1.5 py-0.5 rounded-full">📦 CONSOLIDADO</span>' : ''
+                    }
+
+                    </p> <span class="text-[9px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest leading-none border ${order.status === 'pending_call' ? 'bg-orange-500/10 text-orange-500 border-orange-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'} mt-1 inline-block" > $ {
+                        order.status==='pending_call' ? 'Pendiente Llamada' : 'Confirmar Reserva'
+                    }
+
+                    </span> </div> </div> </td> <td class="px-8 py-6 text-white font-black italic uppercase text-[10px]" > $ {
+                        order.volume_m3
+                    }
+
+                    m³ </td> <td class="px-8 py-6 text-[10px] text-slate-400 font-medium italic truncate max-w-[200px]" > $ {
+                        order.address || '—'
+                    }
+
+                    </td> <td class="px-8 py-6 text-right" > <button onclick="window.location.href='admin_dashboard.html?id=${order.id}'" class="bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-brandPurple hover:text-white transition-all" > Gestionar </button> </td> </tr>`;
+                }).join('');
+        }
+
+        function handleOrderAction(orderId) {
+
+            // Redirect to dashboard with the order open in modal
+            window.location.href=`admin_dashboard?open=$ {
+                orderId
+            }
+
+            `;
+        }
+
+        function renderFleet() {
+            const driversContainer=document.getElementById('drivers-container');
+            const vehiclesContainer=document.getElementById('vehicles-container');
+
+            if (driversContainer) {
+                if (drivers.length===0) {
+                    driversContainer.innerHTML='<div class="p-8 text-center opacity-40 text-xs font-black uppercase tracking-widest text-slate-500">No hay conductores registrados</div>';
+                }
+
+                else {
+                    driversContainer.innerHTML=drivers.map(d=> ` <div class="group bg-[#1a1a1a] hover:bg-white/[0.05] border border-white/5 p-6 rounded-[2rem] flex items-center justify-between transition-all duration-300" > <div class="flex items-center gap-6" > <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-brandPurple to-purple-800 flex items-center justify-center shadow-lg shadow-brandPurple/20" > <span class="text-white text-lg font-black uppercase" >$ {
+                            d.name.split(' ').map(n=> n[0]).join('')
+                        }
+
+                        </span> </div> <div> <h4 class="text-md font-black text-white uppercase tracking-tight mb-1" >$ {
+                            d.name
+                        }
+
+                        </h4> <div class="flex items-center gap-3" > <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest" >$ {
+                            d.license
+                        }
+
+                        </span> <span class="w-1 h-1 rounded-full bg-slate-700" ></span> <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest" >$ {
+                            d.phone
+                        }
+
+                        </span> </div> </div> </div> <div class="flex items-center gap-6" > <div class="text-right flex flex-col items-end gap-1" > <div class="flex items-center gap-2 px-3 py-1 bg-${d.status === 'Disponible' ? 'green' : 'brandPurple'}/10 border border-${d.status === 'Disponible' ? 'green' : 'brandPurple'}/20 rounded-full" > <div class="w-1.5 h-1.5 rounded-full bg-${d.status === 'Disponible' ? 'green' : 'brandPurple'} ${d.status === 'Disponible' ? 'animate-pulse' : ''}" ></div> <span class="text-[9px] font-black text-${d.status === 'Disponible' ? 'green' : 'brandPurple'} uppercase tracking-widest" >$ {
+                            d.status
+                        }
+
+                        </span> </div> <span class="text-[8px] text-slate-500 font-bold uppercase tracking-[0.2em] px-2" >Activo hoy</span> </div> <button onclick="openResourceModal('driver', '${d.id}')" class="w-10 h-10 rounded-xl flex items-center justify-center bg-white/5 text-slate-500 hover:bg-brandPurple hover:text-white transition-all" > <span class="material-symbols-outlined text-[18px]" >tune</span> </button> </div> </div> `).join('');
+                }
+            }
+
+            if (vehiclesContainer) {
+                if (vehicles.length===0) {
+                    vehiclesContainer.innerHTML='<div class="p-8 text-center opacity-40 text-xs font-black uppercase tracking-widest text-slate-500">No hay vehículos registrados</div>';
+                }
+
+                else {
+                    vehiclesContainer.innerHTML=vehicles.map(v=> ` <div class="group bg-[#1a1a1a] hover:bg-white/[0.05] border border-white/5 p-6 rounded-[2rem] flex items-center justify-between transition-all duration-300" > <div class="flex items-center gap-6" > <div class="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-brandPurple/30 transition-colors" > <span class="material-symbols-outlined text-3xl text-slate-400 group-hover:text-brandPurple transition-colors" >$ {
+                            v.model.toLowerCase().includes('electric') ? 'electric_car' : 'local_shipping'
+                        }
+
+                        </span> </div> <div> <h4 class="text-md font-black text-white uppercase tracking-tight mb-1" >$ {
+                            v.model
+                        }
+
+                        </h4> <div class="flex items-center gap-3" > <span class="text-[9px] font-bold text-slate-400 bg-white/5 px-2 py-0.5 rounded border border-white/10 uppercase tracking-widest" >$ {
+                            v.plate
+                        }
+
+                        </span> <span class="w-1 h-1 rounded-full bg-slate-700" ></span> <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest" >Cap: $ {
+                            v.capacity
+                        }
+
+                        m³</span> </div> </div> </div> <div class="flex items-center gap-6" > <div class="text-right" > <p class="text-[10px] font-black ${v.status === 'OPERATIVO' ? 'text-green-500' : 'text-brandPurple'} italic uppercase tracking-wider mb-1" >$ {
+                            v.status
+                        }
+
+                        </p> <div class="flex items-center gap-2 justify-end" > <span class="text-[8px] text-slate-500 font-black uppercase tracking-widest" >$ {
+                            v.info
+                        }
+
+                        </span> <span class="material-symbols-outlined text-[12px] ${v.status === 'OPERATIVO' ? 'text-green-500/50' : 'text-brandPurple/50'}" >verified</span> </div> </div> <button onclick="openResourceModal('vehicle', '${v.id}')" class="w-10 h-10 rounded-xl flex items-center justify-center bg-white/5 text-slate-500 hover:bg-brandPurple hover:text-white transition-all" > <span class="material-symbols-outlined text-[18px]" >tune</span> </button> </div> </div> `).join('');
+                }
+            }
+        }
+
+        async function openResourceModal(type, id=null) {
+            currentModalType=type;
+            currentModalId=id;
+
+            const modal=document.getElementById('resourceModal');
+            const title=document.getElementById('resource-modal-title');
+            const driverFields=document.getElementById('driver-fields');
+            const vehicleFields=document.getElementById('vehicle-fields');
+            const driverEmailContainer=document.getElementById('driver-email-container');
+            const userSelect=document.getElementById('driver-user-select');
+
+            title.innerText=(id ? 'Editar ' : 'Alta ')+(type==='driver' ? 'Conductor' : 'Vehículo');
+
+            // Mostrar modal inmediatamente
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            if (type==='driver') {
+                driverFields.classList.remove('hidden');
+                vehicleFields.classList.add('hidden');
+
+                if (id) {
+                    if (driverEmailContainer) driverEmailContainer.classList.add('hidden');
+                    const d=drivers.find(x=> x.id===id);
+                    document.getElementById('driver-name').value=d.name || '';
+                    document.getElementById('driver-license').value=d.license || '';
+                    document.getElementById('driver-phone').value=d.phone || '';
+                }
+
+                else {
+                    if (driverEmailContainer) driverEmailContainer.classList.remove('hidden');
+                    userSelect.innerHTML='<option value="">Cargando usuarios...</option>';
+
+                    try {
+                        const {
+                            data: clients, error: fetchError
+                        }
+
+                        =await window.supabaseClient .from('profiles') .select('id, email, full_name, role') .order('created_at', {
+                            ascending: false
+                        });
+
+                    if (fetchError) throw fetchError;
+
+                    const candidates=clients ? clients.filter(c=> c.role !=='driver' && c.role !=='admin') : [];
+
+                    if (candidates.length===0) {
+                        userSelect.innerHTML='<option value="">No hay usuarios nuevos disponibles</option>';
+                    }
+
+                    else {
+                        userSelect.innerHTML='<option value="">-- Selecciona un usuario --</option>'+candidates.map(c=> `<option value="${c.id}" data-name="${c.full_name || ''}" data-email="${c.email}" class="bg-[#1a1a1a]" >$ {
+                                c.full_name || 'Sin nombre'
+                            }
+
+                            ($ {
+                                    c.email
+                                })</option>`).join('');
+
+                        userSelect.onchange=(e)=> {
+                            const opt=e.target.options[e.target.selectedIndex];
+                            document.getElementById('driver-name').value=opt.dataset.name || '';
+                            document.getElementById('driver-email').value=opt.dataset.email || '';
+                        }
+
+                        ;
+                    }
+                }
+
+                catch (err) {
+                    console.error("Error al cargar candidatos:", err);
+
+                    userSelect.innerHTML=`<option value="">Error al cargar: $ {
+                        err.message
+                    }
+
+                    </option>`;
+                }
+            }
+        }
+
+        else {
+            driverFields.classList.add('hidden');
+            vehicleFields.classList.remove('hidden');
+
+            const v=id ? vehicles.find(x=> x.id===id) : {
+                model: '', plate: '', capacity: '',
+                    capacity_kg: '', length: '', height: '',
+                    notes: '', status: 'OPERATIVO'
+            }
+
+            ;
+            document.getElementById('vehicle-model').value=v.model || '';
+            document.getElementById('vehicle-plate').value=v.plate || '';
+            document.getElementById('vehicle-capacity').value=v.capacity || '';
+            document.getElementById('vehicle-kg').value=v.capacity_kg || '';
+            document.getElementById('vehicle-length').value=v.length || '';
+            document.getElementById('vehicle-height').value=v.height || '';
+            document.getElementById('vehicle-notes').value=v.notes || '';
+            document.getElementById('vehicle-status').value=v.status || 'OPERATIVO';
+        }
+        }
+
+        function closeResourceModal() {
+            document.getElementById('resourceModal').classList.add('hidden');
+            document.getElementById('resourceModal').classList.remove('flex');
+        }
+
+        // Cerrar modal al hacer clic fuera
+        window.addEventListener('click', function (event) {
+                const modal=document.getElementById('resourceModal');
+                if (event.target===modal) closeResourceModal();
+            });
+
+        async function saveResource() {
+            if ( !window.supabaseClient) {
+                showFeedbackModal('Error', 'Cliente Supabase no inicializado', 'error');
+                return;
+            }
+
+            // Validations
+            if (currentModalType==='driver') {
+                const name=document.getElementById('driver-name').value;
+
+                if ( !name) {
+                    showFeedbackModal('Error', 'El nombre es obligatorio', 'error');
+                    return;
+                }
+            }
+
+            else {
+                const model=document.getElementById('vehicle-model').value;
+                const plate=document.getElementById('vehicle-plate').value;
+
+                if ( !model || !plate) {
+                    showFeedbackModal('Error', 'Modelo y Matrícula son obligatorios', 'error');
+                    return;
+                }
+            }
+
+            try {
+                if (currentModalType==='driver') {
+                    const license=document.getElementById('driver-license').value;
+                    const name=document.getElementById('driver-name').value;
+                    const phone=document.getElementById('driver-phone').value;
+
+                    if (currentModalId) {
+
+                        // 1. Edición
+                        const {
+                            error
+                        }
+
+                        =await window.supabaseClient .from('profiles') .update({
+                            full_name: name,
+                            phone: phone,
+                            license: license
+                        }) .eq('id', currentModalId);
+
+                    if (error) throw error;
+                    showFeedbackModal('Actualizado', 'Datos de conductor modificados con éxito.', 'success');
+                }
+
+                else {
+                    // 2. Alta
+                    const selectedUserId=document.getElementById('driver-user-select').value;
+
+                    if ( !selectedUserId) {
+                        showFeedbackModal('Atención', 'Selecciona un usuario de la lista para promocionarlo.', 'error');
+                        return;
+                    }
+
+                    const {
+                        error: updateError
+                    }
+
+                    =await window.supabaseClient .from('profiles') .update({
+                        role: 'driver',
+                        full_name: name,
+                        phone: phone,
+                        license: license
+                    }) .eq('id', selectedUserId);
+
+                if (updateError) throw updateError;
+                showFeedbackModal('Conductor Activado', 'El usuario ahora es parte de la flota.', 'success');
+            }
+        }
+
+        else {
+
+            // Vehicle Logic with ALL new fields
+            const vehicleData= {
+                model: document.getElementById('vehicle-model').value,
+                    plate: document.getElementById('vehicle-plate').value,
+                    capacity_m3: parseFloat(document.getElementById('vehicle-capacity').value) || null,
+                    capacity_kg: parseFloat(document.getElementById('vehicle-kg').value) || null,
+                    length_cm: parseFloat(document.getElementById('vehicle-length').value) || null,
+                    height_cm: parseFloat(document.getElementById('vehicle-height').value) || null,
+                    width_wheel_cm: parseFloat(document.getElementById('vehicle-width-wheel').value) || null,
+                    payload_kg: parseFloat(document.getElementById('vehicle-payload').value) || null,
+                    lift_capacity_kg: parseFloat(document.getElementById('vehicle-lift-capacity').value) || null,
+                    notes: document.getElementById('vehicle-notes').value,
+                    status: document.getElementById('vehicle-status').value
+            }
+
+            ;
+
+            if (currentModalId && currentModalId !=='null') {
+                const {
+                    error
+                }
+
+                =await window.supabaseClient.from('vehicles').update(vehicleData).eq('id', currentModalId);
+                if (error) throw error;
+            }
+
+            else {
+                const {
+                    error
+                }
+
+                =await window.supabaseClient.from('vehicles').insert([vehicleData]);
+                if (error) throw error;
+            }
+
+            showFeedbackModal('Vehículo Guardado', 'La ficha técnica ha sido actualizada.', 'success');
+        }
+
+        // Refresh & Close
+        setTimeout(async ()=> {
+                await fetchFleet();
+                closeResourceModal();
+            }
+
+            , 1500);
+
+        }
+
+        catch (err) {
+            console.error("Save error:", err);
+            showFeedbackModal('Error al Guardar', err.message || 'Error desconocido', 'error');
+        }
+        }
+
+        const WAREHOUSE_LOCATION= {
+            address: "Calle Artes Gráficas 7, 28320 Pinto, Madrid",
+                lat: 40.246473,
+                lng: -3.693414
+        }
+
+        ;
+
+        function renderRoutes() {
+            const container=document.getElementById('routes-container');
+            if ( !container) return;
+
+            // Filtrar servicios relevantes para hoy (o activos)
+            // Incluimos completados de hoy para que se vea el progreso
+            const todayStr=new Date().toISOString().split('T')[0];
+            const activeLeads=leads.filter(l=> (l.status==='pending_pickup' || l.status==='in_transit' || l.status==='picking_up' || (l.status==='completed' && l.pickup_date===todayStr) || (l.status==='confirmed' && l.pickup_date===todayStr)));
+
+            // Ordenar por orden de ruta
+            activeLeads.sort((a, b)=> (a.route_order || 999) - (b.route_order || 999));
+
+            const countEl=document.getElementById('route-count-badge');
+
+            if (countEl) countEl.innerText=`$ {
+                activeLeads.length
+            }
+
+            SERVICIOS`;
+
+            if (activeLeads.length===0) {
+                container.innerHTML=` <div class="p-12 text-center opacity-40"><div class="flex flex-col items-center gap-4"><span class="material-symbols-outlined text-4xl text-slate-600">map</span><p class="text-xs font-black uppercase tracking-widest text-slate-500">No hay actividad de ruta hoy</p></div></div>`;
+                return;
+            }
+
+            container.innerHTML=activeLeads.map((lead, idx)=> {
+                    // Status Logic
+                    let statusColor='bg-slate-500';
+                    let statusText='Pendiente';
+                    let icon='schedule';
+
+                    if (lead.status==='in_transit') {
+                        statusColor='bg-blue-500'; statusText='En Camino'; icon='local_shipping';
+                    }
+
+                    else if (lead.status==='picking_up') {
+                        statusColor='bg-yellow-500'; statusText='En Sitio'; icon='inventory_2';
+                    }
+
+                    else if (lead.status==='completed') {
+                        statusColor='bg-green-500'; statusText='Completado'; icon='check_circle';
+                    }
+
+                    return ` <div class="p-4 bg-white/[0.02] border-l-2 ${lead.status === 'completed' ? 'border-green-500 opacity-60 hover:opacity-100' : 'border-brandPurple'} hover:bg-white/5 transition-all group flex items-start gap-4" > <div class="mt-1" > <div class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center font-bold text-[10px] border border-white/5" > $ {
+                        idx + 1
+                    }
+
+                    </div> </div> <div class="flex-1 min-w-0" > <div class="flex justify-between items-start" > <div> <h4 class="text-sm font-bold text-white group-hover:text-brandPurple transition-colors truncate" > $ {
+                        lead.full_name || 'Cliente'
+                    }
+
+                    </h4> <p class="text-[10px] text-slate-400 font-medium truncate max-w-[180px]" title="${lead.address}" > $ {
+                        lead.address || 'Sin dirección'
+                    }
+
+                    </p> </div> <div class="text-right" > <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${statusColor}/10 ${statusColor.replace('bg-', 'text-')} border ${statusColor.replace('bg-', 'border-')}/20 text-[8px] font-black uppercase tracking-widest" > <span class="material-symbols-outlined text-[10px]" >$ {
+                        icon
+                    }
+
+                    </span> $ {
+                        statusText
+                    }
+
+                    </span> </div> </div> <div class="mt-3 flex items-center justify-between" > <div class="flex items-center gap-2" > <span class="text-[9px] font-black bg-white/10 px-1.5 py-0.5 rounded text-slate-300" > $ {
+                        lead.volume_m3 || 0
+                    }
+
+                    m³ </span> $ {
+                        lead.heavy_load ? '<span class="text-[9px] text-orange-400" title="Mozo Extra"><span class="material-symbols-outlined text-[12px]">fitness_center</span></span>' : ''
+                    }
+
+                    </div> <button onclick="window.openServiceDetail('${lead.id}')"
+                    class="flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-brandPurple bg-brandPurple/10 px-3 py-1.5 rounded-lg hover:bg-brandPurple hover:text-white transition-all" > Ver Detalles <span class="material-symbols-outlined text-[10px]" >visibility</span> </button> </div> </div> </div>`;
+                }).join('');
+        }
+
+        }).join('');
+        }
+
+        function showFeedbackModal(title, message, type='success') {
+            const modal=document.getElementById('feedbackModal');
+            const iconContainer=document.getElementById('feedbackIcon');
+            const icon=iconContainer.querySelector('span');
+
+            document.getElementById('feedbackTitle').innerText=title;
+            document.getElementById('feedbackMessage').innerText=message;
+
+            // Remove previous classes
+            iconContainer.className='w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 '+(type==='success' ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500');
+
+            icon.innerText=type==='success' ? 'check_circle': 'error';
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeFeedbackModal() {
+            document.getElementById('feedbackModal').classList.add('hidden');
+            document.getElementById('feedbackModal').classList.remove('flex');
+        }
+
+        </script></body></html>

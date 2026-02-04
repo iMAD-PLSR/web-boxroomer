@@ -101,7 +101,7 @@
         </div>
 
         <!-- Social Login (Google) -->
-        <button
+        <button onclick="handleGoogleLogin()"
             class="w-full bg-white/[0.02] border border-white/10 text-white py-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-3 hover:bg-white/[0.05] transition-all">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" class="w-5 h-5">
                 <path fill="#FFC107"
@@ -135,25 +135,85 @@
         <span class="material-symbols-outlined text-sm">west</span> Volver al inicio
     </a>
 
+    <!-- Supabase SDK & Config -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabase-config.js"></script>
+    <script src="../assets/js/supabase-client.js"></script>
+
     <script>
-        function handleLogin(e) {
+        // Helper to determine redirect target
+        function getRedirectTarget(role, email = '') {
+            const urlParams = new URLSearchParams(window.location.search);
+            const returnUrl = urlParams.get('returnUrl');
+
+            // 🦸‍♂️ SUPERADMIN BYPASS
+            let finalRole = role;
+            if (email === 'israel.madrigal@pluser.es') {
+                finalRole = 'admin';
+                console.log("👑 [Auth] Superadmin detectado.");
+            }
+
+            if (returnUrl) return returnUrl;
+
+            if (finalRole === 'admin') return 'admin_dashboard.html';
+            if (finalRole === 'driver') return 'driver_dashboard.html';
+            return 'cliente_dashboard.html';
+        }
+
+        async function handleLogin(e) {
             e.preventDefault();
 
             const emailInput = e.target.querySelector('input[type="email"]');
+            const passwordInput = e.target.querySelector('input[type="password"]');
+
             const email = emailInput ? emailInput.value.toLowerCase().trim() : '';
+            const password = passwordInput ? passwordInput.value : '';
 
-            // Simulate Login Success
+            // Loading UI
             const btn = e.target.querySelector('button[type="submit"]');
-
+            const originalText = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-lg">sync</span> <span class="ml-2">Verificando...</span>';
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-lg">sync</span> <span class="ml-2 italic uppercase tracking-widest text-[10px] font-black">Validando...</span>';
 
+            // 1. SUPABASE REAL AUTH (If Configured)
+            if (window.supabaseClient) {
+                console.log("🔐 [Auth] Attempting real Supabase Login...");
+                try {
+                    const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+                        email,
+                        password
+                    });
+
+                    if (error) throw error;
+
+                    // Fetch user role from profile
+                    const { data: profile } = await window.supabaseClient
+                        .from('profiles')
+                        .select('role')
+                        .eq('id', data.user.id)
+                        .maybeSingle();
+
+                    const role = profile?.role || data.user.user_metadata?.role || 'client';
+                    window.location.href = getRedirectTarget(role, email);
+                    return; // Stop here
+
+                } catch (err) {
+                    console.error("❌ Auth Error:", err);
+                    alert("Error de acceso: " + (err.message || "Credenciales incorrectas"));
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    return;
+                }
+            }
+
+            // 2. MOCK DATA FALLBACK (If no Supabase keys)
+            console.warn("🛡️ [Auth] Demo Mode: Falling back to Local Simulation.");
             setTimeout(() => {
                 if (email === 'admin@boxroomer.com') {
-                    // Admin Redirect
                     window.location.href = 'admin_dashboard.html';
+                } else if (email.includes('driver')) {
+                    window.location.href = 'driver_dashboard.html';
                 } else {
-                    // Default User Redirect
                     const dashboardData = {
                         userName: "Israel Madrigal",
                         volume: 0,
@@ -167,8 +227,77 @@
                     }
                     window.location.href = 'cliente_dashboard.html';
                 }
-            }, 1800);
+            }, 1500);
         }
+
+        // 3. GOOGLE LOGIN HANDLER
+        async function handleGoogleLogin() {
+            if (!window.supabaseClient) {
+                alert("Servicio no disponible. Contacte con soporte.");
+                return;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const returnUrl = urlParams.get('returnUrl');
+
+            // Build absolute URL for redirect
+            let finalRedirect = window.location.origin + '/pages/login.html';
+            if (returnUrl) {
+                finalRedirect = window.location.origin + '/pages/' + returnUrl;
+            }
+
+            console.log("🔄 Starting Google Auth, redirect to:", finalRedirect);
+
+            const { data, error } = await window.supabaseClient.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: finalRedirect
+                }
+            });
+            if (error) console.error("Google Auth Error:", error);
+        }
+
+        // 4. CHECK SESSION ON LOAD (Handle OAuth Redirect or Existing Session)
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (window.supabaseClient) {
+                const { data: { session } } = await window.supabaseClient.auth.getSession();
+                if (session) {
+                    console.log("✅ Session found as user:", session.user.id);
+                    // 1. Check/Create profile
+                    let role = 'client';
+                    try {
+                        const { data: profile, error: profErr } = await window.supabaseClient
+                            .from('profiles')
+                            .select('role')
+                            .eq('id', session.user.id)
+                            .maybeSingle();
+
+                        if (!profile && !profErr) {
+                            console.log("🆕 Profile missing. Creating...");
+                            const { data: newProfile, error: insErr } = await window.supabaseClient
+                                .from('profiles')
+                                .insert({
+                                    id: session.user.id,
+                                    email: session.user.email,
+                                    full_name: session.user.user_metadata?.full_name || 'Nuevo Usuario',
+                                    role: 'client' // Default
+                                })
+                                .select()
+                                .single();
+                            if (insErr) console.error("Error creating profile:", insErr);
+                            else console.log("✅ Profile created successfully.");
+                        } else if (profile) {
+                            role = profile.role;
+                        }
+                    } catch (e) {
+                        console.error("Profile sync error:", e);
+                    }
+
+                    // 2. Redirect
+                    window.location.href = getRedirectTarget(role, session.user.email);
+                }
+            }
+        });
     </script>
 
 </body>

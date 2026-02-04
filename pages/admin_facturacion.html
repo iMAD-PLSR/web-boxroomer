@@ -24,8 +24,9 @@
 <body class="bg-brandDark text-white h-screen overflow-hidden flex">
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-[#111] border-r border-white/5 flex flex-col justify-between p-6">
-        <div>
+    <aside
+        class="w-64 bg-[#111] border-r border-white/5 flex flex-col justify-between p-6 shrink-0 overflow-y-auto scrollbar-hide">
+        <div class="pb-8">
             <div class="flex items-center gap-3 mb-10 opacity-80 hover:opacity-100 transition-opacity cursor-pointer">
                 <img src="../assets/images/logo.png" alt="LOGO" class="h-6 brightness-0 invert">
                 <span
@@ -33,37 +34,64 @@
             </div>
 
             <nav class="space-y-2">
-                <a href="admin_dashboard.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                <a href="admin_dashboard"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
                     <span class="material-symbols-outlined">space_dashboard</span>
                     <span class="text-xs font-bold uppercase tracking-wider">Dashboard</span>
                 </a>
-                <a href="admin_clientes.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                <a href="admin_clientes"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
                     <span class="material-symbols-outlined">group</span>
                     <span class="text-xs font-bold uppercase tracking-wider">Clientes</span>
                 </a>
-                <a href="admin_logistica.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                <a href="admin_logistica"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
                     <span class="material-symbols-outlined">inventory_2</span>
-                    <span class="text-xs font-bold uppercase tracking-wider">Logística</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Tu Trastero Inteligente</span>
                 </a>
-                <a href="admin_facturacion.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl bg-brandPurple text-white border border-brandPurple/20 shadow-lg shadow-brandPurple/10 transition-all">
+
+                <div class="pt-4 pb-2 px-4">
+                    <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Recursos</p>
+                </div>
+                <a href="admin_logistica?page=conductores"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">engineering</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Conductores</span>
+                </a>
+                <a href="admin_logistica?page=vehiculos"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">local_shipping</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Vehículos</span>
+                </a>
+
+                <a href="admin_facturacion"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl bg-brandPurple text-white border border-brandPurple/20 shadow-lg shadow-brandPurple/10 transition-all font-bold">
                     <span class="material-symbols-outlined">payments</span>
                     <span class="text-xs font-bold uppercase tracking-wider">Facturación</span>
                 </a>
-                <a href="admin_ajustes.html"
-                    class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                <a href="admin_ajustes"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
                     <span class="material-symbols-outlined">settings</span>
                     <span class="text-xs font-bold uppercase tracking-wider">Ajustes</span>
+                </a>
+
+                <a href="driver_dashboard.html" target="_blank"
+                    class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white transition-all">
+                    <span class="material-symbols-outlined">directions_car</span>
+                    <span class="text-xs font-bold uppercase tracking-wider">Vista Conductor</span>
+                    <span class="material-symbols-outlined text-[10px] ml-auto">open_in_new</span>
                 </a>
             </nav>
         </div>
 
-        <div class="px-4 py-3 bg-brandPurple/10 rounded-xl border border-brandPurple/20 text-center">
-            <p class="text-[10px] text-brandPurple font-black uppercase tracking-widest mb-1">Stripe Connect</p>
-            <span class="text-[10px] font-bold text-white bg-green-500/20 px-2 py-0.5 rounded">Sincronizado</span>
+        <div class="px-4 py-3 bg-brandPurple/10 rounded-xl border border-brandPurple/20 cursor-pointer hover:bg-red-500/10 hover:border-red-500/20 transition-all group"
+            onclick="handleLogout()">
+            <p class="text-[10px] text-brandPurple font-black uppercase tracking-widest mb-1 group-hover:text-red-400">
+                Cerrar Sesión</p>
+            <div class="flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-green-500 group-hover:bg-red-500"></div>
+                <span class="text-xs font-bold text-white group-hover:text-red-400">Israel Madrigal</span>
+            </div>
         </div>
     </aside>
 
@@ -91,33 +119,30 @@
         <div class="grid grid-cols-4 gap-6 mb-10">
             <div class="bg-[#141414] border border-white/5 p-6 rounded-3xl relative overflow-hidden group">
                 <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2">MRR (Recurrente)</p>
-                <h3 class="text-4xl font-black text-white">12,480€</h3>
+                <h3 class="text-4xl font-black text-white">0€</h3>
                 <div class="flex gap-2 mt-2 items-center">
-                    <span
-                        class="text-[10px] text-green-500 font-bold bg-green-500/10 px-1.5 py-0.5 rounded">+8.2%</span>
-                    <span class="text-[10px] text-slate-500">este mes</span>
+                    <span class="text-[10px] text-slate-500 font-bold bg-white/5 px-1.5 py-0.5 rounded">--</span>
                 </div>
             </div>
             <div class="bg-[#141414] border border-white/5 p-6 rounded-3xl relative overflow-hidden group">
                 <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2">Ingreso Medio (ARPU)</p>
-                <h3 class="text-4xl font-black text-white">124€</h3>
-                <p class="text-[10px] text-slate-500 mt-2">Pack Dúo es el más popular</p>
+                <h3 class="text-4xl font-black text-white">0€</h3>
+                <p class="text-[10px] text-slate-500 mt-2">--</p>
             </div>
             <div
-                class="bg-[#141414] border border-white/10 p-6 rounded-3xl relative overflow-hidden group border-orange-500/30 bg-orange-500/5 shadow-lg shadow-orange-500/5">
+                class="bg-[#141414] border border-white/10 p-6 rounded-3xl relative overflow-hidden group hover:border-orange-500/30 transition-all">
                 <div class="flex justify-between items-start">
                     <div>
                         <p class="text-orange-500 text-[10px] font-black uppercase tracking-widest mb-2">Pendiente Cobro
                         </p>
-                        <h3 class="text-4xl font-black text-orange-400">432€</h3>
+                        <h3 class="text-4xl font-black text-orange-400">0€</h3>
                     </div>
-                    <span class="material-symbols-outlined text-orange-500 animate-pulse">priority_high</span>
                 </div>
-                <p class="text-[10px] text-orange-500/50 mt-2">3 suscripciones en mora (Impago)</p>
+                <p class="text-[10px] text-orange-500/50 mt-2">Sin incidencias</p>
             </div>
             <div class="bg-[#141414] border border-white/5 p-6 rounded-3xl relative overflow-hidden group">
                 <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2">Impuestos (IVA 21%)</p>
-                <h3 class="text-4xl font-black text-white">2,620€</h3>
+                <h3 class="text-4xl font-black text-white">0€</h3>
                 <p class="text-[10px] text-slate-500 mt-2">Trimestre en curso</p>
             </div>
         </div>
@@ -152,43 +177,10 @@
             <!-- Programmed Transactions -->
             <div class="bg-[#141414] border border-white/5 p-8 rounded-[2.5rem] flex flex-col">
                 <h3 class="text-sm font-black text-white uppercase italic tracking-tighter mb-6">Próximos Cobros</h3>
-                <div class="flex-1 space-y-4">
-                    <div
-                        class="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 group hover:bg-white/[0.04] transition-all">
-                        <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
-                            <span class="material-symbols-outlined text-sm">schedule</span>
-                        </div>
-                        <div class="flex-1">
-                            <p class="text-[10px] font-black text-white uppercase tracking-widest">Mañana • ID #C102</p>
-                            <p class="text-[9px] text-slate-500 font-bold uppercase mt-1 italic">Renovación Pack Mini
-                            </p>
-                        </div>
-                        <p class="text-sm font-black text-white italic">29€</p>
-                    </div>
-                    <div
-                        class="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 group hover:bg-white/[0.04] transition-all">
-                        <div
-                            class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500">
-                            <span class="material-symbols-outlined text-sm">schedule</span>
-                        </div>
-                        <div class="flex-1">
-                            <p class="text-[10px] font-black text-white uppercase tracking-widest">18 Ene • ID #C044</p>
-                            <p class="text-[9px] text-slate-500 font-bold uppercase mt-1 italic">Renovación Pack Dúo</p>
-                        </div>
-                        <p class="text-sm font-black text-white italic">49€</p>
-                    </div>
-                    <div
-                        class="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/5 group hover:bg-white/[0.04] transition-all">
-                        <div
-                            class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
-                            <span class="material-symbols-outlined text-sm">schedule</span>
-                        </div>
-                        <div class="flex-1">
-                            <p class="text-[10px] font-black text-white uppercase tracking-widest">22 Ene • ID #C201</p>
-                            <p class="text-[9px] text-slate-500 font-bold uppercase mt-1 italic">Reserva Personalizado
-                            </p>
-                        </div>
-                        <p class="text-sm font-black text-white italic">124€</p>
+                <div class="flex-1 space-y-4 flex items-center justify-center">
+                    <div class="text-center opacity-40">
+                        <span class="material-symbols-outlined text-3xl mb-2">calendar_month</span>
+                        <p class="text-[10px] font-black uppercase tracking-widest">Sin cobros próximos</p>
                     </div>
                 </div>
                 <button onclick="openCalendarModal()"
@@ -268,9 +260,44 @@
         </div>
     </div>
 
+    <!-- Supabase SDK & Config -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabase-config.js"></script>
+    <script src="../assets/js/supabase-client.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Auth Check
+            if (window.supabaseClient) {
+                const { data: { session } } = await window.supabaseClient.auth.getSession();
+                if (!session) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const { data: profile } = await window.supabaseClient
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', session.user.id)
+                    .maybeSingle();
+
+                const role = profile?.role || session.user.user_metadata?.role || 'client';
+
+                // 🦸‍♂️ SUPERADMIN BYPASS
+                let finalRole = role;
+                if (session.user.email === 'israel.madrigal@pluser.es') {
+                    finalRole = 'admin';
+                    console.log("👑 [Auth] Superadmin detectado por email en Facturación.");
+                }
+
+                if (finalRole !== 'admin') {
+                    console.warn("⛔ Acceso denegado: Solo administradores.");
+                    window.location.href = 'cliente_dashboard.html';
+                    return;
+                }
+            }
+
             renderBilling();
             initChart();
             renderCalendar();
@@ -282,7 +309,8 @@
             let html = days.map(d => `<div class="p-4 text-center text-[10px] font-black text-slate-500 uppercase bg-white/5">${d}</div>`).join('');
 
             for (let i = 1; i <= 31; i++) {
-                const hasCharge = [5, 12, 18, 22, 25, 29].includes(i);
+                // Get real charges from somewhere eventually, but for now strict clean slate
+                const hasCharge = false;
                 html += `
                     <div onclick="showDayDetail(${i})" class="min-h-[100px] p-3 border border-white/5 bg-[#141414] relative group hover:bg-brandPurple/5 transition-all cursor-pointer">
                         <span class="text-[10px] font-bold ${hasCharge ? 'text-brandPurple' : 'text-slate-700'}">${i}</span>
@@ -359,8 +387,8 @@
 
             // Custom plugin to show % difference labels
             const labels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
-            const data2026 = [12480, 14200, 15100, 18500, 21000, 24500];
-            const data2025 = [9800, 10500, 12000, 13100, 14500, 15200];
+            const data2026 = [0, 0, 0, 0, 0, 0];
+            const data2025 = [0, 0, 0, 0, 0, 0];
 
             new Chart(ctx, {
                 type: 'line',
@@ -434,24 +462,18 @@
             const dataStr = localStorage.getItem('BOXROOMER_DASHBOARD_DATA');
             const tableBody = document.getElementById('billing-table-body');
 
-            let rowsHtml = `
-                <tr class="hover:bg-white/[0.02] transition-colors opacity-50">
-                    <td class="p-6 text-slate-600 font-mono text-xs">ch_3N8y2X...42Z</td>
-                    <td class="p-6">
-                        <span class="block text-white font-black italic uppercase text-[11px]">Pack Mini</span>
-                        <span class="text-[9px] text-slate-600 font-black uppercase tracking-widest">Suscripción Mensual</span>
-                    </td>
-                    <td class="p-6 flex items-center gap-3">
-                        <div class="w-7 h-7 bg-slate-800 rounded-lg flex items-center justify-center text-[10px] font-black">AG</div>
-                        <div class="text-[11px] text-slate-500 font-bold uppercase">Ana García</div>
-                    </td>
-                    <td class="p-6 text-slate-600 text-[11px]">12 Enero 2026</td>
-                    <td class="p-6 text-right font-black text-white italic">29.00€</td>
-                    <td class="p-6 text-right">
-                        <span class="bg-green-500/10 text-green-500 text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest border border-green-500/20">Pagado</span>
-                    </td>
-                </tr>
-            `;
+            let rowsHtml = '';
+
+            if (!dataStr) {
+                rowsHtml = `
+                    <tr>
+                        <td colspan="6" class="p-12 text-center opacity-40">
+                             <span class="material-symbols-outlined text-3xl mb-2">receipt_long</span>
+                             <p class="text-[10px] font-black uppercase tracking-widest">No hay facturas registradas</p>
+                        </td>
+                    </tr>
+                `;
+            }
 
             if (dataStr) {
                 const data = JSON.parse(dataStr);

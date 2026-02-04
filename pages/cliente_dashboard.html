@@ -36,6 +36,27 @@
                 right: 1.5rem !important;
             }
         }
+
+        /* Scrollbar Actividad Live */
+        .custom-scrollbar-activity::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar-activity::-webkit-scrollbar-thumb {
+            background: var(--brandPurple);
+            border-radius: 10px;
+            opacity: 0.3;
+        }
+
+        .custom-scrollbar-activity::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        /* Timeline background fix */
+        .timeline-icon-container {
+            background-color: var(--app-bg);
+            box-shadow: 0 0 0 4px var(--app-bg);
+        }
     </style>
 </head>
 
@@ -71,8 +92,8 @@
                     </a>
                     <a href="cliente_inventario.html"
                         class="flex items-center gap-4 px-5 py-4 rounded-2xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all group">
-                        <span class="material-symbols-outlined">grid_view</span>
-                        <span class="font-black text-[11px] uppercase tracking-widest">Mis Cosas</span>
+                        <span class="material-symbols-outlined">inventory_2</span>
+                        <span class="font-black text-[11px] uppercase tracking-widest">Mi Espacio</span>
                     </a>
                     <a href="cliente_pagos.html"
                         class="flex items-center gap-4 px-5 py-4 rounded-2xl text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all group">
@@ -103,15 +124,14 @@
 
             <!-- User Mini Profile -->
             <div class="flex items-center gap-4 p-4 rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] cursor-pointer hover:bg-[var(--card-hover)] transition-all group"
-                onclick="window.location.href='../index.html'">
+                onclick="handleLogout()">
                 <div
                     class="w-10 h-10 rounded-xl bg-gradient-to-br from-brandPurple/20 to-brandPurple/40 text-brandPurple flex items-center justify-center font-black border border-brandPurple/20">
                     IM</div>
                 <div class="flex-1">
                     <p
                         class="text-xs font-black text-[var(--text-main)] group-hover:text-brandPurple transition-colors">
-                        Israel
-                        Madrigal</p>
+                        Usuario</p>
                     <p class="text-[9px] text-[var(--text-muted)] font-bold uppercase tracking-wider">Cerrar Sesión</p>
                 </div>
                 <span
@@ -136,16 +156,49 @@
 
             <main class="px-5 pt-8 pb-32 max-w-lg mx-auto md:max-w-6xl md:mx-0 md:p-12 w-full fade-in-section">
 
+                <!-- Renewal Reminder Banner (iOS Style & Compact Glass) -->
+                <div id="renewalBanner" class="mb-8 relative group animate-fade-in-up hidden" data-expiry="2026-01-16">
+                    <div
+                        class="banner-glow absolute -inset-0.5 bg-amber-500/20 rounded-[1.8rem] blur-sm opacity-20 group-hover:opacity-40 transition duration-1000">
+                    </div>
+                    <div
+                        class="banner-content relative bg-amber-500/[0.08] dark:bg-amber-500/[0.12] backdrop-blur-2xl border border-amber-500/20 rounded-[1.8rem] p-3.5 md:p-4 flex items-center gap-4 shadow-xl">
+                        <div
+                            class="banner-icon-bg w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center shrink-0 border border-amber-500/20">
+                            <span
+                                class="material-symbols-outlined text-xl text-amber-600 dark:text-amber-500 animate-pulse banner-icon">notification_important</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex-1">
+                                <h4
+                                    class="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase tracking-widest mb-0.5">
+                                    Renovación Próxima</h4>
+                                <p class="text-[9px] text-[var(--text-muted)] font-bold leading-tight">Tu suscripción
+                                    actual está por finalizar. Asegura tu tarifa para el próximo periodo.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="window.location.href='cliente_pagos.html'"
+                                class="px-4 py-2 bg-amber-600 text-white rounded-lg font-black uppercase text-[8px] tracking-widest hover:scale-105 transition-all shadow-lg shadow-amber-500/20 banner-btn">Gestionar</button>
+                            <button onclick="document.getElementById('renewalBanner').remove()"
+                                class="w-6 h-6 flex items-center justify-center text-amber-600/40 hover:text-amber-600 transition-colors banner-close">
+                                <span class="material-symbols-outlined text-sm">close</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Welcome Header -->
                 <div class="mb-10">
                     <h1
                         class="text-3xl md:text-5xl font-black text-[var(--text-main)] tracking-tighter italic uppercase leading-none">
-                        Hola, <span class="text-brandPurple underline decoration-brandPurple/20">Israel</span> 👋
+                        Hola, <span id="user-display-name"
+                            class="text-brandPurple underline decoration-brandPurple/20">Usuario</span> 👋
                     </h1>
                     <div class="flex items-center gap-3 mt-4">
                         <span
                             class="px-3 py-1 bg-brandPurple/10 border border-brandPurple/20 rounded-full text-[9px] font-black uppercase tracking-widest text-brandPurple">Tu
-                            Espacio Inteligente</span>
+                            Tu Trastero Inteligente</span>
                         <div class="h-px flex-1 bg-[var(--card-border)]"></div>
                     </div>
                 </div>
@@ -172,9 +225,9 @@
                                         class="flex items-center gap-3 bg-[var(--icon-bg)] border border-[var(--card-border)] px-4 py-2 rounded-full backdrop-blur-md">
                                         <span
                                             class="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_12px_rgba(74,222,128,0.5)]"></span>
-                                        <span
-                                            class="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-main)]">Todo
-                                            Seguro</span>
+                                        <span id="dashboard-status-text"
+                                            class="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-main)]">Sin
+                                            Estado</span>
                                     </div>
                                     <div
                                         class="w-12 h-12 rounded-2xl bg-brandPurple/10 flex items-center justify-center border border-[var(--card-border)]">
@@ -187,21 +240,23 @@
                                     <p
                                         class="text-[var(--text-muted)] text-[10px] font-black uppercase tracking-[0.3em]">
                                         Ocupación Actual</p>
-                                    <h2
+                                    <h2 id="dashboard-volume"
                                         class="text-5xl md:text-7xl font-black text-[var(--text-main)] italic tracking-tighter">
-                                        12 m³
+                                        0 m³
                                     </h2>
                                 </div>
-                                <p class="text-[var(--text-muted)] text-xs md:text-sm font-bold mt-3 mb-10">En Almacen
-                                    Central
-                                    Pinto, Madrid</p>
+                                <p id="dashboard-date-info"
+                                    class="text-[var(--text-muted)] text-xs md:text-sm font-bold mt-3 mb-10">
+                                    —
+                                </p>
 
                                 <!-- Progress -->
                                 <div class="space-y-3">
                                     <div
                                         class="flex justify-between text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest">
                                         <span>Estado del Plan</span>
-                                        <span class="text-brandPurple plan-status-text">Activo</span>
+                                        <span id="dashboard-plan-name"
+                                            class="text-brandPurple plan-status-text">Inactivo</span>
                                     </div>
                                     <div
                                         class="h-2 w-full bg-[var(--icon-bg)] rounded-full overflow-hidden border border-[var(--card-border)]">
@@ -215,8 +270,8 @@
 
                         <!-- Quick Actions -->
                         <div class="grid grid-cols-2 gap-6">
-                            <button onclick="window.location.href='cliente_inventario.html'"
-                                class="bg-[var(--card-bg)] border border-[var(--card-border)] p-6 rounded-[2.5rem] hover:bg-[var(--card-hover)] hover:border-brandPurple/20 transition-all text-left shadow-xl group">
+                            <button id="btn-dashboard-recover" onclick="window.location.href='cliente_inventario.html'"
+                                class="bg-[var(--card-bg)] border border-[var(--card-border)] p-6 rounded-[2.5rem] hover:bg-[var(--card-hover)] hover:border-brandPurple/20 transition-all text-left shadow-xl group disabled:opacity-30 disabled:cursor-not-allowed">
                                 <div
                                     class="w-12 h-12 rounded-2xl bg-orange-500/10 text-orange-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                                     <span class="material-symbols-outlined text-2xl">package_2</span>
@@ -249,221 +304,41 @@
                             class="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[3rem] p-8 md:p-10 h-full relative overflow-hidden shadow-2xl">
                             <div class="absolute top-0 right-0 w-32 h-32 bg-brandPurple/5 rounded-full blur-3xl"></div>
 
-                            <div class="flex justify-between items-center mb-10 relative z-10">
+                            <div class="flex justify-between items-center mb-8 relative z-10">
                                 <h3
                                     class="text-xl font-black text-[var(--text-main)] italic uppercase tracking-tighter">
-                                    Actividad
-                                    Live</h3>
+                                    Actividad Live</h3>
                                 <button onclick="window.location.href='cliente_pagos.html'"
                                     class="text-[9px] font-black text-brandPurple uppercase border-b border-brandPurple/20 hover:border-brandPurple transition-all py-1">Historial
-                                    Full</button>
+                                    completo</button>
                             </div>
 
-                            <div class="space-y-8 relative">
+                            <div class="relative h-[450px] overflow-y-auto pr-4 custom-scrollbar-activity">
                                 <!-- Modern Vertical Timeline Line -->
                                 <div
-                                    class="absolute left-[20px] top-2 bottom-2 w-[2px] bg-gradient-to-b from-brandPurple/40 via-white/5 to-transparent">
+                                    class="absolute left-[23px] top-4 bottom-4 w-[2px] bg-gradient-to-b from-brandPurple via-[var(--card-border)] to-transparent z-0 opacity-40">
                                 </div>
 
-                                <div id="live-timeline" class="space-y-8 relative">
+                                <div id="live-timeline" class="space-y-8 relative z-10">
                                     <!-- JS Injected Content -->
-                                    <!-- Fallback Static Content for Design Preview -->
-                                    <div
-                                        class="absolute left-[20px] top-2 bottom-2 w-[2px] bg-gradient-to-b from-brandPurple/40 via-white/5 to-transparent">
-                                    </div>
-                                    <div class="relative pl-14 group">
-                                        <div
-                                            class="absolute left-0 top-0 w-10 h-10 rounded-xl bg-[var(--card-bg)] border-2 border-[var(--card-border)] flex items-center justify-center z-10 group-hover:scale-110 transition-transform shadow-lg group-hover:border-brandPurple/30">
-                                            <span
-                                                class="material-symbols-outlined text-brandPurple text-lg">check_circle</span>
-                                        </div>
-                                        <div class="space-y-1">
-                                            <h4
-                                                class="text-sm font-black text-[var(--text-main)] uppercase tracking-tighter">
-                                                Pago
-                                                Confirmado</h4>
-                                            <p class="text-xs text-[var(--text-muted)] font-bold">Mensualidad Enero 2026
-                                                - Plan
-                                                Pack Mini</p>
-                                            <div class="flex items-center gap-2 mt-2">
-                                                <span class="w-1 h-1 rounded-full bg-brandPurple"></span>
-                                                <span
-                                                    class="text-[9px] font-black text-brandPurple/60 uppercase tracking-widest">Hace
-                                                    2 horas</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <!-- JS Injected Content -->
+
                                 </div>
                             </div>
                         </div>
-
                     </div>
+                </div>
             </main>
         </div>
     </div>
 
-    <!-- Mobile Navigation Bar -->
-    <div
-        class="md:hidden fixed bottom-8 left-6 right-6 bg-[var(--sidebar-bg)] backdrop-blur-3xl border border-[var(--card-border)] rounded-[2.5rem] p-3 shadow-2xl flex justify-between items-center z-50">
 
-        <button class="flex-1 flex flex-col items-center gap-1 py-1 text-brandPurple">
-            <div class="w-10 h-10 rounded-2xl bg-brandPurple/10 flex items-center justify-center">
-                <span class="material-symbols-outlined filled">home</span>
-            </div>
-            <span class="text-[8px] font-black uppercase tracking-widest">Inicio</span>
-        </button>
+    <!-- Supabase SDK & Config -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabase-config.js"></script>
+    <script src="../assets/js/supabase-client.js"></script>
 
-        <button onclick="window.location.href='cliente_inventario.html'"
-            class="flex-1 flex flex-col items-center gap-1 py-1 text-[var(--text-muted)] hover:text-brandPurple transition-colors">
-            <span class="material-symbols-outlined">grid_view</span>
-            <span class="text-[8px] font-black uppercase tracking-widest">Cosas</span>
-        </button>
-
-        <!-- Center FAB -->
-        <div class="relative -top-10">
-            <button onclick="window.location.href='../pages/reserva.html'"
-                class="w-16 h-16 rounded-3xl bg-brandPurple text-white shadow-2xl shadow-brandPurple/40 flex items-center justify-center transform hover:scale-110 active:scale-90 transition-all border-4 border-[var(--app-bg)]">
-                <span class="material-symbols-outlined text-2xl">add</span>
-            </button>
-        </div>
-
-        <button onclick="window.location.href='cliente_pagos.html'"
-            class="flex-1 flex flex-col items-center gap-1 py-1 text-[var(--text-muted)] hover:text-brandPurple transition-colors">
-            <span class="material-symbols-outlined">receipt_long</span>
-            <span class="text-[8px] font-black uppercase tracking-widest">Pagos</span>
-        </button>
-
-        <button onclick="window.location.href='cliente_cuenta.html'"
-            class="flex-1 flex flex-col items-center gap-1 py-1 text-[var(--text-muted)] hover:text-brandPurple transition-colors">
-            <span class="material-symbols-outlined">settings</span>
-            <span class="text-[8px] font-black uppercase tracking-widest">Cuenta</span>
-        </button>
-    </div>
-
-    <!-- Simulation Script: Hydrate Dashboard -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            renderTimeline();
-            const dataStr = localStorage.getItem('BOXROOMER_DASHBOARD_DATA');
-            if (!dataStr) return;
-
-            const data = JSON.parse(dataStr);
-
-            // Update Name
-            const nameEl = document.querySelector('h1 span');
-            if (nameEl) nameEl.innerText = data.userName;
-
-            // Update Volume
-            const volEl = document.querySelector('h2');
-            if (volEl && data.volume !== undefined) volEl.innerText = `${data.volume} m³`;
-
-            // Update Status Card based on booking status
-            if (data.status === 'pending_pickup') {
-                const statusDot = document.querySelector('.bg-green-400');
-                if (statusDot) {
-                    statusDot.classList.replace('bg-green-400', 'bg-orange-400');
-                    statusDot.classList.add('shadow-[0_0_12px_rgba(251,146,60,0.5)]');
-                    statusDot.nextElementSibling.textContent = 'En Tránsito';
-                }
-
-                const subtitle = document.querySelector('.text-slate-400.text-xs');
-                if (subtitle) {
-                    const pickupDate = data.pickupDate || 'Mañana, 10:00 - 14:00';
-                    subtitle.innerText = `Recogida programada: ${pickupDate}`;
-                }
-
-                const statusSpan = document.querySelector('.plan-status-text');
-                if (statusSpan) statusSpan.innerText = "Pendiente";
-
-                // Update Progress Bar color to orange
-                const progressBar = document.querySelector('.bg-gradient-to-r');
-                if (progressBar) {
-                    progressBar.className = "h-full w-[35%] bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-500 shadow-[0_0_20px_rgba(251,146,60,0.3)]";
-                }
-            }
-        });
-
-        function renderTimeline() {
-            const history = JSON.parse(localStorage.getItem('BOXROOMER_CLIENT_HISTORY') || '[]');
-            const container = document.getElementById('live-timeline');
-
-            // Start with the connecting line
-            // Start with the connecting line
-            let html = `<div class="absolute left-[20px] top-2 bottom-2 w-[2px] bg-gradient-to-b from-brandPurple/40 via-[var(--card-border)] to-transparent"></div>`;
-
-            // Render live events from localStorage
-            history.forEach(item => {
-                let icon = 'notifications';
-                let colorClass = 'text-brandPurple';
-                let title = 'Notificación';
-                let borderColor = 'border-brandPurple/30';
-
-                if (item.action === 'NOTIF_EMAIL') {
-                    icon = 'mail';
-                    colorClass = 'text-blue-500';
-                    borderColor = 'border-blue-500/30';
-                    title = 'Correo Enviado';
-                } else if (item.action === 'NOTIF_WHATSAPP') {
-                    icon = 'chat';
-                    colorClass = 'text-green-500';
-                    borderColor = 'border-green-500/30';
-                    title = 'WhatsApp Nuevo';
-                } else if (item.action === 'ANULACION_ORDEN') {
-                    icon = 'cancel';
-                    colorClass = 'text-red-500';
-                    borderColor = 'border-red-500/30';
-                    title = 'Servicio Anulado';
-                }
-
-                html += `
-                <div class="relative pl-14 group mb-8 animate-pulse">
-                    <div class="absolute left-0 top-0 w-10 h-10 rounded-xl bg-[var(--app-bg)] border-2 ${borderColor} flex items-center justify-center z-10 shadow-lg shadow-brandPurple/10">
-                        <span class="material-symbols-outlined ${colorClass} text-lg">${icon}</span>
-                    </div>
-                    <div class="space-y-1">
-                        <h4 class="text-sm font-black text-[var(--text-main)] uppercase tracking-tighter">${title}</h4>
-                        <p class="text-xs text-[var(--text-muted)] font-bold line-clamp-2">${item.details}</p>
-                        <div class="flex items-center gap-2 mt-2">
-                             <span class="bg-brandPurple/20 text-brandPurple text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest">Ahora</span>
-                        </div>
-                    </div>
-                </div>`;
-            });
-
-            // Append static historical items
-            html += `
-                <div class="relative pl-14 group">
-                    <div class="absolute left-0 top-0 w-10 h-10 rounded-xl bg-[var(--app-bg)] border-2 border-brandPurple/30 flex items-center justify-center z-10 group-hover:scale-110 transition-transform shadow-lg shadow-brandPurple/10">
-                        <span class="material-symbols-outlined text-brandPurple text-lg">check_circle</span>
-                    </div>
-                    <div class="space-y-1">
-                        <h4 class="text-sm font-black text-[var(--text-main)] uppercase tracking-tighter">Pago Confirmado</h4>
-                        <p class="text-xs text-[var(--text-muted)] font-bold">Mensualidad Enero 2026 - Plan Pack Mini</p>
-                        <div class="flex items-center gap-2 mt-2">
-                            <span class="w-1 h-1 rounded-full bg-brandPurple"></span>
-                            <span class="text-[9px] font-black text-brandPurple/60 uppercase tracking-widest">Hace 2 horas</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="relative pl-14 group opacity-50 hover:opacity-100 transition-opacity mt-8">
-                    <div class="absolute left-0 top-0 w-10 h-10 rounded-xl bg-[var(--app-bg)] border-2 border-[var(--card-border)] flex items-center justify-center z-10 group-hover:scale-110 transition-transform">
-                        <span class="material-symbols-outlined text-[var(--text-muted)] text-lg">inventory_2</span>
-                    </div>
-                    <div class="space-y-1">
-                        <h4 class="text-sm font-black text-[var(--text-main)] uppercase tracking-tighter">Entrada en Almacén</h4>
-                        <p class="text-xs text-[var(--text-muted)] font-bold">Orden #8392 - 15 Bultos Auditados</p>
-                        <div class="flex items-center gap-2 mt-2">
-                            <span class="w-1 h-1 rounded-full bg-slate-500"></span>
-                            <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">12 de Ene</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            container.innerHTML = html;
-        }
-    </script>
+    <script src="../assets/js/cliente-dashboard.js"></script>
 
     <!-- Mobile Nav -->
     <div
@@ -477,8 +352,8 @@
 
         <button onclick="window.location.href='cliente_inventario.html'"
             class="flex-1 flex flex-col items-center gap-1 py-1 text-[var(--text-muted)] hover:text-brandPurple transition-colors">
-            <span class="material-symbols-outlined">grid_view</span>
-            <span class="text-[8px] font-black uppercase tracking-widest">Cosas</span>
+            <span class="material-symbols-outlined">inventory_2</span>
+            <span class="text-[8px] font-black uppercase tracking-widest">Mi Espacio</span>
         </button>
         <div class="relative -top-10 z-20">
             <button onclick="window.location.href='../pages/reserva.html?from=dashboard'"
@@ -498,8 +373,98 @@
         </button>
     </div>
 
+    <!-- Live Tracking Modal -->
+    <div id="trackingModal"
+        class="hidden fixed inset-0 bg-[#0A0510]/80 backdrop-blur-xl z-[150] flex items-center justify-center p-6">
+        <div
+            class="bg-[var(--app-bg)] border border-[var(--card-border)] rounded-[3rem] p-0 max-w-2xl w-full shadow-2xl relative overflow-hidden animate-fade-in group">
+
+            <!-- Map Placeholder (Premium Aesthetics) -->
+            <div class="h-80 bg-slate-900 relative overflow-hidden">
+                <div class="absolute inset-0 opacity-40">
+                    <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=800"
+                        class="w-full h-full object-cover grayscale invert opacity-20">
+                </div>
+                <!-- Animated Truck Line -->
+                <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 800 320">
+                    <path d="M 100 250 Q 400 100 700 250" fill="transparent" stroke="var(--brandPurple)"
+                        stroke-width="3" stroke-dasharray="10 10" class="animate-pulse opacity-40" />
+                    <circle cx="100" cy="250" r="6" fill="var(--brandPurple)" />
+                    <circle cx="700" cy="250" r="6" fill="var(--brandPurple)" />
+                </svg>
+
+                <!-- Truck Icon on Path -->
+                <div
+                    class="absolute left-1/2 top-[175px] -translate-x-1/2 -translate-y-1/2 w-14 h-14 bg-[#0A0A0A] rounded-2xl flex items-center justify-center border-2 border-brandPurple shadow-[0_0_40px_rgba(110,68,255,0.3)] z-30 animate-bounce">
+                    <div class="absolute inset-0 bg-brandPurple/20 rounded-2xl animate-pulse"></div>
+                    <span
+                        class="material-symbols-outlined text-brandPurple text-3xl filled relative z-10 transition-transform group-hover:scale-110">local_shipping</span>
+                </div>
+
+                <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[var(--app-bg)] to-transparent">
+                </div>
+
+                <button onclick="closeTrackingModal()"
+                    class="absolute top-6 right-6 w-10 h-10 bg-[var(--app-bg)]/80 backdrop-blur-md rounded-xl flex items-center justify-center hover:bg-brandPurple hover:text-white transition-all border border-[var(--card-border)] z-20">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <div class="p-10 -mt-10 relative z-10">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="w-2 h-2 rounded-full bg-orange-400 animate-pulse"></span>
+                            <span class="text-[9px] font-black text-orange-400 uppercase tracking-[0.2em]">En
+                                Movimiento</span>
+                        </div>
+                        <h3 class="text-3xl font-black text-[var(--text-main)] italic tracking-tighter uppercase">
+                            Rastreo en Vivo</h3>
+                        <p class="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mt-1">Orden
+                            #8395 • BoxRoomer Express</p>
+                    </div>
+                    <div
+                        class="bg-[var(--card-bg)] border border-brandPurple/20 p-5 rounded-3xl text-center min-w-[120px]">
+                        <p class="text-[8px] font-black text-brandPurple uppercase tracking-widest mb-1">Tu Ventana ETA
+                        </p>
+                        <h4 class="text-2xl font-black text-[var(--text-main)] italic leading-none uppercase">16:45</h4>
+                        <p class="text-[8px] text-[var(--text-muted)] font-bold mt-1 uppercase tracking-widest">± 15 min
+                        </p>
+                    </div>
+                </div>
+
+                <div class="space-y-6 mb-10">
+                    <div
+                        class="flex items-center gap-5 p-5 bg-[var(--icon-bg)] border border-[var(--card-border)] rounded-2xl">
+                        <div
+                            class="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center border border-white/5">
+                            <span class="material-symbols-outlined text-brandPurple text-2xl">local_shipping</span>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-black text-[var(--text-main)] uppercase tracking-tighter">
+                                Transportista: Carlos M.</p>
+                            <p class="text-[8px] text-[var(--text-muted)] font-bold uppercase tracking-widest">Furgoneta
+                                Eléctrica • Envío #12</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="closeTrackingModal()"
+                    class="w-full py-5 bg-[var(--icon-bg)] border border-[var(--card-border)] rounded-2xl font-black uppercase text-xs tracking-[0.3em] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase SDK & Config -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../assets/js/supabase-config.js"></script>
+    <script src="../assets/js/supabase-client.js"></script>
+    <script src="../assets/js/cliente-dashboard.js"></script>
+
     <script src="../assets/js/main.js"></script>
     <script src="../assets/js/chat.js"></script>
-</body>
+
 
 </html>

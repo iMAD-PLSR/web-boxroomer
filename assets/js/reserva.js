@@ -1,6 +1,5 @@
-/**
- * BOXROOMER - Reserva Wizard Logic
- */
+// Supabase Client is accessed via window.supabaseClient (set in supabase-client.js)
+let supabase = null; // Will be set on load
 
 let selectedStep = 1;
 let selectMode = 'packs'; // 'packs' or 'manual'
@@ -10,6 +9,7 @@ let selectedDuration = null; // 3, 6, or 12
 let sliderDebounce = null; // Timer key for chat suppression
 let isPaid = false; // Flag to lock wizard after payment
 let lastCpChecked = null; // Prevent repeated CP feedback messages
+let pendingLead = null; // Stores consolidation data if exists
 
 // Pricing Constants (Synced with calculator.js)
 const PRICES = {
@@ -38,12 +38,25 @@ function isZona0(cp) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    initStep1();
-    // Initialize address autocomplete immediately on page load
-    // This ensures it works even if the field has a saved value
-    setTimeout(() => {
-        initAutocomplete();
-    }, 500);
+    try {
+        console.log("🏁 [Reserva] DOM Loaded. Initializing...");
+
+        // Late binding of supabase client
+        supabase = window.supabaseClient;
+        if (!supabase) console.warn("⚠️ [Reserva] window.supabaseClient is null/undefined at start.");
+
+        initStep1();
+
+        // Initialize address autocomplete immediately on page load
+        setTimeout(() => {
+            initAutocomplete();
+        }, 500);
+
+        // Check if we just returned from OAuth
+        checkOAuthCallback();
+    } catch (e) {
+        console.error("🔥 [Reserva] CRITICAL INIT ERROR:", e);
+    }
 });
 
 function initStep1() {
@@ -137,10 +150,54 @@ function initStep1() {
     // Load saved address from "profile" if exists
     loadSavedAddress();
 
-    // Dynamic initial greeting with thinking effect
-    setTimeout(() => {
-        addAiMessage("¡Hola! ¡Bienvenido a **BOXROOMER**! 👋 Soy **BoxBot**, tu asistente inteligente. Estamos en el **Paso 1: Configura tu Espacio**. Estoy aquí para ir dándote consejos e información de lo que vas seleccionando para que tu reserva sea perfecta. ¿Qué tienes pensado guardar hoy? ✨");
-    }, 800);
+    // Consolidation Check
+    checkPendingPickup().then((hasPending) => {
+        setTimeout(() => {
+            if (hasPending && pendingLead) {
+                const dateStr = new Date(pendingLead.pickup_date).toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
+                addAiMessage(`¡Hola de nuevo! Veo que ya tenemos una recogida pendiente para el **${dateStr}**. ✨ ¡Qué alegría que necesites más espacio! Como todavía no hemos hecho el viaje, podemos **consolidarlo todo en el mismo trayecto**. 🚛 Solo te cobraremos la diferencia de m³ y te ahorrarás cualquier gestión logística extra. ¡Es la ventaja de ser ya cliente! 😊`);
+
+                // Pre-fill logistics to match pending lead
+                if (pendingLead.address) localStorage.setItem('boxroomer_address', pendingLead.address);
+                if (pendingLead.cp) localStorage.setItem('boxroomer_cp', pendingLead.cp);
+                if (pendingLead.city) localStorage.setItem('boxroomer_city', pendingLead.city);
+                selectedDate = pendingLead.pickup_date;
+                selectedSlot = pendingLead.pickup_slot;
+            } else {
+                addAiMessage("¡Hola! ¡Bienvenido a **BOXROOMER**! 👋 Soy **BoxBot**, tu asistente inteligente. Estamos en el **Paso 1: Configura tu Espacio**. Estoy aquí para ir dándote consejos e información de lo que vas seleccionando para que tu reserva sea perfecta. ¿Qué tienes pensado guardar hoy? ✨");
+            }
+        }, 800);
+    });
+}
+
+async function checkPendingPickup() {
+    if (!window.supabaseClient) return false;
+
+    try {
+        const { data: { session } } = await window.supabaseClient.auth.getSession();
+        if (!session) return false;
+
+        // Search for a lead associated with the user that hasn't been picked up yet
+        const { data, error } = await window.supabaseClient
+            .from('leads_wizard')
+            .select('*')
+            .eq('email', session.user.email)
+            .in('status', ['pending_call', 'confirmed'])
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+        if (error) throw error;
+
+        if (data) {
+            pendingLead = data;
+            console.log("📦 [Reserva] Recogida pendiente detectada para consolidación:", pendingLead);
+            return true;
+        }
+    } catch (e) {
+        console.error("Error checking pending pickup:", e);
+    }
+    return false;
 }
 
 function loadSavedAddress() {
@@ -149,14 +206,22 @@ function loadSavedAddress() {
     const savedCity = localStorage.getItem('boxroomer_city');
 
     if (savedAddr) {
-        // We'll fill them when we reach step 2 or if they exist in DOM
         const addrInput = document.getElementById('pickup-address');
         const cpInput = document.getElementById('pickup-cp');
         const cityInput = document.getElementById('pickup-city');
 
-        if (addrInput) addrInput.value = savedAddr;
-        if (cpInput) cpInput.value = savedCP || '';
-        if (cityInput) cityInput.value = savedCity || '';
+        if (addrInput) {
+            addrInput.value = savedAddr;
+            if (pendingLead) addrInput.disabled = true;
+        }
+        if (cpInput) {
+            cpInput.value = savedCP || '';
+            if (pendingLead) cpInput.disabled = true;
+        }
+        if (cityInput) {
+            cityInput.value = savedCity || '';
+            if (pendingLead) cityInput.disabled = true;
+        }
     }
 }
 
@@ -437,6 +502,10 @@ function setCustomerType(type) {
 }
 
 function setDeliveryMode(mode) {
+    if (pendingLead && mode === 'dropoff') {
+        addAiMessage("💡 Para la consolidación de tu reserva, es necesario mantener el servicio de **Recogida**, para que podamos llevar todo en el mismo viaje y ahorrarte costes.");
+        return;
+    }
     deliveryMode = mode;
     const pill = document.getElementById('pill-delivery');
     const btnPickup = document.getElementById('mode-pickup');
@@ -779,7 +848,11 @@ function validateStep2(showAlert = false) {
 
     if (isValid) {
         if (window._logisticsReady !== true) {
-            addAiMessage("¡Logística validada! ✅ He comprobado que todo es correcto. Pulsa en **'Ir al Resumen'** para revisar el desglose final y asegurar tu espacio.");
+            if (pendingLead) {
+                addAiMessage("¡Consolidación preparada! ✅ He bloqueado la fecha y dirección para que coincidan con tu recogida pendiente. Pulsa en **'Ir al Resumen'**.");
+            } else {
+                addAiMessage("¡Logística validada! ✅ He comprobado que todo es correcto. Pulsa en **'Ir al Resumen'** para revisar el desglose final y asegurar tu espacio.");
+            }
             window._logisticsReady = true;
         }
     } else {
@@ -797,11 +870,22 @@ function initStep2(manualDateStr = null) {
     const monthsArr = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
     // Recommendation 2: Logistical Cutoff (16:00h)
-    // If it's past 16h, the first available day is not tomorrow, but the day after tomorrow.
     const now = new Date();
     let daysIterated = (now.getHours() >= 16) ? 2 : 1;
 
     let addedDays = 0;
+
+    if (pendingLead) {
+        // If consolidating, we force the pending lead's date and disable others visually
+        setDeliveryMode('pickup');
+        selectedDate = pendingLead.pickup_date;
+        selectedSlot = pendingLead.pickup_slot;
+
+        // Add an AI message explaining the lock
+        setTimeout(() => {
+            addAiMessage("📍 **Logística Unificada**: He fijado la dirección y el horario para que coincidan con tu recogida ya programada. ¡Así lo gestionamos todo en un solo viaje! 🚛");
+        }, 500);
+    }
 
     // First 5 standard slots
     while (addedDays < 5) {
@@ -892,13 +976,23 @@ function renderCalendarDay(container, date, days, months, dateStr) {
 
     const dayEl = document.createElement('div');
     dayEl.id = `date-${dateStr}`;
-    dayEl.onclick = () => selectDate(dateStr);
-    dayEl.className = 'flex flex-col items-center justify-center p-3 rounded-2xl border-2 border-slate-50 bg-slate-50 cursor-pointer transition-all hover:border-brandPurple/30 group';
 
-    // If this is the selected date, highlight it
-    if (selectedDate === dateStr) {
-        dayEl.classList.remove('border-slate-50', 'bg-slate-50');
-        dayEl.classList.add('border-brandPurple', 'bg-white', 'shadow-md', 'scale-105', 'z-10');
+    // If consolidating, disable click on other dates
+    if (pendingLead) {
+        dayEl.style.opacity = (selectedDate === dateStr) ? '1' : '0.3';
+        dayEl.style.cursor = (selectedDate === dateStr) ? 'default' : 'not-allowed';
+        if (selectedDate === dateStr) {
+            dayEl.classList.add('border-brandPurple', 'bg-white', 'shadow-md', 'scale-105', 'z-10');
+        } else {
+            dayEl.classList.add('border-slate-50', 'bg-slate-50');
+        }
+    } else {
+        dayEl.onclick = () => selectDate(dateStr);
+        dayEl.className = 'flex flex-col items-center justify-center p-3 rounded-2xl border-2 border-slate-50 bg-slate-50 cursor-pointer transition-all hover:border-brandPurple/30 group';
+        if (selectedDate === dateStr) {
+            dayEl.classList.remove('border-slate-50', 'bg-slate-50');
+            dayEl.classList.add('border-brandPurple', 'bg-white', 'shadow-md', 'scale-105', 'z-10');
+        }
     }
 
     dayEl.innerHTML = `
@@ -980,6 +1074,10 @@ function selectDate(dateStr, isManual = false) {
 }
 
 function setTimeSlot(slot) {
+    if (pendingLead && slot !== pendingLead.pickup_slot) {
+        addAiMessage("⏳ El horario ha sido unificado con tu recogida pendiente para que el equipo logístico pueda realizar toda la carga en una sola parada.");
+        return;
+    }
     selectedSlot = slot;
     const pill = document.getElementById('pill-timeslot');
     const btnMorning = document.getElementById('slot-morning');
@@ -1432,59 +1530,87 @@ function updateSummary() {
     if (costRent) costRent.innerText = `${monthlyRent},00€`;
     if (costTotalMonthly) costTotalMonthly.innerText = `${monthlyRent},00€`;
 
+    // 4. Consolidation Credits Logic
+    let previousPlanCredit = 0;
+    const rowCredits = document.getElementById('row-credits');
+    const costCreditsDisplay = document.getElementById('cost-credits');
 
-    // 4. One-time costs (Boxes & Mozo)
+    if (pendingLead && rowCredits && costCreditsDisplay) {
+        // Calculate what they "already have" or "already paid" (simplified to the monthly value of their previous plan)
+        const prevVol = parseFloat(pendingLead.volume_m3) || 1.0;
+        const prevMonths = parseInt(pendingLead.plan_months) || 3;
+        let prevTotalPeriodPrice = 0;
+
+        if (prevVol <= 1.0) prevTotalPeriodPrice = PRICES.PACK_MINI[prevMonths];
+        else if (prevVol <= 2.0) prevTotalPeriodPrice = PRICES.PACK_DUO[prevMonths];
+        else {
+            const base = PRICES.BASE_M1;
+            const extra = PRICES.ADDITIONAL_M2;
+            const monthlyBase = base + (prevVol - 1) * extra;
+            let mToPay = prevMonths;
+            if (prevMonths === 6) mToPay = 5;
+            else if (prevMonths === 12) mToPay = 9;
+            prevTotalPeriodPrice = monthlyBase * mToPay;
+        }
+
+        previousPlanCredit = Math.round(prevTotalPeriodPrice / prevMonths);
+
+        rowCredits.classList.remove('hidden');
+        costCreditsDisplay.innerText = `-${previousPlanCredit},00€`;
+    } else if (rowCredits) {
+        rowCredits.classList.add('hidden');
+    }
+
+    // 5. One-time costs (Boxes & Mozo)
     const rowBoxes = document.getElementById('row-boxes');
     const rowMozo = document.getElementById('row-mozo');
     const rowTotalExtra = document.getElementById('row-total-extra');
     const costTotalExtra = document.getElementById('cost-total-extra');
     const costGrandTotal = document.getElementById('cost-grand-total');
 
-    let hasOneTime = false;
-    let totalOneTime = 0;
+    let extrasTotal = 0;
 
-    // Boxes Logic
-    if (boxCount > 0) {
-        if (rowBoxes) rowBoxes.classList.remove('hidden');
+    // Boxes cost
+    if (boxCount > 0 && rowBoxes) {
+        rowBoxes.classList.remove('hidden');
+        const boxesTotal = boxCount * 1.8;
+        extrasTotal += boxesTotal;
+        if (document.getElementById('cost-boxes')) document.getElementById('cost-boxes').innerText = `${boxesTotal.toFixed(2).replace('.', ',')}€`;
         if (summaryBoxQty) summaryBoxQty.innerText = boxCount;
-        const totalBoxesCost = boxCount * 1.80;
-        if (costBoxes) costBoxes.innerText = `${totalBoxesCost.toFixed(2)}€`;
-        totalOneTime += totalBoxesCost;
-        hasOneTime = true;
-    } else {
-        if (rowBoxes) rowBoxes.classList.add('hidden');
+    } else if (rowBoxes) {
+        rowBoxes.classList.add('hidden');
     }
 
-    // Mozo Extra Logic
-    if (deliveryMode === 'pickup' && selectedLoadType === 'heavy') {
-        if (rowMozo) rowMozo.classList.remove('hidden');
-        totalOneTime += PRICES.EXTRA_MOVER;
-        hasOneTime = true;
-    } else {
-        if (rowMozo) rowMozo.classList.add('hidden');
+    // Mozo cost
+    if (selectedLoadType === 'heavy' && rowMozo) {
+        rowMozo.classList.remove('hidden');
+        extrasTotal += 35;
+    } else if (rowMozo) {
+        rowMozo.classList.add('hidden');
     }
 
-    // Subtotal Adicionales Logic
-    if (hasOneTime) {
-        if (rowTotalExtra) rowTotalExtra.classList.remove('hidden');
-        if (costTotalExtra) costTotalExtra.innerText = `${totalOneTime.toFixed(2)}€`;
-    } else {
-        if (rowTotalExtra) rowTotalExtra.classList.add('hidden');
+    // Toggle Section One-time
+    if (extrasTotal > 0 && sectionOneTime) sectionOneTime.classList.remove('hidden');
+    else if (sectionOneTime) sectionOneTime.classList.add('hidden');
+
+    if (rowTotalExtra) {
+        if (extrasTotal > 0) {
+            rowTotalExtra.classList.remove('hidden');
+            if (costTotalExtra) costTotalExtra.innerText = `${extrasTotal.toFixed(2).replace('.', ',')}€`;
+        } else {
+            rowTotalExtra.classList.add('hidden');
+        }
     }
 
-    // Grand Total Logic (Today's Payment)
-    const grandTotal = monthlyRent + totalOneTime;
-    if (costGrandTotal) costGrandTotal.innerText = `${grandTotal.toFixed(2)}€`;
-
-    // Show/Hide section
-    if (sectionOneTime) {
-        if (hasOneTime) sectionOneTime.classList.remove('hidden');
-        else sectionOneTime.classList.add('hidden');
+    // GRAND TOTAL: Monthly Rent - Credit + Extras
+    if (costGrandTotal) {
+        const finalToPay = Math.max(0, monthlyRent - previousPlanCredit + extrasTotal);
+        costGrandTotal.innerText = `${finalToPay},00€`;
     }
 }
 
-function confirmOrder() {
-    const legalCheck = document.getElementById('legal-check'); // Updated ID from previous task
+async function confirmOrder() {
+    const legalCheck = document.getElementById('legal-check');
     const authName = document.getElementById('auth-name');
     const authEmail = document.getElementById('auth-email');
     const authPass = document.getElementById('auth-pass');
@@ -1503,98 +1629,219 @@ function confirmOrder() {
         }
     });
 
-    // Specific password validation message
-    let passError = false;
     if (authPass.value.length < 8) {
         authPass.classList.add('border-red-500');
-        passError = true;
         authError = true;
     }
 
-    // Specific Email Validation
-    let emailErrorMsg = "";
-    const emailValue = authEmail.value.trim();
-    // Simple regex for basic validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailValue) {
-        // Already handled by empty check, but ensures consistent flow
-    } else if (!emailRegex.test(emailValue)) {
+    if (!emailRegex.test(authEmail.value.trim())) {
         authEmail.classList.add('border-red-500');
-        emailErrorMsg = "El formato del email no parece correcto.";
-        authError = true;
-    } else if (emailValue === 'cliente@boxroomer.com' || emailValue === 'admin@boxroomer.com') {
-        // Simulation of existing user
-        authEmail.classList.add('border-red-500');
-        emailErrorMsg = "Este usuario ya existe. ¿Quizás querías iniciar sesión?";
         authError = true;
     }
 
     if (authError) {
-        if (emailErrorMsg) {
-            addAiMessage(`📧 **Ojo al dato**: ${emailErrorMsg}`);
-        } else if (passError) {
-            addAiMessage("🔒 **Seguridad**: La contraseña debe tener al menos **8 caracteres** para proteger tu cuenta.");
-        } else {
-            addAiMessage(`⚠️ **Atención**: Necesito que completes todos tus datos de **${customerType === 'individual' ? 'facturación personal' : 'empresa'}** para poder generar el contrato de alquiler.`);
-        }
+        addAiMessage("⚠️ **Atención**: Necesito que completes todos tus datos correctamente (incluyendo DNI/CIF y una contraseña de 8+ caracteres) para poder procesar tu reserva.");
         authName.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
     }
 
-    // 2. Terms Validation
     if (!legalCheck || !legalCheck.checked) {
-        addAiMessage("⚠️ Para confirmar tu reserva, es necesario que firmes el contrato y aceptes la política de privacidad marcando la casilla.");
+        addAiMessage("⚠️ Para confirmar tu reserva, es necesario que firmes el contrato y aceptes la política de privacidad.");
         legalCheck.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
     }
 
-    // Success simulation
     const btn = document.getElementById('confirm-btn');
-    const backBtn = document.getElementById('btn-back-to-step-2');
-    const stepperContainer = document.querySelector('.flex.items-center.justify-between.md\\:justify-center.gap-2.md\\:gap-8.mb-8');
-
     btn.disabled = true;
     btn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Creando Cuenta y Procesando Pago...';
 
+    // Collect all data for Supabase
+    const leadData = {
+        email: authEmail.value.trim(),
+        full_name: authName.value.trim(),
+        dni_cif: authId.value.trim(),
+        customer_type: customerType, // 'individual' or 'company'
+        volume_m3: selectedVolume,
+        plan_months: selectedDuration,
+        pack_type: selectedPack === 1 ? 'mini' : (selectedPack === 2 ? 'duo' : 'custom'),
+        delivery_mode: deliveryMode,
+        address: document.getElementById('pickup-address')?.value || '',
+        cp: document.getElementById('pickup-cp')?.value || '',
+        city: document.getElementById('pickup-city')?.value || '',
+        pickup_date: selectedDate || null,
+        pickup_slot: selectedSlot,
+        extra_boxes: boxCount,
+        extra_packing: document.getElementById('extra-packing')?.checked || false,
+        extra_assembly: document.getElementById('extra-assembly')?.checked || false,
+        heavy_load: selectedLoadType === 'heavy',
+        access_type: selectedAccessType,
+        total_monthly: (document.getElementById('cost-total-monthly')?.innerText || '0').replace('€/mes', '').trim(),
+        total_initial: (document.getElementById('cost-grand-total')?.innerText || '0').replace('€', '').trim(),
+        is_consolidation: !!pendingLead,
+        consolidated_with: pendingLead ? pendingLead.id : null,
+        created_at: new Date().toISOString()
+    };
+
+    console.log("📤 [Supabase] Preparing to send lead data:", leadData);
+
+    // Save to Supabase if available
+    if (supabase) {
+        try {
+            // Step A: Handle Auth (Skip if already logged in via OAuth)
+            let userId = null;
+            const { data: { session } } = await supabase.auth.getSession();
+
+            if (session) {
+                userId = session.user.id;
+                console.log("✅ [Supabase] User already authenticated:", userId);
+            } else {
+                // Create Auth User manually
+                const { data: authData, error: authErr } = await supabase.auth.signUp({
+                    email: leadData.email,
+                    password: authPass.value,
+                    options: {
+                        data: {
+                            full_name: leadData.full_name,
+                            dni_cif: leadData.dni_cif
+                        }
+                    }
+                });
+
+                if (authErr) throw authErr;
+                userId = authData.user.id;
+            }
+
+            // Add the real user ID to the lead data
+            leadData.user_id = userId;
+
+            // Step B: Save Lead in leads_wizard table
+            const { error: leadErr } = await supabase
+                .from('leads_wizard')
+                .insert([leadData]);
+
+            if (leadErr) throw leadErr;
+
+            // Step C: Update Profile if needed
+            if (leadData.dni_cif) {
+                await supabase
+                    .from('profiles')
+                    .update({ dni_cif: leadData.dni_cif, full_name: leadData.full_name })
+                    .eq('id', userId);
+            }
+        } catch (err) {
+            console.error("❌ [Supabase Error]:", err);
+            addAiMessage(`🛑 **Error al procesar**: ${err.message || 'Hubo un problema al crear tu cuenta. Por favor, inténtalo de nuevo o contacta con soporte.'}`);
+            btn.disabled = false;
+            btn.innerHTML = 'Reintentar Pago <span class="material-symbols-outlined">refresh</span>';
+            return;
+        }
+    } else {
+        // Mock delay for simulation if supabase is not initialized
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        console.warn("⚠️ [Supabase] SDK not initialized or no keys found. Data saved to localStorage only.");
+    }
+
+    // Final UI Updates (Universal)
+    isPaid = true;
+    localStorage.setItem('BOXROOMER_DASHBOARD_DATA', JSON.stringify({
+        userName: leadData.full_name.split(' ')[0],
+        userEmail: leadData.email,
+        status: 'pending_call',
+        volume: leadData.volume_m3,
+        plan: leadData.pack_type
+    }));
+
+    addAiMessage("¡PAGO CONFIRMADO! 💳🎉 Tu reserva ya está registrada en nuestro sistema de forma segura. Te redirijo a tu Área de Cliente...");
+
+    btn.disabled = false;
+    btn.innerHTML = 'Ir a mi Espacio <span class="material-symbols-outlined">arrow_forward</span>';
+    btn.classList.replace('bg-brandDark', 'bg-green-600');
+
     setTimeout(() => {
-        isPaid = true; // LOCK NAVIGATION
+        window.location.href = 'cliente_dashboard.html';
+    }, 1500);
+}
 
-        // UI Changes
-        if (backBtn) backBtn.classList.add('hidden');
-        if (legalCheck) legalCheck.disabled = true;
-        // Lock auth fields
-        if (authName) authName.disabled = true;
-        if (authEmail) authEmail.disabled = true;
-        if (authPass) authPass.disabled = true;
+// --- SOCIAL LOGIN & OAUTH FLOW ---
+async function loginWithSocial(provider) {
+    if (!window.supabaseClient) {
+        alert("El servicio de autenticación no está disponible en este momento.");
+        return;
+    }
 
-        // Hide stepper to avoid confusion
-        if (stepperContainer) stepperContainer.classList.add('opacity-30', 'pointer-events-none');
+    // 1. Save Current State to LocalStorage (Draft)
+    saveReservationDraft();
 
-        // SAVE DATA FOR DASHBOARD SIMULATION
-        const dashboardData = {
-            userName: authName.value.split(' ')[0], // Take first name
-            userEmail: authEmail.value,
-            volume: document.getElementById('reserva-range')?.value || 0,
-            address: document.getElementById('pickup-address')?.value || "La dirección no se guardó bien",
-            pickupDate: selectedDate ? `${selectedDate.day} ${selectedDate.num} ${selectedDate.month}` : 'Pendiente',
-            pickupTime: selectedSlot === 'morning' ? 'Mañana (09:00 - 14:00)' : (selectedSlot === 'afternoon' ? 'Tarde (14:00 - 18:00)' : 'Pendiente'),
-            status: 'pending_pickup', // active, pending_pickup
-            plan: selectedPack === 1 ? 'Pack Mini' : (selectedPack === 2 ? 'Pack Dúo' : 'Plan Personalizado'),
-            bookingDate: new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
-        };
-        localStorage.setItem('BOXROOMER_DASHBOARD_DATA', JSON.stringify(dashboardData));
+    // 2. Trigger OAuth
+    const { data, error } = await window.supabaseClient.auth.signInWithOAuth({
+        provider: provider,
+        options: {
+            redirectTo: window.location.origin + window.location.pathname + '?oauth_complete=true'
+        }
+    });
 
-        addAiMessage("¡PAGO CONFIRMADO! 💳🎉 Tu reserva ya es oficial. Te redirijo a tu Área de Cliente...");
+    if (error) {
+        console.error("❌ Social Auth Error:", error);
+        alert("Error al conectar con " + provider);
+    }
+}
 
-        btn.disabled = false;
-        btn.innerHTML = 'Ir a mi Espacio <span class="material-symbols-outlined">arrow_forward</span>';
-        btn.classList.replace('bg-brandDark', 'bg-green-600');
+function saveReservationDraft() {
+    const draft = {
+        volume: volumeM3,
+        pack: selectedPack,
+        duration: selectedDuration,
+        deliveryMode: selectedDeliveryMode,
+        pickup_address: document.getElementById('pickup-address')?.value,
+        pickup_cp: document.getElementById('pickup-cp')?.value,
+        pickup_city: document.getElementById('pickup-city')?.value,
+        pickup_date: selectedDate,
+        pickup_slot: selectedSlot,
+        boxCount: boxCount,
+        heavy_load: selectedLoadType === 'heavy',
+        access_type: selectedAccessType,
+        extras: {
+            packing: document.getElementById('extra-packing')?.checked,
+            assembly: document.getElementById('extra-assembly')?.checked
+        }
+    };
+    localStorage.setItem('BOXROOMER_PENDING_RESERVA', JSON.stringify(draft));
+}
 
-        setTimeout(() => {
-            window.location.href = 'cliente_dashboard.html';
-        }, 1500);
-    }, 2500);
+async function checkOAuthCallback() {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('oauth_complete') === 'true') {
+            if (!window.supabaseClient) {
+                console.error("❌ OAuth callback detected but Supabase client is missing.");
+                return;
+            }
+
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            const draft = JSON.parse(localStorage.getItem('BOXROOMER_PENDING_RESERVA'));
+
+            if (session && draft) {
+                // Restore state
+                const userName = session.user.user_metadata?.full_name || 'Viajero';
+                addAiMessage(`¡Hola de nuevo, ${userName}! Estamos finalizando tu reserva automáticamente.`);
+
+                const nameInput = document.getElementById('auth-name');
+                const emailInput = document.getElementById('auth-email');
+
+                if (nameInput) nameInput.value = userName;
+                if (emailInput) emailInput.value = session.user.email || '';
+
+                // Go to summary step immediately
+                goToStep(3);
+
+                // Clear URL params to avoid re-triggering
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+    } catch (err) {
+        console.error("❌ Error in OAuth Callback:", err);
+    }
 }
 
 // AI Copilot Messages Logic

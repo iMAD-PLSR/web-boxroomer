@@ -13,57 +13,53 @@ Este documento detalla los componentes técnicos y servicios externos que sostie
 
 ## 2. Capa de Identidad (Auth)
 
-- **Proveedor**: Clerk.
-- **Métodos de Acceso**:
-  - Social: Google (Principal), Apple, Microsoft.
-  - Passwordless: Magic Links vía Email.
-- **Seguridad**: MFA (Multi-Factor) activado obligatoriamente para perfiles Admin.
-- **Plan**: Free (hasta 10,000 MAU).
+- **Proveedor**: Supabase Auth (GoTrue).
+- **Métodos de Acceso**: Email & Password y Google OAuth.
+- **Seguridad**: RLS (Row Level Security) activado en todas las tablas sensibles vinculando recursos con `auth.uid()`.
 
 ## 3. Capa Financiera (Pagos)
 
 - **Proveedor**: Stripe.
-- **Productos**:
-  - **Stripe Billing**: Para suscripciones recurrentes (Packs 3/6/12 meses).
-  - **Stripe Elements**: Para captura segura de tarjetas en el Wizard.
-  - **Stripe Radar**: Prevención de fraude automática.
-- **Lógica**: Uso de *SetupIntents* para validación de tarjetas sin cargo inicial.
-- **Facturación**: Requisito de DNI/CIF obligatorio para todos los clientes (B2C y B2B) para cumplir con la normativa española de facturación.
+- **Lógica**: SetupIntents para validación de tarjetas y Stripe Billing para suscripciones.
+- **Facturación**: Requisito de DNI/CIF obligatorio para cumplimiento legal en España.
 
-## 4. Integración Logística (SGA)
+## 4. Gestión de Datos y Persistencia
 
-- **Sistema**: SGA Ad-Hoc.
-- **Comunicación**:
-  - **Saliente**: API REST para envío de órdenes de recogida/entrega.
-  - **Entrante**: Webhooks para confirmación de entrada física y enlaces a fotos de inventario.
+- **Motor Central**: Supabase (PostgreSQL + Real-time Broadcaster).
+- **Estrategia Mobile**: PWA con soporte para IndexedDB (en desarrollo).
+- **Auditoría**: Tabla `audit_logs` con trazabilidad completa de acciones críticas.
 
-## 5. Comunicaciones y Emails
+### 4.1. Definición de Tablas (PostgreSQL)
 
-- **SMTP**: Google Workspace (@boxroomer.com).
-- **Diseño**: HTML/CSS responsivo alineado con la identidad visual corporativa (Manrope + BrandPurple).
-- **Transactional**: Notificaciones de pedido, avisos T-7 de renovación, facturas y códigos de recogida.
+| Tabla | Descripción |
+| :--- | :--- |
+| `profiles` | Usuarios, roles, datos fiscales y metadatos. |
+| `leads_wizard` | Reservas, contratos y estado logístico. Campos extendidos: `operational_incident_type`, `operational_evidence`, `current_trip_count`. |
+| `driver_shifts` | Registro de jornadas (inicio/fin) y duración de turnos. |
+| `vehicles` | Flota: matrícula, modelo, capacidad, dimensiones y estado. |
+| `payments` | Historial de cuotas y transacciones de Stripe. |
 
-## 6. Generación de Documentos (PDF)
+### 4.2. Detalle Logística Avanzada
 
-- **Librería**: `jsPDF` (v2.5.1).
-- **Funcionalidad**: Generación en cliente de Facturas, Albaranes y Contratos Legales.
-- **Seguridad**: Inclusión de hashes de firma en el pie de página del PDF para trazabilidad.
+- **Consolidación**: Campos `is_consolidation` y `consolidated_with` en `leads_wizard` para agrupar recogidas.
+- **Tracking**: Mapeo dinámico de estados (`pending_pickup`, `confirmed`, `active`) para el Live Tracker.
+- **Gestión de Incidencias**: Seguimiento operacional de fallos en el servicio (`operational_incident_type`) con marca de tiempo precisa.
+- **Multi-Viaje**: Soporte para servicios que requieren múltiples trayectos entre domicilio y almacén (`current_trip_count`).
 
-## 7. Arquitectura de Interfaces (Frontend)
+## 5. Comunicaciones y Documentos
 
-- **Layout System**: Basado en **Flexbox avanzado**. El uso de `display: flex` y `flex-direction: column` es mandatorio en los contenedores de los pasos (`.step-content`) para permitir el scroll interno de componentes pesados (formularios, calendarios, inventarios) sin perder de vista los controles de navegación.
-- **Animaciones**: CSS Transitions para micro-interacciones y animaciones de entrada.
+- **SMTP**: Google Workspace corporativo.
+- **PDF**: Generación en cliente vía `jsPDF` para facturas y contratos con firma digital táctil.
 
-## 8. Inteligencia de Soporte (ChatbotBoxBot)
+## 7. Geolocalización y Logística en Tiempo Real
 
-- **Motor**: Motor de reglas locales + Integración futura con OpenAI/Anthropic (vía API).
-- **Interfaz**: Widget flotante `chat.js` personalizado con soporte para WhatsApp Direct y transiciones automáticas a humano.
-- **Logs**: Almacenamiento de sesiones en `localStorage` para persistencia durante la navegación.
+- **Cálculo de ETA**: Implementado mediante la **Fórmula de Haversine** para medir distancia entre coordenadas (Conductor vs Cliente) y extrapolación de tiempo basada en velocidad media y factor de tráfico Madrid (1.5x).
+- **Geocodificación**: Uso de **Nominatim (OpenStreetMap)** para resolución de direcciones a coordenadas lat/lon sin costes de API.
+- **Librerías Externas**:
+  - `SortableJS`: Motor de arrastre y reordenamiento táctil para la hoja de ruta.
+  - `Navigator Geolocation API`: Acceso a la posición GPS del dispositivo móvil del conductor.
 
-- **Legal**: Firma digital táctil con captura de IP, User-Agent y Timestamp.
+## 8. Seguridad y Control de Datos
 
-## 9. Sistema de Navegación Dinámica
-
-- **Lógica**: Implementada en `main.js` mediante la función `initNavPill()`.
-- **Funcionamiento**: Calcula coordenadas de elementos activos dinámicamente, permitiendo que el indicador visual "vuele" entre secciones sin recargas bruscas.
-- **Responsividad**: Ajusta el cálculo automáticamente para orientaciones verticales (Sidebar) u horizontales (Barra móvil).
+- **Evidencia Digital**: Almacenamiento de timestamps precisos (`en_route_at`, `pickup_started_at`, `completed_at`) para trazabilidad del servicio.
+- **Firma Digital**: Captura de conformidad del cliente en el momento de la recogida mediante canvas táctil (simulado en fase actual).

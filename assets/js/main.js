@@ -212,35 +212,108 @@ function initNavPill() {
     const sidebarNav = document.querySelector('.sidebar-nav-pill');
     const bottomNav = document.querySelector('.bottom-nav-pill');
 
-    const updatePills = () => {
+    const updatePills = (initial = false) => {
         if (sidebarNav) {
             const indicator = sidebarNav.querySelector('.nav-indicator-sidebar');
             const activeItem = sidebarNav.querySelector('.nav-item-pill-active');
+
             if (indicator && activeItem) {
+                // Si es la carga inicial, intentamos recuperar la posición previa para el efecto slide
+                if (initial) {
+                    const prevTop = sessionStorage.getItem('pill-sidebar-top');
+                    if (prevTop) {
+                        indicator.style.transition = 'none';
+                        indicator.style.top = `${prevTop}px`;
+                        indicator.style.height = sessionStorage.getItem('pill-sidebar-height') + 'px';
+                        indicator.style.opacity = '1';
+
+                        // Forzamos el reflow y luego animamos
+                        indicator.offsetHeight;
+                        indicator.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    }
+                }
+
                 indicator.style.height = `${activeItem.offsetHeight}px`;
                 indicator.style.top = `${activeItem.offsetTop}px`;
                 indicator.style.opacity = '1';
+
+                // Guardamos para la siguiente página
+                sessionStorage.setItem('pill-sidebar-top', activeItem.offsetTop);
+                sessionStorage.setItem('pill-sidebar-height', activeItem.offsetHeight);
             }
         }
 
         if (bottomNav) {
             const indicator = bottomNav.querySelector('.nav-indicator-mobile');
             const activeItem = bottomNav.querySelector('.nav-item-pill-active');
+
             if (indicator && activeItem) {
+                if (initial) {
+                    const prevLeft = sessionStorage.getItem('pill-mobile-left');
+                    if (prevLeft) {
+                        indicator.style.transition = 'none';
+                        indicator.style.left = `${prevLeft}px`;
+                        indicator.style.width = sessionStorage.getItem('pill-mobile-width') + 'px';
+                        indicator.style.opacity = '1';
+
+                        indicator.offsetHeight;
+                        indicator.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    }
+                }
+
                 indicator.style.width = `${activeItem.offsetWidth}px`;
                 indicator.style.height = `${activeItem.offsetHeight}px`;
                 indicator.style.left = `${activeItem.offsetLeft}px`;
                 indicator.style.opacity = '1';
+
+                sessionStorage.setItem('pill-mobile-left', activeItem.offsetLeft);
+                sessionStorage.setItem('pill-mobile-width', activeItem.offsetWidth);
             }
         }
     };
 
-    updatePills();
-    window.addEventListener('resize', updatePills);
+    // Primera ejecución con lógica de persistencia
+    updatePills(true);
 
-    // Also trigger after a short delay or when visibility changes to ensure correct layout
-    setTimeout(updatePills, 300);
+    window.addEventListener('resize', () => updatePills(false));
+
+    // Backup para asegurar layout tras renderizado completo
+    setTimeout(() => updatePills(false), 100);
 }
+
+// Toast System: Professional notifications instead of alerts
+function showBoxBotToast(message) {
+    const existing = document.getElementById('boxbot-toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'boxbot-toast';
+    toast.className = 'fixed top-10 left-1/2 -translate-x-1/2 z-[300] w-[90%] max-w-md animate-fade-in-down';
+
+    toast.innerHTML = `
+        <div class="bg-[var(--app-bg)]/80 backdrop-blur-2xl border border-brandPurple/30 p-6 rounded-[2rem] shadow-2xl flex items-center gap-6">
+            <div class="w-12 h-12 rounded-2xl bg-brandPurple/10 flex items-center justify-center border border-brandPurple/20 flex-shrink-0">
+                <span class="material-symbols-outlined text-brandPurple">smart_toy</span>
+            </div>
+            <div class="flex-1 text-left">
+                <p class="text-[10px] font-black text-brandPurple uppercase tracking-widest mb-1 italic">BoxBot Informa</p>
+                <p class="text-[11px] text-[var(--text-main)] font-black leading-tight uppercase tracking-tight">${message}</p>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(toast);
+
+    // Auto-remove after 6 seconds
+    setTimeout(() => {
+        toast.classList.replace('animate-fade-in-down', 'opacity-0');
+        toast.style.transform = 'translate(-50%, -40px)';
+        toast.style.transition = 'all 0.5s ease';
+        setTimeout(() => toast.remove(), 500);
+    }, 6000);
+}
+
+window.showBoxBotToast = showBoxBotToast;
 
 // Global expose to re-init if needed
 window.initNavPill = initNavPill;

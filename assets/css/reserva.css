@@ -7,6 +7,7 @@ body {
     min-height: 100vh;
     margin: 0;
     padding: 0;
+    background-color: #F8F9FC;
 }
 
 @media (min-width: 1024px) {
@@ -16,6 +17,26 @@ body {
         overflow: hidden !important;
         height: 100vh !important;
     }
+}
+
+/* --- PREMIUM CARD SHADOWS --- */
+/* Replaces standard shadows + borders for cleaner rendering */
+.shadow-card-white {
+    /* Soft purple-tinted shadow + Subtle purple ring */
+    box-shadow:
+        0 20px 40px -5px rgba(110, 68, 255, 0.15),
+        0 0 0 1px rgba(110, 68, 255, 0.05);
+    border: none !important;
+    /* Override physical border */
+}
+
+.shadow-card-dark {
+    /* Deep dark shadow + Subtle white ring */
+    box-shadow:
+        0 30px 60px -10px rgba(15, 5, 35, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    border: none !important;
+    /* Override physical border */
 }
 
 #scroll-to-top {
