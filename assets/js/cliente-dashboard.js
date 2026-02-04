@@ -289,7 +289,7 @@ function renderTrackingButton(isPending, leads = []) {
 
     if (isPending && container) {
         container.innerHTML = `
-            <button onclick="window.openTrackingModal()" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-orange-500/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 group">
+            <button onclick="event.stopPropagation(); window.openTrackingModal()" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-orange-500/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 group">
                 <span class="material-symbols-outlined text-lg animate-bounce">local_shipping</span>
                 Rastrear Recogida
             </button>
