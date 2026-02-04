@@ -1653,9 +1653,13 @@ function initializeSortable() {
         ghostClass: 'dragging',
         chosenClass: 'drag-over',
         dragClass: 'dragging',
-        filter: '.no-drag', // No permite arrastrar elementos con esta clase
-        preventOnFilter: false, // ¡IMPORTANTE! Permite que el scroll nativo funcione en elementos filtrados
-        handle: '.can-drag', // Solo permite arrastrar por los elementos permitidos
+        filter: '.no-drag',
+        preventOnFilter: false,
+        delay: 50, // Pequeño delay para permitir scroll en móvil
+        delayOnTouchOnly: true, // Solo en táctil para no penalizar desktop
+        handle: '.can-drag',
+        forceFallback: true, // Forzar fallback para mejor control de eventos
+        fallbackTolerance: 3, // Tolerancia al mover antes de iniciar drag
         onMove: function (evt) {
             // No permitir mover un elemento por encima de uno que ya esté iniciado
             const targetStatus = evt.related.getAttribute('data-status');
