@@ -448,14 +448,15 @@ async function notifyEnRoute(taskId) {
 
     try {
         const address = `${task.pickup_address || task.address}, ${task.pickup_city || task.city}`;
-        const etaMinutes = await calculateEstimatedTime(address);
+        const { minutes: etaMinutes, distance: etaDistance } = await calculateEstimatedTime(address);
 
         const { error } = await window.supabaseClient
             .from('leads_wizard')
             .update({
                 status: 'in_transit',
                 en_route_at: new Date().toISOString(),
-                estimated_trip_minutes: etaMinutes
+                estimated_trip_minutes: etaMinutes,
+                estimated_total_km: etaDistance
             })
             .eq('id', taskId);
 
@@ -549,10 +550,10 @@ async function calculateEstimatedTime(address) {
                 const roundedMinutes = Math.ceil(minutes / 5) * 5;
 
                 console.log(`📍 ETA Instantáneo - Distancia: ${distance.toFixed(2)}km -> Tiempo: ${roundedMinutes}min`);
-                resolve(roundedMinutes.toString());
+                resolve({ minutes: roundedMinutes.toString(), distance: distance.toFixed(2) });
             } catch (err) {
                 console.warn("⚠️ Error en geocoding, usando fallback:", err);
-                resolve(fallbackTime);
+                resolve({ minutes: fallbackTime, distance: "10" });
             }
         };
 

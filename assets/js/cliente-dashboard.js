@@ -288,10 +288,15 @@ function renderTrackingButton(isPending, leads = []) {
     }
 
     if (isPending && container) {
+        // Detectar si es entrega o recogida
+        const activeLead = leads.find(l => l.status === 'in_transit' || l.status === 'pending_pickup');
+        const isDelivery = activeLead?.type === 'return' || activeLead?.service_type === 'return';
+        const actionText = isDelivery ? 'Rastrear Entrega' : 'Rastrear Recogida';
+
         container.innerHTML = `
             <button onclick="event.stopPropagation(); window.openTrackingModal()" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-orange-500/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 group">
                 <span class="material-symbols-outlined text-lg animate-bounce">local_shipping</span>
-                Rastrear Recogida
+                ${actionText}
             </button>
         `;
     } else if (container) {
@@ -339,6 +344,12 @@ window.openTrackingModal = async function () {
         if (distanceText) distanceText.innerText = "ESPERANDO ACTUALIZACIÓN GPS...";
         return;
     }
+
+    // Título dinámico
+    const isDelivery = lead?.type === 'return' || lead?.service_type === 'return';
+    const actionTitle = isDelivery ? 'Entrega en Vivo' : 'Rastrear en Vivo';
+    const titleEl = modal.querySelector('h3');
+    if (titleEl) titleEl.innerText = actionTitle.toUpperCase();
 
     // 2. Obtener Nombre del Conductor real
     const { data: driverProfile } = await window.supabaseClient
@@ -401,6 +412,27 @@ window.openTrackingModal = async function () {
 
                 const distanceText = document.getElementById('tracking-distance-info');
                 if (distanceText) distanceText.innerText = `CONDUCTOR A ${realDistanceKm.toFixed(1)} KM • RUTA OPTIMIZADA`;
+
+                // Mover el camión visualmente (Progreso porcentual)
+                const totalKm = parseFloat(lead.estimated_total_km || (realDistanceKm + 2));
+                const progress = Math.max(5, Math.min(95, ((totalKm - realDistanceKm) / totalKm) * 100));
+
+                const truckIcon = document.getElementById('tracking-truck-icon');
+                if (truckIcon) {
+                    // Mapear el progreso a la posición horizontal (X)
+                    truckIcon.style.left = `${progress}%`;
+
+                    // Curva parabólica para la altura (Y) - El punto más alto está en el 50%
+                    const arcHeight = 50;
+                    const normalizedProgress = (progress - 5) / 90;
+                    const heightY = Math.sin(normalizedProgress * Math.PI) * arcHeight;
+
+                    truckIcon.style.top = `${210 - heightY}px`;
+
+                    // Rotación sutil para que parezca que sube y baja la "colina"
+                    const rotation = (0.5 - normalizedProgress) * 40;
+                    truckIcon.style.transform = `translate(-50%, -50%) rotate(${-rotation}deg)`;
+                }
             } else {
                 throw new Error("No route found in OSRM");
             }
