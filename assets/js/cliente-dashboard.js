@@ -436,6 +436,8 @@ window.closeTrackingModal = function () {
             trackingSubscription.unsubscribe();
             trackingSubscription = null;
         }
+        // Redirigir al dashboard al salir
+        window.location.href = 'cliente_dashboard.html';
     }
 }
 
