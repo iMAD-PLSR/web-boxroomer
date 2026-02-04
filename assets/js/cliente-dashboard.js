@@ -373,33 +373,58 @@ window.openTrackingModal = async function () {
         }
     }
 
-    // 4. Función de actualización de UI
+    // 4. Función de actualización de UI con OSRM (Trayecto real por carretera)
     const updateModalETA = async (driverLat, driverLon) => {
-        console.log(`📍 [Tracking] Calculando distancia: Driver(${driverLat}, ${driverLon}) -> Client(${clientCoords.lat}, ${clientCoords.lon})`);
         if (!clientCoords) return;
 
-        // Calcular distancia Haversine
-        const R = 6371;
-        const dLat = (clientCoords.lat - driverLat) * Math.PI / 180;
-        const dLon = (clientCoords.lon - driverLon) * Math.PI / 180;
-        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(driverLat * Math.PI / 180) * Math.cos(clientCoords.lat * Math.PI / 180) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const distance = R * c;
+        try {
+            console.log(`🛣️ [Tracking] Calculando ruta real: (${driverLat},${driverLon}) -> (${clientCoords.lat},${clientCoords.lon})`);
 
-        console.log(`📏 [Tracking] Distancia calculada: ${distance.toFixed(2)} km`);
+            // Usar OSRM (Open Source Routing Machine) para trayecto real por carretera
+            const routeUrl = `https://router.project-osrm.org/route/v1/driving/${driverLon},${driverLat};${clientCoords.lon},${clientCoords.lat}?overview=false`;
+            const resp = await fetch(routeUrl);
+            const data = await resp.json();
 
-        // Estimación dinámica (30km/h ciudad + tráfico)
-        let minutes = (distance / 30) * 60 * 1.5 + 4;
-        const roundedMinutes = Math.ceil(minutes);
+            if (data && data.routes && data.routes.length > 0) {
+                const route = data.routes[0];
+                const realDistanceKm = route.distance / 1000;
+                const realDurationMin = Math.ceil(route.duration / 60);
 
-        // Actualizar UI con IDs específicos
-        const etaText = document.getElementById('tracking-eta-value');
-        if (etaText) etaText.innerText = `${roundedMinutes} min`;
+                // Añadir un margen premium de 3-5 min por tráfico/aparcamiento
+                const finalEta = realDurationMin + 3;
 
-        const distanceText = document.getElementById('tracking-distance-info');
-        if (distanceText) distanceText.innerText = `CONDUCTOR A ${distance.toFixed(1)} KM • BOXROOMER LIVE`;
+                console.log(`✅ [Tracking] Ruta OSRM: ${realDistanceKm.toFixed(1)} km, ${realDurationMin} min (+3 min margen)`);
+
+                // Actualizar UI
+                const etaText = document.getElementById('tracking-eta-value');
+                if (etaText) etaText.innerText = `${finalEta} min`;
+
+                const distanceText = document.getElementById('tracking-distance-info');
+                if (distanceText) distanceText.innerText = `CONDUCTOR A ${realDistanceKm.toFixed(1)} KM • RUTA OPTIMIZADA`;
+            } else {
+                throw new Error("No route found in OSRM");
+            }
+        } catch (e) {
+            console.warn("⚠️ [Tracking] Fallback a Haversine (OSRM falló):", e);
+            // Fallback manual optimizado (Velocidad media 50km/h para autovías)
+            const R = 6371;
+            const dLat = (clientCoords.lat - driverLat) * Math.PI / 180;
+            const dLon = (clientCoords.lon - driverLon) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(driverLat * Math.PI / 180) * Math.cos(clientCoords.lat * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distance = R * c;
+
+            let minutes = (distance / 50) * 60 + 5;
+            const roundedMinutes = Math.ceil(minutes);
+
+            const etaText = document.getElementById('tracking-eta-value');
+            if (etaText) etaText.innerText = `${roundedMinutes} min`;
+
+            const distanceText = document.getElementById('tracking-distance-info');
+            if (distanceText) distanceText.innerText = `CONDUCTOR A ${distance.toFixed(1)} KM • BOXROOMER LIVE`;
+        }
     };
 
     // 5. Suscribirse a la ubicación real del conductor
