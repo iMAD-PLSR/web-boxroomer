@@ -288,15 +288,10 @@ function renderTrackingButton(isPending, leads = []) {
     }
 
     if (isPending && container) {
-        // Detectar si es entrega o recogida
-        const activeLead = leads.find(l => l.status === 'in_transit' || l.status === 'pending_pickup');
-        const isDelivery = activeLead?.type === 'return' || activeLead?.service_type === 'return';
-        const actionText = isDelivery ? 'Rastrear Entrega' : 'Rastrear Recogida';
-
         container.innerHTML = `
             <button onclick="event.stopPropagation(); window.openTrackingModal()" class="w-full bg-orange-500 text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl shadow-orange-500/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 group">
                 <span class="material-symbols-outlined text-lg animate-bounce">local_shipping</span>
-                ${actionText}
+                Rastrear VEHÍCULO
             </button>
         `;
     } else if (container) {
@@ -308,8 +303,8 @@ function renderTrackingButton(isPending, leads = []) {
 // TRACKING MODAL LOGIC
 // ---------------------------------------------------------
 
-let trackingSubscription = null;
-let clientCoords = null;
+let trackingSubscriptions = []; // Array de suscripciones
+let activeClientCoords = {}; // Cache de coordenadas por dirección
 
 window.openTrackingModal = async function () {
     const modal = document.getElementById('trackingModal');
@@ -318,178 +313,142 @@ window.openTrackingModal = async function () {
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 
-    // 1. Obtener el lead en tránsito (con fallback por email si falla el id)
+    // 1. Obtener TODOS los leads en tránsito para este cliente
     const { data: { session } } = await window.supabaseClient.auth.getSession();
-    let { data: lead } = await window.supabaseClient
+    let { data: leads } = await window.supabaseClient
         .from('leads_wizard')
         .select('*')
         .eq('user_id', session.user.id)
-        .eq('status', 'in_transit')
-        .maybeSingle();
+        .eq('status', 'in_transit');
 
-    if (!lead) {
-        // Fallback por email
+    if (!leads || leads.length === 0) {
         const { data: fallbackLeads } = await window.supabaseClient
             .from('leads_wizard')
             .select('*')
             .eq('email', session.user.email)
-            .eq('status', 'in_transit')
-            .maybeSingle();
-        lead = fallbackLeads;
+            .eq('status', 'in_transit');
+        leads = fallbackLeads || [];
     }
 
-    if (!lead || !lead.assigned_driver_id) {
-        console.warn("⚠️ [Tracking] No hay conductor asignado o no está en camino.");
+    // Limpiar iconos previos y suscripciones
+    const mapArea = modal.querySelector('.h-80');
+    mapArea.querySelectorAll('.truck-v-icon').forEach(el => el.remove());
+    trackingSubscriptions.forEach(s => s.unsubscribe());
+    trackingSubscriptions = [];
+
+    if (leads.length === 0) {
         const distanceText = document.getElementById('tracking-distance-info');
-        if (distanceText) distanceText.innerText = "ESPERANDO ACTUALIZACIÓN GPS...";
+        if (distanceText) distanceText.innerText = "NO HAY VEHÍCULOS EN MARCHA";
         return;
     }
 
-    // Título dinámico
-    const isDelivery = lead?.type === 'return' || lead?.service_type === 'return';
-    const actionTitle = isDelivery ? 'Entrega en Vivo' : 'Rastrear en Vivo';
     const titleEl = modal.querySelector('h3');
-    if (titleEl) titleEl.innerText = actionTitle.toUpperCase();
+    if (titleEl) titleEl.innerText = "RASTREO VEHÍCULOS";
 
-    // 2. Obtener Nombre del Conductor real
-    const { data: driverProfile } = await window.supabaseClient
-        .from('profiles')
-        .select('full_name')
-        .eq('id', lead.assigned_driver_id)
-        .maybeSingle();
+    // 2. Procesar cada lead
+    leads.forEach(async (lead, index) => {
+        if (!lead.assigned_driver_id) return;
 
-    if (driverProfile) {
-        const driverNameEl = modal.querySelector('p.text-\\[10px\\].font-black.text-\\[var\\(--text-main\\)\\]');
-        if (driverNameEl) driverNameEl.innerText = `Transportista: ${driverProfile.full_name}`;
-    }
+        // Crear Icono de Camión Dinámico
+        const isDelivery = lead.service_type === 'return' || lead.type === 'return';
+        const labelText = isDelivery ? 'ENTREGA' : 'RECOGIDA';
+        const truckColor = isDelivery ? '#3B82F6' : 'var(--brandPurple)'; // Azul para entrega, Morado para recogida
 
-    // 3. Geocodificar la dirección del cliente solo una vez
-    if (!clientCoords) {
+        const truckHtml = `
+            <div id="truck-${lead.id}" class="truck-v-icon absolute left-[15%] top-[185px] -translate-x-1/2 -translate-y-1/2 z-30 transition-all duration-1000 ease-in-out group/truck">
+                <div class="relative">
+                    <!-- Etiqueta Flotante -->
+                    <div class="absolute -top-12 left-1/2 -translate-x-1/2 bg-[#0A0A0A] border border-white/10 px-3 py-1 rounded-full whitespace-nowrap shadow-2xl">
+                        <p class="text-[8px] font-black tracking-widest text-white">${labelText}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-[#0A0A0A] rounded-xl flex items-center justify-center border-2 shadow-[0_0_20px_rgba(255,255,255,0.1)]" style="border-color: ${truckColor}">
+                        <div class="absolute inset-0 rounded-xl animate-pulse" style="background-color: ${truckColor}20"></div>
+                        <span class="material-symbols-outlined text-2xl filled transition-transform" style="color: ${truckColor}">local_shipping</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        mapArea.insertAdjacentHTML('beforeend', truckHtml);
+
+        // Geocodificar destino si no está en cache
         const address = `${lead.pickup_address || lead.address}, ${lead.pickup_city || lead.city}`;
-        console.log("🔍 [Tracking] Geocodificando destino:", address);
-        try {
-            const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
-            const resp = await fetch(geoUrl);
-            const data = await resp.json();
-            if (data && data.length > 0) {
-                clientCoords = { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
-                console.log("✅ [Tracking] Destino fijado:", clientCoords);
-            } else {
-                console.warn("⚠️ [Tracking] Nominatim no encontró la dirección, usando fallback Madrid Centro");
-                clientCoords = { lat: 40.4168, lon: -3.7038 }; // Fallback
-            }
-        } catch (e) {
-            console.error("❌ [Tracking] Error en geocoding:", e);
-            clientCoords = { lat: 40.4168, lon: -3.7038 };
-        }
-    }
-
-    // 4. Función de actualización de UI con OSRM (Trayecto real por carretera)
-    const updateModalETA = async (driverLat, driverLon) => {
-        if (!clientCoords) return;
-
-        try {
-            console.log(`🛣️ [Tracking] Calculando ruta real: (${driverLat},${driverLon}) -> (${clientCoords.lat},${clientCoords.lon})`);
-
-            // Usar OSRM (Open Source Routing Machine) para trayecto real por carretera
-            const routeUrl = `https://router.project-osrm.org/route/v1/driving/${driverLon},${driverLat};${clientCoords.lon},${clientCoords.lat}?overview=false`;
-            const resp = await fetch(routeUrl);
-            const data = await resp.json();
-
-            if (data && data.routes && data.routes.length > 0) {
-                const route = data.routes[0];
-                const realDistanceKm = route.distance / 1000;
-                const realDurationMin = Math.ceil(route.duration / 60);
-
-                // Añadir un margen premium de 3-5 min por tráfico/aparcamiento
-                const finalEta = realDurationMin + 3;
-
-                console.log(`✅ [Tracking] Ruta OSRM: ${realDistanceKm.toFixed(1)} km, ${realDurationMin} min (+3 min margen)`);
-
-                // Actualizar UI
-                const etaText = document.getElementById('tracking-eta-value');
-                if (etaText) etaText.innerText = `${finalEta} min`;
-
-                const distanceText = document.getElementById('tracking-distance-info');
-                if (distanceText) distanceText.innerText = `CONDUCTOR A ${realDistanceKm.toFixed(1)} KM • RUTA OPTIMIZADA`;
-
-                // Mover el camión visualmente (Progreso porcentual)
-                const totalKm = parseFloat(lead.estimated_total_km || (realDistanceKm + 2));
-                const progress = Math.max(5, Math.min(95, ((totalKm - realDistanceKm) / totalKm) * 100));
-
-                const truckIcon = document.getElementById('tracking-truck-icon');
-                if (truckIcon) {
-                    // Mapear el progreso a la posición horizontal (X)
-                    truckIcon.style.left = `${progress}%`;
-
-                    // Curva parabólica para la altura (Y) - El punto más alto está en el 50%
-                    const arcHeight = 50;
-                    const normalizedProgress = (progress - 5) / 90;
-                    const heightY = Math.sin(normalizedProgress * Math.PI) * arcHeight;
-
-                    truckIcon.style.top = `${210 - heightY}px`;
-
-                    // Rotación sutil para que parezca que sube y baja la "colina"
-                    const rotation = (0.5 - normalizedProgress) * 40;
-                    truckIcon.style.transform = `translate(-50%, -50%) rotate(${-rotation}deg)`;
+        if (!activeClientCoords[address]) {
+            try {
+                const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
+                const resp = await fetch(geoUrl);
+                const data = await resp.json();
+                if (data && data.length > 0) {
+                    activeClientCoords[address] = { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+                } else {
+                    activeClientCoords[address] = { lat: 40.4168, lon: -3.7038 };
                 }
-            } else {
-                throw new Error("No route found in OSRM");
+            } catch (e) {
+                activeClientCoords[address] = { lat: 40.4168, lon: -3.7038 };
             }
-        } catch (e) {
-            console.warn("⚠️ [Tracking] Fallback a Haversine (OSRM falló):", e);
-            // Fallback manual optimizado (Velocidad media 50km/h para autovías)
-            const R = 6371;
-            const dLat = (clientCoords.lat - driverLat) * Math.PI / 180;
-            const dLon = (clientCoords.lon - driverLon) * Math.PI / 180;
-            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(driverLat * Math.PI / 180) * Math.cos(clientCoords.lat * Math.PI / 180) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            const distance = R * c;
-
-            let minutes = (distance / 50) * 60 + 5;
-            const roundedMinutes = Math.ceil(minutes);
-
-            const etaText = document.getElementById('tracking-eta-value');
-            if (etaText) etaText.innerText = `${roundedMinutes} min`;
-
-            const distanceText = document.getElementById('tracking-distance-info');
-            if (distanceText) distanceText.innerText = `CONDUCTOR A ${distance.toFixed(1)} KM • BOXROOMER LIVE`;
         }
-    };
 
-    // 5. Suscribirse a la ubicación real del conductor
-    if (trackingSubscription) trackingSubscription.unsubscribe();
+        const clientCoords = activeClientCoords[address];
 
-    // Primera carga manual
-    const { data: loc } = await window.supabaseClient
-        .from('driver_locations')
-        .select('*')
-        .eq('driver_id', lead.assigned_driver_id)
-        .maybeSingle();
+        const updateVehicleUI = async (driverLat, driverLon) => {
+            try {
+                const routeUrl = `https://router.project-osrm.org/route/v1/driving/${driverLon},${driverLat};${clientCoords.lon},${clientCoords.lat}?overview=false`;
+                const resp = await fetch(routeUrl);
+                const data = await resp.json();
 
-    if (loc) {
-        console.log("📍 [Tracking] Ubicación conductor inicial encontrada:", loc.latitude, loc.longitude);
-        updateModalETA(loc.latitude, loc.longitude);
-    } else {
-        console.warn("⚠️ [Tracking] El conductor no tiene ubicación activa en driver_locations.");
-        const distanceText = document.getElementById('tracking-distance-info');
-        if (distanceText) distanceText.innerText = "CONDUCTOR FUERA DE RANGO GPS";
-    }
+                if (data && data.routes && data.routes.length > 0) {
+                    const route = data.routes[0];
+                    const realDistanceKm = route.distance / 1000;
+                    const realDurationMin = Math.ceil(route.duration / 60) + 3;
 
-    trackingSubscription = window.supabaseClient
-        .channel('live-gps')
-        .on('postgres_changes', {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'driver_locations',
-            filter: `driver_id=eq.${lead.assigned_driver_id}`
-        }, (payload) => {
-            console.log("📍 [Tracking] Movimiento detectado:", payload.new.latitude, payload.new.longitude);
-            updateModalETA(payload.new.latitude, payload.new.longitude);
-        })
-        .subscribe();
+                    // Actualizar Camión
+                    const truckEl = document.getElementById(`truck-${lead.id}`);
+                    if (truckEl) {
+                        const totalKm = parseFloat(lead.estimated_total_km || (realDistanceKm + 2));
+                        const progress = Math.max(5, Math.min(95, ((totalKm - realDistanceKm) / totalKm) * 100));
+
+                        truckEl.style.left = `${progress}%`;
+                        const normalizedProgress = (progress - 5) / 90;
+                        const heightY = Math.sin(normalizedProgress * Math.PI) * 50;
+                        truckEl.style.top = `${210 - heightY}px`;
+                        const rotation = (0.5 - normalizedProgress) * 40;
+                        truckEl.style.transform = `translate(-50%, -50%) rotate(${-rotation}deg)`;
+                    }
+
+                    // Si es el primero (o único), poner datos en los paneles laterales
+                    if (index === 0) {
+                        const etaVal = document.getElementById('tracking-eta-value');
+                        if (etaVal) etaVal.innerText = `${realDurationMin} min`;
+                        const distInfo = document.getElementById('tracking-distance-info');
+                        if (distInfo) distInfo.innerText = `${labelText} A ${realDistanceKm.toFixed(1)} KM`;
+                    }
+                }
+            } catch (e) {
+                console.error("Error actualizando vehículo:", e);
+            }
+        };
+
+        // Primera carga
+        const { data: loc } = await window.supabaseClient
+            .from('driver_locations')
+            .select('*')
+            .eq('driver_id', lead.assigned_driver_id)
+            .maybeSingle();
+        if (loc) updateVehicleUI(loc.latitude, loc.longitude);
+
+        // Suscribirse
+        const sub = window.supabaseClient
+            .channel(`gps-${lead.id}`)
+            .on('postgres_changes', {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'driver_locations',
+                filter: `driver_id=eq.${lead.assigned_driver_id}`
+            }, (payload) => {
+                updateVehicleUI(payload.new.latitude, payload.new.longitude);
+            })
+            .subscribe();
+        trackingSubscriptions.push(sub);
+    });
 }
 
 window.closeTrackingModal = function () {
@@ -497,11 +456,8 @@ window.closeTrackingModal = function () {
     if (modal) {
         modal.classList.add('hidden');
         document.body.style.overflow = '';
-        if (trackingSubscription) {
-            trackingSubscription.unsubscribe();
-            trackingSubscription = null;
-        }
-        // Redirigir al dashboard al salir
+        trackingSubscriptions.forEach(s => s.unsubscribe());
+        trackingSubscriptions = [];
         window.location.href = 'cliente_dashboard.html';
     }
 }
