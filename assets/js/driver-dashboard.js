@@ -10,6 +10,7 @@ let currentShiftId = localStorage.getItem('activeShiftId');
 let isWorkdayActive = !!currentShiftId;
 let workdayStartTime = null;
 let workdayInterval = null;
+let lastDriverCoords = null; // { lat, lon } para cálculos instantáneos
 
 function updateWorkdayButtonUI() {
     const label = document.getElementById('workday-label');
@@ -244,6 +245,7 @@ function startLocationTracking(driverId) {
     locationWatchId = navigator.geolocation.watchPosition(
         async (position) => {
             const { latitude, longitude, heading, speed } = position.coords;
+            lastDriverCoords = { lat: latitude, lon: longitude };
             console.log("📍 Ubicación actualizada:", latitude, longitude);
 
             // Actualizar en Supabase (Upsert)
@@ -517,19 +519,11 @@ async function startPickup(taskId) {
  */
 async function calculateEstimatedTime(address) {
     return new Promise((resolve) => {
-        // Fallback: 20-30 minutos si algo falla
+        // Fallback: 25 minutos si algo falla
         const fallbackTime = "25";
 
-        if (!navigator.geolocation) {
-            console.warn("⚠️ Geolocalización no soportada");
-            return resolve(fallbackTime);
-        }
-
-        navigator.geolocation.getCurrentPosition(async (position) => {
+        const calculateWithCoords = async (lat, lon) => {
             try {
-                const driverLat = position.coords.latitude;
-                const driverLon = position.coords.longitude;
-
                 // Geocodificar dirección del cliente (OSM Nominatim)
                 const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json&limit=1`;
                 const response = await fetch(geoUrl);
@@ -542,36 +536,44 @@ async function calculateEstimatedTime(address) {
 
                 // Calcular distancia Haversine (km)
                 const R = 6371;
-                const dLat = (clientLat - driverLat) * Math.PI / 180;
-                const dLon = (clientLon - driverLon) * Math.PI / 180;
+                const dLat = (clientLat - lat) * Math.PI / 180;
+                const dLon = (clientLon - lon) * Math.PI / 180;
                 const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                    Math.cos(driverLat * Math.PI / 180) * Math.cos(clientLat * Math.PI / 180) *
+                    Math.cos(lat * Math.PI / 180) * Math.cos(clientLat * Math.PI / 180) *
                     Math.sin(dLon / 2) * Math.sin(dLon / 2);
                 const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
                 const distance = R * c;
 
-                // Estimación: 30km/h velocidad media ciudad + factor tráfico 1.5
-                // Tiempo = (Distancia / Velocidad) * 60 min
-                let minutes = (distance / 30) * 60 * 1.5;
-
-                // Añadir margen de preparación/aparcamiento (5 min)
-                minutes += 5;
-
-                // Redondeo premium: al alza a los 5 o 10 min más cercanos
-                // Ej: 12 min -> 15 min, 18 min -> 20 min
+                // Estimación premium
+                let minutes = (distance / 30) * 60 * 1.5 + 5;
                 const roundedMinutes = Math.ceil(minutes / 5) * 5;
 
-                console.log(`📍 Distancia: ${distance.toFixed(2)}km -> Tiempo est.: ${roundedMinutes}min`);
+                console.log(`📍 ETA Instantáneo - Distancia: ${distance.toFixed(2)}km -> Tiempo: ${roundedMinutes}min`);
                 resolve(roundedMinutes.toString());
-
             } catch (err) {
-                console.error("❌ Error calculando ETA:", err);
+                console.warn("⚠️ Error en geocoding, usando fallback:", err);
                 resolve(fallbackTime);
             }
-        }, (error) => {
-            console.warn("⚠️ Permiso de ubicación denegado o error", error);
-            resolve(fallbackTime);
-        }, { timeout: 5000 });
+        };
+
+        // 1. Intentar usar la última posición conocida (instantáneo)
+        if (lastDriverCoords) {
+            return calculateWithCoords(lastDriverCoords.lat, lastDriverCoords.lon);
+        }
+
+        // 2. Si no hay coords previas, pedir una vez (fallback lento)
+        if (!navigator.geolocation) {
+            return resolve(fallbackTime);
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (pos) => calculateWithCoords(pos.coords.latitude, pos.coords.longitude),
+            (err) => {
+                console.warn("⚠️ Timeout o GPS bloqueado, usando fallback:", err.message);
+                resolve(fallbackTime);
+            },
+            { timeout: 3000, enableHighAccuracy: false }
+        );
     });
 }
 
